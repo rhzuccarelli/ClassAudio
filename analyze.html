@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sound Microscope</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* layout: same product-manual system as the Waves & Harmonics guide — index rail, numbered chapters,
+   black instrument screens with readout strips; here every screen shows a measurement of one recording */
+:root {
+  --bg: #ececea;
+  --panel: #f7f7f5;
+  --ink: #141414;
+  --muted: #6d6d6a;
+  --line: #cbcbc7;
+  --accent: #ff4f00;
+  --on-accent: #ffffff;
+  --screen: #131415;
+  --screen-ink: #f2f2ef;
+  --screen-dim: #6a6d72;
+  --screen-grid: #25272a;
+  --screen-accent: #ff5a0f;
+  --f-sans: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111112; --panel: #19191b; --ink: #ececea; --muted: #8f8f8c; --line: #313133;
+    --accent: #ff6a1f; --on-accent: #111112; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111112; --panel: #19191b; --ink: #ececea; --muted: #8f8f8c; --line: #313133;
+  --accent: #ff6a1f; --on-accent: #111112; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.55 var(--f-sans); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 10px 20px; background: var(--bg); border-bottom: 1px solid var(--line);
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .08em;
+}
+.bar b { color: var(--accent); font-weight: 500; }
+.bar .spacer { flex: 1; }
+.bar label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.bar input[type=range] { width: 110px; }
+
+.page { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 0 96px; }
+nav.index { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 56px); align-self: start; padding-top: 40px; font: 400 12px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; }
+nav.index ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.index a { display: grid; grid-template-columns: 28px 1fr; padding: 6px 0; text-decoration: none; color: var(--muted); }
+nav.index a:hover, nav.index a.on { color: var(--ink); }
+nav.index a.on span:first-child { color: var(--accent); }
+main { min-width: 0; }
+
+header.hero { padding-block: 56px 32px; border-bottom: 1px solid var(--ink); }
+.eyebrow { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+h1 { font: 700 clamp(44px, 7.5vw, 88px)/.92 var(--f-sans); letter-spacing: -.035em; margin: 18px 0 20px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 19px; line-height: 1.5; max-width: 34em; margin: 0; }
+section.ch { padding-block: 56px 8px; border-bottom: 1px solid var(--line); scroll-margin-top: 48px; }
+.ch-head { display: grid; grid-template-columns: 64px minmax(0,1fr); align-items: baseline; }
+.ch-num { font: 500 13px/1 var(--f-mono); color: var(--accent); }
+h2 { font: 600 34px/1.05 var(--f-sans); letter-spacing: -.02em; margin: 0 0 18px; text-wrap: balance; }
+h3 { font: 600 18px/1.25 var(--f-sans); margin: 32px 0 8px; display: flex; gap: 12px; align-items: baseline; }
+h3 .n { font: 500 12px/1 var(--f-mono); color: var(--muted); min-width: 40px; }
+.prose { max-width: 40em; }
+.prose p { margin: 0 0 14px; }
+.prose ul, .prose ol { margin: 0 0 14px; padding-left: 20px; }
+.prose li { margin-bottom: 8px; }
+.indent { padding-left: 64px; }
+kbd { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; border: 1px solid var(--ink); border-radius: 999px; padding: 3px 8px; white-space: nowrap; }
+.note { position: relative; padding: 12px 0 0 34px; margin: 20px 0; max-width: 40em; border-top: 1px solid var(--ink); font-size: 15px; }
+.note::before { content: "i"; position: absolute; left: 0; top: 12px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font: 600 12px/1 var(--f-mono); }
+.note.try::before { content: "→"; }
+
+.lab { margin: 24px 0; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.lab-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.lab-name { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; }
+.lab-top .spacer { flex: 1; }
+.screen { position: relative; border-radius: 8px; overflow: hidden; border: 2px solid var(--screen); background: var(--screen); }
+.screen canvas { display: block; width: 100%; height: 220px; cursor: crosshair; }
+.screen.tall canvas { height: 300px; }
+.screen.short canvas { height: 150px; }
+.tip {
+  position: absolute; pointer-events: none; background: var(--screen-ink); color: var(--screen);
+  font: 500 10.5px/1.45 var(--f-mono); padding: 6px 8px; border-radius: 4px; white-space: pre; z-index: 2;
+  font-variant-numeric: tabular-nums;
+}
+.readout { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 2px 2px; font: 400 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.readout b { color: var(--ink); font-weight: 500; }
+.key { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; background: transparent; color: var(--ink); border: 1px solid var(--ink); border-radius: 999px; padding: 7px 11px; cursor: pointer; }
+.key:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.key[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.key.hot { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.key:disabled { opacity: .4; cursor: default; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ctl-label { font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }
+
+.drop {
+  display: grid; gap: 10px; justify-items: start; padding: 22px; border: 1.5px dashed var(--ink); border-radius: 10px;
+  background: var(--bg);
+}
+.drop.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--bg)); }
+.drop strong { font: 600 20px/1.2 var(--f-sans); }
+.drop p { margin: 0; color: var(--muted); font-size: 14px; }
+.file-btn { position: relative; overflow: hidden; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.status { font: 500 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.status.err { color: var(--accent); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 14px; }
+.stat { background: var(--panel); padding: 12px 14px; display: grid; gap: 4px; }
+.stat span { font: 500 10px/1.2 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }
+.stat b { font: 600 20px/1.1 var(--f-sans); font-variant-numeric: tabular-nums; }
+.stat i { font: 400 11px/1.3 var(--f-mono); font-style: normal; color: var(--muted); }
+
+.legend-row { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 10px 2px 0; font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.legend-row span { display: inline-flex; align-items: center; gap: 6px; }
+.legend-row i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+
+.f0-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.f0-row input[type=number] { width: 96px; font: 500 13px/1 var(--f-mono); padding: 6px 8px; border: 1px solid var(--ink); border-radius: 6px; background: var(--bg); color: var(--ink); }
+
+.tbl-wrap { overflow-x: auto; margin: 14px 0 0; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.5px; }
+th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+th:first-child, td:first-child { text-align: left; }
+th { font: 500 10px/1.2 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); border-bottom-color: var(--ink); }
+td.miss { color: var(--muted); }
+td.flag { color: var(--accent); font-weight: 600; }
+.bars-cell { display: inline-block; height: 6px; background: var(--ink); border-radius: 0 3px 3px 0; vertical-align: middle; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid2 > div { min-width: 0; }
+footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.empty-note { font: 500 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 8px 2px 0; }
+
+@media (max-width: 960px) { .page { grid-template-columns: minmax(0,1fr); gap: 0; } nav.index { display: none; } }
+@media (max-width: 700px) {
+  .ch-head { grid-template-columns: minmax(0,1fr); } .ch-num { margin-bottom: 10px; } .indent { padding-left: 0; }
+  .grid2 { grid-template-columns: 1fr; }
+  .screen canvas { height: 180px; } .screen.tall canvas { height: 240px; }
+  .bar { padding: 10px 16px; } .page { padding-inline: 16px; } .bar input[type=range] { width: 80px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span>ClassAudio <b>/</b> <a href="index.html">guide</a> <b>/</b> sound microscope</span>
+  <span class="spacer"></span>
+  <label for="master-vol">volume <input id="master-vol" type="range" min="0" max="1" step="0.01" value="0.5"></label>
+  <button class="key" id="stop-all" type="button">stop</button>
+</div>
+
+<div class="page">
+  <nav class="index" aria-label="Chapters">
+    <ol>
+      <li><a href="#load"><span>1</span><span>load a sound</span></a></li>
+      <li><a href="#time"><span>2</span><span>envelope</span></a></li>
+      <li><a href="#sgram"><span>3</span><span>spectrogram</span></a></li>
+      <li><a href="#harm"><span>4</span><span>harmonics</span></a></li>
+      <li><a href="#decay"><span>5</span><span>harmonic decay</span></a></li>
+      <li><a href="#move"><span>6</span><span>pitch &amp; brightness</span></a></li>
+      <li><a href="#resynth"><span>7</span><span>resynthesis</span></a></li>
+      <li><a href="#deep"><span>8</span><span>how deep can we go</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div class="eyebrow">sound design guide · part 2 · analysis</div>
+      <h1>sound<br><em>microscope</em></h1>
+      <p class="lede">Load a recording of one note and take it apart: its envelope, its harmonics, how each harmonic decays, how the pitch and brightness move. Then rebuild it from the measurements and hear what is missing.</p>
+    </header>
+
+    <!-- 1 -->
+    <section class="ch" id="load">
+      <div class="ch-head"><span class="ch-num">1</span><h2>load a sound</h2></div>
+      <div class="indent">
+        <div class="prose"><p>Use a single, isolated note: one key of a Rhodes, one piano note, one plucked string. Dry recordings work best. The file never leaves your computer. All the maths runs in the browser.</p></div>
+        <div class="lab">
+          <div class="drop" id="drop">
+            <strong>Drop an audio file here</strong>
+            <p>WAV, AIFF, FLAC, MP3, M4A or OGG · the first 30 seconds are analysed</p>
+            <div class="seg">
+              <span class="key hot file-btn">choose file<input id="file" type="file" accept="audio/*,.wav,.aif,.aiff,.flac,.mp3,.m4a,.ogg" aria-label="choose audio file"></span>
+            </div>
+          </div>
+          <div class="seg" style="margin-top:14px">
+            <span class="ctl-label">or try a synthetic example:</span>
+            <button class="key" type="button" data-ex="epiano">e-piano tine model</button>
+            <button class="key" type="button" data-ex="piano">struck string</button>
+            <button class="key" type="button" data-ex="pluck">plucked string</button>
+          </div>
+          <div class="seg" style="margin-top:14px">
+            <button class="key" type="button" id="play-orig" disabled>▶ play original</button>
+            <span class="status" id="status" role="status">nothing loaded</span>
+          </div>
+          <div class="stats" id="stats"></div>
+        </div>
+        <div class="note">The examples are generated by code on this page, not recorded. They are built to show typical behaviour: the e-piano model has a tine "clang" and a pickup that adds harmonics, the struck string has stretched partials and two slightly detuned strings. Use them to learn the charts, then load real recordings.</div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="ch" id="time">
+      <div class="ch-head"><span class="ch-num">2</span><h2>envelope</h2></div>
+      <div class="indent">
+        <div class="prose"><p>The top screen is the raw waveform. The lower screen is the loudness in decibels over time, the <b>envelope</b>. On a dB scale, an exponential decay becomes a straight line, so you can read the decay rate as a slope. Click either screen to move the orange <b>cursor</b>. The harmonic chapters below analyse the sound at the cursor.</p></div>
+        <div class="lab">
+          <div class="lab-top"><span class="lab-name">waveform · envelope</span></div>
+          <div class="screen short"><canvas id="cv-wave" aria-label="waveform"></canvas></div>
+          <div class="screen" style="margin-top:6px"><canvas id="cv-env" aria-label="envelope in decibels"></canvas></div>
+          <div class="readout" id="ro-env"></div>
+        </div>
+        <h3><span class="n">2.1</span>two-stage decay</h3>
+        <div class="prose"><p>Many struck instruments decay in two stages: a fast early drop, then a slow tail. In a piano, energy first leaves through the vertical motion of the string, then the horizontal motion sings on. In a Rhodes, the tine and its tonebar trade energy. The readout fits the <b>early</b> slope (first 20 dB) and the <b>late</b> slope separately. A plain synth envelope with one decay knob can only do one of them.</p></div>
+        <h3><span class="n">2.2</span>tremolo</h3>
+        <div class="prose"><p>The readout also looks for slow, regular wobbles in loudness between 1 and 15 Hz. A Rhodes Suitcase with its tremolo on shows a clear rate and depth here. Beating between two slightly detuned strings shows up too, as a slow modulation.</p></div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="ch" id="sgram">
+      <div class="ch-head"><span class="ch-num">3</span><h2>spectrogram</h2></div>
+      <div class="indent">
+        <div class="prose"><p>A spectrogram is many spectra side by side, one every ~10 ms. Time runs left to right, frequency runs up (on a musical, logarithmic scale), and brightness is level. Each harmonic becomes a horizontal line. You can see which lines fade first, and any short vertical smear at the start is the <b>attack transient</b>: hammer, pick or tine noise that is not part of the harmonic series.</p></div>
+        <div class="lab">
+          <div class="lab-top"><span class="lab-name">spectrogram · log frequency · 80 dB range</span></div>
+          <div class="screen tall"><canvas id="cv-sg" aria-label="spectrogram"></canvas></div>
+          <div class="readout"><span>hover to read time, frequency and level · click to move the cursor</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="ch" id="harm">
+      <div class="ch-head"><span class="ch-num">4</span><h2>harmonics at the cursor</h2></div>
+      <div class="indent">
+        <div class="prose"><p>This is a high-resolution Fourier spectrum of about a third of a second of sound around the cursor. Orange ticks mark where perfect harmonics <i>should</i> be (n × f<sub>0</sub>). The table lists what was actually found at each one.</p></div>
+        <div class="lab">
+          <div class="lab-top"><span class="lab-name">spectrum at cursor · 16384-point fft</span></div>
+          <div class="screen"><canvas id="cv-spec" aria-label="spectrum at cursor"></canvas></div>
+          <div class="f0-row">
+            <span class="ctl-label">fundamental f0</span>
+            <input type="number" id="f0" min="20" max="4000" step="0.01" aria-label="fundamental frequency in hertz">
+            <span class="ctl-label">hz</span>
+            <button class="key" type="button" id="f0-half">÷2</button>
+            <button class="key" type="button" id="f0-dbl">×2</button>
+            <button class="key" type="button" id="f0-auto">auto</button>
+            <span class="spacer"></span>
+            <button class="key" type="button" id="zoom-spec" aria-pressed="false">zoom to 16 harmonics</button>
+          </div>
+          <div class="readout" id="ro-spec"></div>
+          <div class="tbl-wrap"><table id="tbl-harm"></table></div>
+        </div>
+        <h3><span class="n">4.1</span>inharmonicity</h3>
+        <div class="prose"><p>Real strings are a little stiff, so their upper partials run sharp, more and more the higher they go. The <b>cents</b> column shows how far each partial sits from a perfect harmonic (100 cents = one semitone). The readout fits the piano-tuner's formula f<sub>n</sub> = n·f<sub>0</sub>·√(1 + B·n²) and reports <b>B</b>. A bass piano string has B around 0.0001, a treble string 0.001 or more. Perfectly harmonic synths have B = 0. This stretch is one reason pianos are tuned "stretched", with high notes slightly sharp.</p></div>
+        <h3><span class="n">4.2</span>odd, even and noise</h3>
+        <div class="prose"><p>The <b>odd/even balance</b> compares harmonics 3, 5, 7… against 2, 4, 6… A symmetric wave has only odd harmonics (chapter 2 of the guide). A Rhodes pickup is placed slightly off-centre from the tine, which makes the wave lopsided and adds even harmonics. <b>Harmonic energy</b> is how much of the sound sits on the found harmonics, versus noise and inharmonic partials between them.</p></div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="ch" id="decay">
+      <div class="ch-head"><span class="ch-num">5</span><h2>harmonic decay</h2></div>
+      <div class="indent">
+        <div class="prose"><p>This is the measurement that separates real instruments from simple synths. Each line is the level of one harmonic over time, tracked through the spectrogram. In a basic subtractive or additive patch every harmonic follows the same envelope. In a real instrument each harmonic has its own life: upper harmonics usually start louder and die faster, which is why a note gets darker as it rings.</p></div>
+        <div class="lab">
+          <div class="lab-top"><span class="lab-name">level of harmonics 1–8 over time</span></div>
+          <div class="screen tall"><canvas id="cv-tracks" aria-label="harmonic levels over time"></canvas></div>
+          <div class="legend-row" id="legend-tracks"></div>
+          <div class="readout"><span>lines go from light (harmonic 1) to dark (harmonic 8) · the decay column in chapter 4 is fitted on these lines</span></div>
+        </div>
+        <div class="note try">On a Rhodes, record the same key soft and hard. The hard note has much more energy in harmonics 2–6 during the first half second, and those harmonics fall faster than the fundamental. That is the "bark". It comes from the pickup, not the tine, and it is why a Rhodes changes colour with playing strength rather than only volume.</div>
+        <div class="note">Wavy lines that rise and fall regularly are <b>beating</b>: two partials very close in frequency (two piano strings on one note, or a tine and a tonebar mode) drifting in and out of phase.</div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="ch" id="move">
+      <div class="ch-head"><span class="ch-num">6</span><h2>pitch &amp; brightness</h2></div>
+      <div class="indent">
+        <div class="prose"><p>Two small details that are easy to hear and hard to program. The pitch track shows how far the pitch moves from its average, in cents. Struck and plucked notes often start a little sharp and settle, because the string or tine is stretched further during a loud attack. The brightness track is the <b>spectral centroid</b>, the balance point of the spectrum. It usually starts high at the attack and falls as the upper harmonics die.</p></div>
+        <div class="grid2">
+          <div class="lab">
+            <div class="lab-top"><span class="lab-name">pitch deviation · cents</span></div>
+            <div class="screen"><canvas id="cv-pitch" aria-label="pitch deviation in cents"></canvas></div>
+            <div class="readout" id="ro-pitch"></div>
+          </div>
+          <div class="lab">
+            <div class="lab-top"><span class="lab-name">brightness · spectral centroid</span></div>
+            <div class="screen"><canvas id="cv-cent" aria-label="spectral centroid over time"></canvas></div>
+            <div class="readout" id="ro-cent"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="ch" id="resynth">
+      <div class="ch-head"><span class="ch-num">7</span><h2>resynthesis</h2></div>
+      <div class="indent">
+        <div class="prose"><p>Now rebuild the note from the numbers, using 24 sine waves at the measured partial frequencies. Compare three versions to hear what each measurement contributes.</p>
+          <ul>
+            <li><b>Static:</b> the harmonic mix measured at the cursor, with one overall envelope. This is what a simple additive or wavetable patch does.</li>
+            <li><b>Tracked:</b> every partial follows its own measured envelope from chapter 5. Much closer, and the note darkens as it rings.</li>
+            <li><b>Original:</b> the recording. What is still missing from "tracked" is mostly the attack noise, the beating and the phase relationships. That residue is exactly what makes the real instrument hard to fake.</li>
+          </ul>
+        </div>
+        <div class="lab">
+          <div class="lab-top"><span class="lab-name">a / b / c listening test</span></div>
+          <div class="seg">
+            <button class="key" type="button" data-play="static" disabled>▶ static</button>
+            <button class="key" type="button" data-play="tracked" disabled>▶ tracked</button>
+            <button class="key" type="button" data-play="orig" disabled>▶ original</button>
+          </div>
+          <div class="readout"><span>all three are normalised to the same peak level</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="ch" id="deep">
+      <div class="ch-head"><span class="ch-num">8</span><h2>how deep can we go</h2></div>
+      <div class="indent">
+        <div class="prose">
+          <p>Analysis goes in layers. Each layer needs more careful recordings and gives you more of what makes an instrument itself.</p>
+          <ol>
+            <li><b>One number per sound.</b> Level, duration, pitch, crest factor. Easy, and says little about timbre.</li>
+            <li><b>One spectrum.</b> Which harmonics, how loud, odd/even balance. Enough to build a static patch.</li>
+            <li><b>Spectra over time.</b> Envelope, per-harmonic decay, centroid, pitch drift. Enough for a convincing additive model. This page measures up to here.</li>
+            <li><b>Fitted physical parameters.</b> Inharmonicity B, two-stage decay times, beating rates, tremolo. These are the numbers physical-modelling synths are tuned with. This page gives first estimates of them.</li>
+            <li><b>Many recordings together.</b> The real character of an instrument lives in how these numbers <i>change</i>: across velocities, across the keyboard, across pickup settings. That needs a set of recordings and a spreadsheet, not one file.</li>
+          </ol>
+        </div>
+        <h3><span class="n">8.1</span>what makes a Rhodes hard to simulate, and how to measure it</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>feature</th><th style="text-align:left">where it comes from</th><th style="text-align:left">how to see it here</th></tr></thead>
+            <tbody>
+              <tr><td>bark</td><td style="text-align:left">The pickup's magnetic field is non-linear. A tine swinging further gets more distorted, which adds harmonics.</td><td style="text-align:left">Compare soft vs. hard notes in chapter 5. Upper harmonics are louder and decay faster when hard.</td></tr>
+              <tr><td>tine clang</td><td style="text-align:left">The tine's own vibration modes are inharmonic: about 6.3× and 17.5× the fundamental for a clamped bar. They ring for a few milliseconds.</td><td style="text-align:left">A short bright line in the spectrogram at the attack, well off the harmonic grid.</td></tr>
+              <tr><td>even harmonics</td><td style="text-align:left">The tine sits slightly off-centre in front of the pickup, so the wave is lopsided.</td><td style="text-align:left">Odd/even balance in chapter 4. Change the pickup alignment and this number moves.</td></tr>
+              <tr><td>two-stage decay</td><td style="text-align:left">The tine and tonebar form a coupled pair and trade energy.</td><td style="text-align:left">Early vs. late decay in chapter 2.</td></tr>
+              <tr><td>pitch settle</td><td style="text-align:left">Loud strikes bend the tine further. Its pitch settles as the swing shrinks.</td><td style="text-align:left">The pitch track in chapter 6, over the first 100 ms.</td></tr>
+              <tr><td>tremolo &amp; amp</td><td style="text-align:left">The Suitcase's stereo tremolo and the amplifier's own saturation.</td><td style="text-align:left">Tremolo rate and depth in chapter 2. Amp saturation shows as extra harmonics at high levels.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3><span class="n">8.2</span>limits of this page</h3>
+        <div class="prose">
+          <ul>
+            <li><b>One note at a time.</b> Chords and melodies confuse the pitch detector and mix the harmonic series together.</li>
+            <li><b>Room and reverb</b> smear the decay times. Reverb makes the late decay look longer than the instrument's own.</li>
+            <li><b>MP3 and AAC</b> often cut everything above 16 kHz and add artefacts in quiet tails. Use WAV or FLAC when you can.</li>
+            <li><b>Resolution trade-off.</b> Short windows show fast changes but blur frequencies; long windows separate close partials but blur time. The spectrogram uses about 85 ms windows, and the cursor spectrum about 340 ms. Very low notes (below ~50 Hz) and very fast attacks are at the edge of both.</li>
+            <li><b>Beyond this page:</b> a full physical-model fit, noise/residual separation and machine-learning timbre models are research tools (for example the sinusoidal modelling in SMS or Loris, or DDSP). They build on exactly the measurements shown here.</li>
+          </ul>
+        </div>
+        <footer>ClassAudio · all analysis runs locally in the browser with the Web Audio API and a JavaScript FFT · no audio is uploaded anywhere.</footer>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+"use strict";
+const TAU = Math.PI * 2;
+const MAX_SEC = 30;
+const $ = id => document.getElementById(id);
+const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const noteOf = f => { const m = 69 + 12 * Math.log2(f / 440), r = Math.round(m); return { name: NOTES[(r % 12 + 12) % 12] + (Math.floor(r / 12) - 1), cents: Math.round((m - r) * 100) }; };
+const fmtHz = f => !isFinite(f) ? "—" : f >= 1000 ? (f / 1000).toFixed(2) + " kHz" : f.toFixed(f < 100 ? 2 : 1) + " Hz";
+const fmtT = t => t < 1 ? (t * 1000).toFixed(0) + " ms" : t.toFixed(2) + " s";
+const db = x => 20 * Math.log10(Math.max(x, 1e-12));
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+/* ============== FFT ============== */
+const twCache = new Map();
+function fft(re, im) {
+  const n = re.length;
+  let tw = twCache.get(n);
+  if (!tw) { tw = { c: new Float64Array(n / 2), s: new Float64Array(n / 2) }; for (let i = 0; i < n / 2; i++) { tw.c[i] = Math.cos(TAU * i / n); tw.s[i] = -Math.sin(TAU * i / n); } twCache.set(n, tw); }
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const half = len >> 1, step = n / len;
+    for (let i = 0; i < n; i += len) {
+      for (let k = 0; k < half; k++) {
+        const a = i + k, b = a + half, wr = tw.c[k * step], wi = tw.s[k * step];
+        const xr = re[b] * wr - im[b] * wi, xi = re[b] * wi + im[b] * wr;
+        re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi;
+      }
+    }
+  }
+}
+const hannCache = new Map();
+function hann(n) { let w = hannCache.get(n); if (!w) { w = new Float64Array(n); for (let i = 0; i < n; i++) w[i] = 0.5 - 0.5 * Math.cos(TAU * i / n); hannCache.set(n, w); } return w; }
+// magnitude spectrum scaled so a sine of amplitude A reads A
+function spectrum(x, start, N) {
+  const re = new Float64Array(N), im = new Float64Array(N), w = hann(N);
+  for (let i = 0; i < N; i++) { const j = start + i; re[i] = (j >= 0 && j < x.length ? x[j] : 0) * w[i]; }
+  fft(re, im);
+  const out = new Float32Array(N / 2 + 1), k = 2 / (N / 2);
+  for (let i = 0; i <= N / 2; i++) out[i] = Math.hypot(re[i], im[i]) * k;
+  return out;
+}
+
+/* ============== analysis ============== */
+function linfit(xs, ys) {
+  const n = xs.length; if (n < 3) return null;
+  let sx = 0, sy = 0, sxx = 0, sxy = 0;
+  for (let i = 0; i < n; i++) { sx += xs[i]; sy += ys[i]; sxx += xs[i] * xs[i]; sxy += xs[i] * ys[i]; }
+  const d = n * sxx - sx * sx; if (!d) return null;
+  const m = (n * sxy - sx * sy) / d; return { m, b: (sy - m * sx) / n };
+}
+
+function yin(x, start, W, sr, fmin, fmax) {
+  const N = W * 2, re = new Float64Array(N), im = new Float64Array(N);
+  for (let i = 0; i < W; i++) { const j = start + i; re[i] = j >= 0 && j < x.length ? x[j] : 0; }
+  const e = new Float64Array(W + 1);
+  for (let i = 0; i < W; i++) e[i + 1] = e[i] + re[i] * re[i];
+  fft(re, im);
+  for (let i = 0; i < N; i++) { re[i] = re[i] * re[i] + im[i] * im[i]; im[i] = 0; }
+  fft(re, im); // real, even input: forward FFT == N·IFFT
+  const tMax = Math.min(W >> 1, Math.floor(sr / fmin)), tMin = Math.max(2, Math.floor(sr / fmax));
+  const d = new Float64Array(tMax + 2); let run = 0; d[0] = 1;
+  for (let t = 1; t <= tMax + 1; t++) {
+    const r = re[t] / N, e1 = e[W - t], e2 = e[W] - e[t];
+    const v = e1 + e2 - 2 * r; run += v; d[t] = run > 0 ? v * t / run : 1;
+  }
+  let best = -1;
+  for (let t = tMin; t <= tMax; t++) {
+    if (d[t] < 0.15) { while (t + 1 <= tMax && d[t + 1] < d[t]) t++; best = t; break; }
+  }
+  if (best < 0) { let m = Infinity; for (let t = tMin; t <= tMax; t++) if (d[t] < m) { m = d[t]; best = t; } }
+  const a = d[best - 1], b = d[best], c = d[best + 1];
+  const den = a - 2 * b + c, off = den ? 0.5 * (a - c) / den : 0;
+  return { f: sr / (best + (Math.abs(off) < 1 ? off : 0)), clarity: 1 - b };
+}
+
+let A = null; // analysis result
+
+function analyse(x, sr, meta) {
+  const R = { x, sr, meta, dur: x.length / sr };
+  // --- level stats
+  let peak = 0, sum = 0, sum2 = 0;
+  for (let i = 0; i < x.length; i++) { const v = x[i]; peak = Math.max(peak, Math.abs(v)); sum += v; sum2 += v * v; }
+  R.peak = peak; R.rms = Math.sqrt(sum2 / x.length); R.dc = sum / x.length;
+
+  // --- fine peak envelope (for attack) and RMS envelope in dB
+  const ph = Math.max(16, Math.round(sr * 0.0015));
+  R.penv = []; for (let i = 0; i < x.length; i += ph) { let m = 0; for (let j = i; j < Math.min(i + ph, x.length); j++) m = Math.max(m, Math.abs(x[j])); R.penv.push(m); }
+  R.penvHop = ph;
+  const eh = Math.round(sr * 0.005), ew = eh * 4;
+  R.envHop = eh; R.env = [];
+  for (let i = 0; i + 1 < x.length; i += eh) {
+    let s = 0, n = 0; for (let j = i - ew / 2; j < i + ew / 2; j++) if (j >= 0 && j < x.length) { s += x[j] * x[j]; n++; }
+    R.env.push(db(Math.sqrt(s / Math.max(1, n)) * Math.SQRT2));
+  }
+  const sorted = [...R.env].sort((a, b) => a - b);
+  R.floor = sorted[Math.floor(sorted.length * 0.05)];
+  // if the file stops while the note is still decaying, the quietest frames are not the noise floor
+  const tail = R.env.slice(Math.floor(R.env.length * 0.75)), tfit = linfit(tail.map((_, i) => i * eh / sr), tail);
+  if (tfit && tfit.m < -3) R.floor = sorted[0] - 20;
+  let pk = 0; R.env.forEach((v, i) => { if (v > R.env[pk]) pk = i; });
+  R.envPeakI = pk; R.envPeak = R.env[pk];
+
+  // attack 10 % → 90 % on the fine envelope
+  let pp = 0; R.penv.forEach((v, i) => { if (v > R.penv[pp]) pp = i; });
+  const pmax = R.penv[pp]; let i90 = pp, i10 = pp;
+  while (i90 > 0 && R.penv[i90 - 1] >= 0.9 * pmax) i90--;
+  while (i10 > 0 && R.penv[i10 - 1] >= 0.1 * pmax) i10--;
+  R.attack = (i90 - i10) * ph / sr; R.onset = i10 * ph / sr;
+
+  // two-stage decay: best two-line (broken-stick) fit from the peak to where the tail meets the floor
+  const tOf = i => i * eh / sr;
+  let lateEnd = R.env.length - 1 - Math.round(0.1 * sr / eh);           // skip the last 100 ms (fades, clicks)
+  while (lateEnd > pk && R.env[lateEnd] < R.floor + 8) lateEnd--;
+  const a0 = pk + Math.max(1, Math.round(0.01 * sr / eh));
+  const fitRange = (a, b) => { const xs = [], ys = []; for (let i = a; i <= b; i++) { xs.push(tOf(i)); ys.push(R.env[i]); } const f = linfit(xs, ys); if (!f) return null; let e = 0; xs.forEach((x, k) => { const d = ys[k] - (f.m * x + f.b); e += d * d; }); f.sse = e; return f; };
+  R.early = R.late = null; R.earlyRange = R.lateRange = null;
+  if (lateEnd - a0 >= 20) {
+    const one = fitRange(a0, lateEnd);
+    let best = null;
+    const n = lateEnd - a0, stepB = Math.max(1, Math.floor(n / 60));
+    for (let k = a0 + Math.max(6, Math.floor(n * 0.03)); k <= lateEnd - 10; k += stepB) {
+      const e1 = fitRange(a0, k), e2 = fitRange(k, lateEnd);
+      if (e1 && e2 && (!best || e1.sse + e2.sse < best.sse)) best = { sse: e1.sse + e2.sse, k, e1, e2 };
+    }
+    if (best && best.sse < one.sse * 0.5 && best.e1.m < best.e2.m - 1 && best.e2.m < -0.5) {
+      R.early = best.e1; R.late = best.e2; R.earlyRange = [a0, best.k]; R.lateRange = [best.k, lateEnd];
+    } else { R.late = one; R.lateRange = [a0, lateEnd]; }
+  }
+  const iE = R.lateRange ? R.lateRange[0] : pk, late = R.late;
+  // tremolo: modulation spectrum of the detrended envelope (1–15 Hz)
+  R.trem = null;
+  if (late && lateEnd - iE > 60) {
+    const seg = []; for (let i = iE; i <= lateEnd; i++) seg.push(R.env[i] - (late.m * tOf(i) + late.b));
+    let N = 1; while (N < seg.length * 4) N <<= 1;
+    const re = new Float64Array(N), im = new Float64Array(N), w = hann(seg.length);
+    seg.forEach((v, i) => re[i] = v * w[i]);
+    fft(re, im);
+    const fs = sr / eh; let best = 0, bf = 0;
+    for (let k = 1; k < N / 2; k++) { const f = k * fs / N; if (f < 1 || f > 15) continue; const m = Math.hypot(re[k], im[k]); if (m > best) { best = m; bf = f; } }
+    const depth = 2 * best * 2 / seg.length * 2; // peak-to-peak dB (hann gain 0.5)
+    R.trem = { rate: bf, depth };
+  }
+
+  // --- STFT
+  const N = 4096, hop = 512; R.N = N; R.hop = hop;
+  R.frames = []; R.fMax = Math.min(sr / 2, 20000);
+  for (let s = -N / 2; s < x.length - N / 2; s += hop) R.frames.push(spectrum(x, s, N));
+  R.frameT = i => (i * hop) / sr;
+  // centroid per frame
+  R.cent = R.frames.map((F, i) => {
+    let s = 0, w = 0; const k = sr / N;
+    for (let b = 1; b < F.length; b++) { const f = b * k; if (f > 16000) break; s += f * F[b]; w += F[b]; }
+    const e = R.env[Math.min(R.env.length - 1, Math.round(i * hop / eh))];
+    return e > R.floor + 20 && w > 0 ? s / w : NaN;
+  });
+
+  // --- pitch track (YIN)
+  let W = 2048; while (W < sr * 0.04) W <<= 1;
+  const ph2 = Math.max(512, Math.round(x.length / 500));
+  R.pitch = [];
+  for (let s = 0; s + W < x.length; s += ph2) {
+    const e = R.env[Math.min(R.env.length - 1, Math.round((s + W / 2) / eh))];
+    if (e < R.floor + 15) { R.pitch.push({ t: (s + W / 2) / sr, f: NaN }); continue; }
+    const p = yin(x, s, W, sr, 40, 2500);
+    R.pitch.push({ t: (s + W / 2) / sr, f: p.clarity > 0.8 ? p.f : NaN, c: p.clarity });
+  }
+  const good = R.pitch.filter(p => isFinite(p.f) && p.t > R.onset + 0.03).map(p => p.f).sort((a, b) => a - b);
+  R.f0auto = good.length ? good[Math.floor(good.length / 2)] : 220;
+  R.f0 = R.f0auto;
+  R.cursor = Math.min(R.dur * 0.9, R.onset + Math.max(R.attack, 0.02) + 0.12);
+  return R;
+}
+
+// harmonic peaks in a high-res spectrum
+function findHarmonics(R) {
+  const N = 16384, start = Math.round(R.cursor * R.sr - N / 2);
+  const S = spectrum(R.x, start, N), bw = R.sr / N;
+  const Sdb = Float32Array.from(S, db);
+  let ref = -Infinity; for (let i = 1; i < Sdb.length; i++) if (Sdb[i] > ref) ref = Sdb[i];
+  const f0 = R.f0, H = [];
+  let B = 0;
+  const maxN = Math.min(40, Math.floor(Math.min(R.sr * 0.47, 18000) / f0));
+  for (let n = 1; n <= maxN; n++) {
+    const pred = n * f0 * Math.sqrt((1 + B * n * n) / (1 + B));
+    const span = Math.min(0.3 * f0, Math.max(3 * bw, pred * 0.03));
+    const lo = Math.max(1, Math.floor((pred - span) / bw)), hi = Math.min(Sdb.length - 2, Math.ceil((pred + span) / bw));
+    let bi = lo, mn = Infinity;
+    for (let b = lo; b <= hi; b++) { if (Sdb[b] > Sdb[bi]) bi = b; if (Sdb[b] < mn) mn = Sdb[b]; }
+    const a = Sdb[bi - 1], b0 = Sdb[bi], c = Sdb[bi + 1], den = a - 2 * b0 + c, off = den ? 0.5 * (a - c) / den : 0;
+    const f = (bi + off) * bw, lvl = b0 - 0.25 * (a - c) * off - ref;
+    const found = lvl > -70 && b0 - mn > 12 && bi > lo && bi < hi;
+    H.push({ n, pred: n * f0, f: found ? f : pred, lvl: found ? lvl : NaN, amp: found ? Math.pow(10, (b0 - 0.25 * (a - c) * off) / 20) : 0, found });
+    // refit B from the harmonics found so far
+    const pts = H.filter(h => h.found && h.n >= 2 && h.lvl > -50), h1 = H[0];
+    if (h1.found && pts.length >= 3) {
+      let sn = 0, sd = 0;
+      for (const h of pts) { const r = Math.pow(h.f / (h.n * h1.f), 2), q = h.n * h.n - 1; sn += (r - 1) * q; sd += q * q; }
+      B = Math.max(-1e-3, Math.min(0.02, sn / sd));
+    }
+  }
+  const h1 = H[0];
+  H.forEach(h => { h.cents = h.found && h1.found ? 1200 * Math.log2(h.f / (h.n * h1.f)) : NaN; });
+  // odd / even / harmonic energy
+  let odd = 0, even = 0, harm = 0, tot = 0;
+  H.forEach(h => { if (!h.found) return; const p = h.amp * h.amp; if (h.n >= 2) (h.n % 2 ? odd += p : even += p); });
+  const guard = Math.max(2, Math.round(0.03 * f0 / bw));
+  const onHarm = new Uint8Array(S.length);
+  H.forEach(h => { if (!h.found) return; const c = Math.round(h.f / bw); for (let b = c - guard; b <= c + guard; b++) if (b > 0 && b < S.length) onHarm[b] = 1; });
+  for (let b = Math.round(30 / bw); b < S.length && b * bw < 16000; b++) { const p = S[b] * S[b]; tot += p; if (onHarm[b]) harm += p; }
+  return { S: Sdb, ref, bw, H, B, oddEven: even > 0 ? 10 * Math.log10(odd / even) : Infinity, harmFrac: tot ? harm / tot : NaN };
+}
+
+// per-harmonic tracks through the STFT
+function trackHarmonics(R, spec, count) {
+  const bw = R.sr / R.N, tracks = [];
+  for (let n = 1; n <= count; n++) {
+    const h = spec.H[n - 1]; if (!h) break;
+    const fc = h.f, span = Math.min(0.4 * R.f0, Math.max(2.5 * bw, fc * 0.02));
+    const lo = Math.max(1, Math.floor((fc - span) / bw)), hi = Math.min(R.N / 2, Math.ceil((fc + span) / bw));
+    const amp = new Float32Array(R.frames.length);
+    R.frames.forEach((F, i) => { let m = 0; for (let b = lo; b <= hi; b++) if (F[b] > m) m = F[b]; amp[i] = m; });
+    // decay fit: from this harmonic's peak until it falls 40 dB or hits the floor
+    let pk = 0; amp.forEach((v, i) => { if (v > amp[pk]) pk = i; });
+    const pdb = db(amp[pk]), xs = [], ys = [];
+    for (let i = pk + 2; i < amp.length; i++) { const d = db(amp[i]); if (d < pdb - 40 || d < R.floor - 6) break; xs.push(R.frameT(i)); ys.push(d); }
+    const fit = linfit(xs, ys);
+    tracks.push({ n, f: fc, amp, peakDb: pdb, peakT: R.frameT(pk), slope: fit ? fit.m : NaN });
+  }
+  return tracks;
+}
+
+/* ============== synthetic examples ============== */
+function makeExample(kind) {
+  const sr = 44100;
+  let seed = 12345; const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff) * 2 - 1;
+  let x;
+  if (kind === "epiano") {
+    const dur = 3.5, f0 = 220; x = new Float32Array(sr * dur);
+    let lp = 0;
+    for (let i = 0; i < x.length; i++) {
+      const t = i / sr;
+      const amp = (0.55 * Math.exp(-t / 0.28) + 0.45 * Math.exp(-t / 2.4)) * (1 - Math.exp(-t / 0.0012));
+      const bend = 1 + 0.004 * Math.exp(-t / 0.05);                // slight sharp start
+      const tine = amp * Math.sin(TAU * f0 * bend * t) + 0.35 * Math.exp(-t / 0.035) * Math.sin(TAU * f0 * 6.27 * t) + 0.12 * Math.exp(-t / 0.012) * Math.sin(TAU * f0 * 17.55 * t);
+      const pickup = Math.tanh(2.6 * (tine * 0.95 + 0.32)) - Math.tanh(2.6 * 0.32);   // off-centre, non-linear pickup
+      lp += 0.25 * (rnd() - lp);
+      const thump = t < 0.02 ? lp * 0.25 * Math.exp(-t / 0.004) : 0;
+      x[i] = pickup + thump;
+    }
+  } else if (kind === "piano") {
+    const dur = 4, f0 = 110, Bc = 0.0007; x = new Float32Array(sr * dur);
+    for (let n = 1; n <= 36; n++) {
+      const fn = n * f0 * Math.sqrt(1 + Bc * n * n); if (fn > 16000) break;
+      const hammer = Math.abs(Math.sin(Math.PI * n * 0.13)) / Math.pow(n, 0.9);
+      const tau = 3.2 / (1 + 0.12 * n), tauE = tau * 0.2;
+      const det = 0.25 + 0.03 * n;                                 // second, weaker string slightly detuned → beating
+      const p1 = rnd() * Math.PI, p2 = rnd() * Math.PI;
+      for (let i = 0; i < x.length; i++) {
+        const t = i / sr, env = hammer * (0.6 * Math.exp(-t / tauE) + 0.4 * Math.exp(-t / tau)) * (1 - Math.exp(-t / 0.002));
+        x[i] += env * (0.7 * Math.sin(TAU * fn * t + p1) + 0.3 * Math.sin(TAU * (fn + det) * t + p2));
+      }
+    }
+    let lp = 0;
+    for (let i = 0; i < sr * 0.03; i++) { lp += 0.4 * (rnd() - lp); x[i] += lp * 0.3 * Math.exp(-i / sr / 0.006); }
+  } else {
+    const dur = 3, f0 = 196, P = Math.round(sr / f0); x = new Float32Array(sr * dur);
+    const buf = new Float32Array(P); for (let i = 0; i < P; i++) buf[i] = rnd();
+    let k = 0;
+    for (let i = 0; i < x.length; i++) {
+      const a = buf[k], b = buf[(k + 1) % P];
+      buf[k] = 0.4985 * (a + b); x[i] = a; k = (k + 1) % P;
+    }
+  }
+  let mean = 0; for (const v of x) mean += v / x.length;
+  const fade = Math.round(sr * 0.08);
+  for (let i = 0; i < x.length; i++) { x[i] -= mean; if (i > x.length - fade) x[i] *= (x.length - i) / fade; }  // AC-coupled output, short fade at the end
+  let m = 0; for (const v of x) m = Math.max(m, Math.abs(v)); for (let i = 0; i < x.length; i++) x[i] *= 0.9 / m;
+  return { x, sr };
+}
+
+/* ============== audio ============== */
+let ctx = null, master = null, src = null;
+const vol = $("master-vol");
+const volCurve = () => Math.pow(+vol.value, 2);
+function ensureCtx() {
+  if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)(); master = ctx.createGain(); master.gain.value = volCurve(); master.connect(ctx.destination); }
+  if (ctx.state === "suspended") ctx.resume();
+}
+vol.addEventListener("input", () => { if (master) master.gain.setTargetAtTime(volCurve(), ctx.currentTime, 0.02); });
+function stopPlay() { if (src) { try { src.stop(); } catch (e) {} src = null; } playT0 = null; }
+$("stop-all").addEventListener("click", stopPlay);
+let playT0 = null, playLen = 0;
+function playArray(x, sr) {
+  ensureCtx(); stopPlay();
+  let m = 0; for (const v of x) m = Math.max(m, Math.abs(v));
+  const b = ctx.createBuffer(1, x.length, sr), d = b.getChannelData(0), g = m > 0 ? 0.9 / m : 1;
+  for (let i = 0; i < x.length; i++) d[i] = x[i] * g;
+  src = ctx.createBufferSource(); src.buffer = b; src.connect(master); src.start();
+  playT0 = ctx.currentTime; playLen = x.length / sr;
+  src.onended = () => { playT0 = null; drawWave(); drawEnv(); };
+  requestAnimationFrame(playhead);
+}
+function playhead() {
+  if (playT0 == null || !A) return;
+  drawWave(); drawEnv();
+  requestAnimationFrame(playhead);
+}
+
+function resynth(kind) {
+  const R = A, sr = R.sr, n = R.x.length, y = new Float32Array(n), T = R.tracks24;
+  if (kind === "static") {
+    // one shared envelope (the overall RMS envelope) applied to the spectrum measured at the cursor
+    const envLin = R.env.map(v => Math.pow(10, v / 20)), peak = Math.max(...envLin);
+    const H = R.spec.H.slice(0, 24).filter(h => h.found);
+    const ph = H.map(() => Math.random() * TAU);
+    for (let i = 0; i < n; i++) {
+      const p = i / R.envHop, k = Math.floor(p), fr = p - k;
+      const e = ((envLin[k] || 0) * (1 - fr) + (envLin[k + 1] || 0) * fr) / peak;
+      let s = 0; for (let j = 0; j < H.length; j++) s += H[j].amp * Math.sin(TAU * H[j].f * i / sr + ph[j]);
+      y[i] = e * s;
+    }
+  } else {
+    for (const t of T) {
+      const w = TAU * t.f / sr, p0 = Math.random() * TAU;
+      for (let i = 0; i < n; i++) {
+        const p = (i + 0) / R.hop, k = Math.floor(p), fr = p - k;
+        const a = (t.amp[k] || 0) * (1 - fr) + (t.amp[k + 1] || 0) * fr;
+        y[i] += a * Math.sin(w * i + p0);
+      }
+    }
+  }
+  return y;
+}
+
+/* ============== drawing ============== */
+let C = {};
+function readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ["screen", "screen-ink", "screen-dim", "screen-grid", "screen-accent"]) C[k] = cs.getPropertyValue("--" + k).trim(); }
+readColors();
+// ordinal ramp for harmonics 1..8 (light → dark orange), all on the dark screen
+const RAMP = ["#fff4ec", "#ffd9bd", "#ffbd8f", "#ffa062", "#ff8438", "#f26614", "#cc520d", "#a4430f"];
+function fit(cv) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, w, h];
+}
+function frame(g, w, h, title, right) {
+  g.fillStyle = C.screen; g.fillRect(0, 0, w, h);
+  g.font = "500 10px 'IBM Plex Mono', monospace"; g.textBaseline = "top";
+  if (title) { g.fillStyle = C["screen-ink"]; g.textAlign = "left"; g.fillText(title.toUpperCase(), 10, 8); }
+  if (right) { g.fillStyle = C["screen-dim"]; g.textAlign = "right"; g.fillText(right.toUpperCase(), w - 10, 8); }
+}
+function emptyScreen(cv, msg) { const [g, w, h] = fit(cv); frame(g, w, h, "", ""); g.fillStyle = C["screen-dim"]; g.textAlign = "center"; g.textBaseline = "middle"; g.font = "500 11px 'IBM Plex Mono', monospace"; g.fillText(msg.toUpperCase(), w / 2, h / 2); }
+const PAD = { l: 44, r: 12, t: 26, b: 22 };
+function timeAxis(g, w, h, dur) {
+  const X = t => PAD.l + t / dur * (w - PAD.l - PAD.r);
+  const raw = dur / 6, mag = Math.pow(10, Math.floor(Math.log10(raw))), st = [1, 2, 5, 10].map(m => m * mag).find(m => m >= raw);
+  g.font = "400 9.5px 'IBM Plex Mono', monospace"; g.textAlign = "center"; g.textBaseline = "top"; g.fillStyle = C["screen-dim"];
+  g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath();
+  for (let t = 0; t <= dur + 1e-9; t += st) { const x = Math.round(X(t)) + .5; g.moveTo(x, PAD.t); g.lineTo(x, h - PAD.b); g.fillText((st < 1 ? t.toFixed(st < 0.1 ? 2 : 1) : t.toFixed(0)) + "s", x, h - PAD.b + 6); }
+  g.stroke();
+  return X;
+}
+function yAxis(g, w, h, lo, hi, step, fmt) {
+  const Y = v => h - PAD.b - (v - lo) / (hi - lo) * (h - PAD.t - PAD.b);
+  g.font = "400 9.5px 'IBM Plex Mono', monospace"; g.textAlign = "right"; g.textBaseline = "middle"; g.fillStyle = C["screen-dim"];
+  g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath();
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) { const y = Math.round(Y(v)) + .5; g.moveTo(PAD.l, y); g.lineTo(w - PAD.r, y); g.fillText(fmt(v), PAD.l - 6, y); }
+  g.stroke();
+  return Y;
+}
+function cursorLine(g, X, h, t) { g.strokeStyle = C["screen-accent"]; g.lineWidth = 1.5; g.beginPath(); const x = Math.round(X(t)) + .5; g.moveTo(x, PAD.t - 4); g.lineTo(x, h - PAD.b); g.stroke(); }
+function playLine(g, X, h) { if (playT0 == null || !ctx) return; const t = (ctx.currentTime - playT0); if (t > A.dur) return; g.strokeStyle = C["screen-ink"]; g.lineWidth = 1; g.beginPath(); const x = Math.round(X(t)) + .5; g.moveTo(x, PAD.t); g.lineTo(x, h - PAD.b); g.stroke(); }
+
+function drawWave() {
+  const cv = $("cv-wave"); if (!A) return emptyScreen(cv, "load a sound");
+  const [g, w, h] = fit(cv); frame(g, w, h, "waveform", A.meta.name);
+  const X = timeAxis(g, w, h, A.dur), mid = PAD.t + (h - PAD.t - PAD.b) / 2, half = (h - PAD.t - PAD.b) / 2 * 0.95;
+  const cols = Math.floor(w - PAD.l - PAD.r), per = A.x.length / cols;
+  g.fillStyle = C["screen-ink"];
+  for (let c = 0; c < cols; c++) {
+    let mn = 1, mx = -1; const s = Math.floor(c * per), e = Math.floor((c + 1) * per);
+    for (let i = s; i < e; i++) { const v = A.x[i]; if (v < mn) mn = v; if (v > mx) mx = v; }
+    const s2 = 1 / (A.peak || 1);
+    g.fillRect(PAD.l + c, mid - mx * s2 * half, 1, Math.max(1, (mx - mn) * s2 * half));
+  }
+  cursorLine(g, X, h, A.cursor); playLine(g, X, h);
+}
+function drawEnv() {
+  const cv = $("cv-env"); if (!A) return emptyScreen(cv, "load a sound");
+  const [g, w, h] = fit(cv); frame(g, w, h, "envelope", "dB · rms");
+  const top = Math.ceil(A.envPeak / 6) * 6 + 3, lo = top - 72;
+  const X = timeAxis(g, w, h, A.dur), Y = yAxis(g, w, h, lo, top, 12, v => v.toFixed(0));
+  g.save(); g.beginPath(); g.rect(PAD.l, PAD.t, w - PAD.l - PAD.r, h - PAD.t - PAD.b); g.clip();
+  g.strokeStyle = C["screen-ink"]; g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
+  A.env.forEach((v, i) => { const x = X(i * A.envHop / A.sr), y = Y(Math.max(lo, v)); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+  g.stroke();
+  // fitted decay lines
+  const tOf = i => i * A.envHop / A.sr;
+  g.setLineDash([4, 3]); g.lineWidth = 1.5; g.strokeStyle = C["screen-accent"];
+  for (const [fitv, rng] of [[A.early, A.earlyRange], [A.late, A.lateRange]]) {
+    if (!fitv) continue; const t0 = tOf(rng[0]), t1 = tOf(rng[1]);
+    g.beginPath(); g.moveTo(X(t0), Y(fitv.m * t0 + fitv.b)); g.lineTo(X(t1), Y(fitv.m * t1 + fitv.b)); g.stroke();
+  }
+  g.setLineDash([]);
+  g.restore();
+  cursorLine(g, X, h, A.cursor); playLine(g, X, h);
+}
+
+let sgImg = null;
+function drawSg() {
+  const cv = $("cv-sg"); if (!A) return emptyScreen(cv, "load a sound");
+  const [g, w, h] = fit(cv); frame(g, w, h, "", "");
+  const pw = Math.floor(w - PAD.l - PAD.r), phh = Math.floor(h - PAD.t - PAD.b);
+  const fLo = 40, fHi = Math.min(A.sr / 2, 16000);
+  if (!sgImg || sgImg.w !== pw || sgImg.h !== phh || sgImg.A !== A) {
+    const oc = document.createElement("canvas"); oc.width = pw; oc.height = phh;
+    const og = oc.getContext("2d"), img = og.createImageData(pw, phh), bw = A.sr / A.N;
+    let gmax = -Infinity; for (const F of A.frames) for (let b = 1; b < F.length; b++) if (F[b] > gmax) gmax = F[b];
+    const top = db(gmax), rng = 80;
+    const rows = []; for (let y = 0; y < phh; y++) {
+      const f1 = fLo * Math.pow(fHi / fLo, 1 - (y + 1) / phh), f2 = fLo * Math.pow(fHi / fLo, 1 - y / phh);
+      rows.push([Math.max(1, Math.floor(f1 / bw)), Math.max(1, Math.ceil(f2 / bw))]);
+    }
+    for (let x = 0; x < pw; x++) {
+      const F = A.frames[Math.min(A.frames.length - 1, Math.floor(x / pw * A.frames.length))];
+      for (let y = 0; y < phh; y++) {
+        const [a, b] = rows[y]; let m = 0; for (let k = a; k <= b && k < F.length; k++) if (F[k] > m) m = F[k];
+        const v = Math.max(0, Math.min(1, (db(m) - top + rng) / rng)), o = (y * pw + x) * 4;
+        // sequential map: screen black → deep orange → orange → near white
+        const r = v < .5 ? 19 + v * 2 * (200 - 19) : 200 + (v - .5) * 2 * (255 - 200);
+        const gg = v < .5 ? 20 + v * 2 * (60 - 20) : 60 + Math.pow((v - .5) * 2, 1.4) * (240 - 60);
+        const bb = v < .5 ? 21 + v * 2 * (10 - 21) : 10 + Math.pow((v - .5) * 2, 2) * (225 - 10);
+        img.data[o] = r; img.data[o + 1] = gg; img.data[o + 2] = bb; img.data[o + 3] = 255;
+      }
+    }
+    og.putImageData(img, 0, 0);
+    sgImg = { c: oc, w: pw, h: phh, A };
+  }
+  g.drawImage(sgImg.c, PAD.l, PAD.t, pw, phh);
+
+  g.font = "500 10px 'IBM Plex Mono', monospace"; g.textBaseline = "top"; g.textAlign = "left"; g.fillStyle = C["screen-ink"]; g.fillText("SPECTROGRAM", 10, 8);
+  const X = t => PAD.l + t / A.dur * pw;
+  const Yf = f => PAD.t + (1 - Math.log(f / fLo) / Math.log(fHi / fLo)) * phh;
+  g.fillStyle = C["screen-dim"]; g.textAlign = "right"; g.textBaseline = "middle"; g.font = "400 9.5px 'IBM Plex Mono', monospace";
+  for (const f of [50, 100, 200, 500, 1000, 2000, 5000, 10000]) if (f >= fLo && f <= fHi) g.fillText(f >= 1000 ? f / 1000 + "k" : String(f), PAD.l - 6, Yf(f));
+  const raw = A.dur / 6, mag = Math.pow(10, Math.floor(Math.log10(raw))), st = [1, 2, 5, 10].map(m => m * mag).find(m => m >= raw);
+  g.textAlign = "center"; g.textBaseline = "top";
+  for (let t = 0; t <= A.dur; t += st) g.fillText((st < 1 ? t.toFixed(st < 0.1 ? 2 : 1) : t.toFixed(0)) + "s", X(t), h - PAD.b + 6);
+  // harmonic grid markers on the right edge
+  g.fillStyle = C["screen-accent"];
+  if (A.spec) A.spec.H.slice(0, 12).forEach(hh => { if (hh.f > fLo && hh.f < fHi) g.fillRect(w - PAD.r + 2, Yf(hh.f) - 1, 6, 2); });
+  cursorLine(g, X, h, A.cursor);
+  A._sgMap = { X, Yf, fLo, fHi, pw, phh };
+}
+
+let zoomSpec = false;
+function drawSpec() {
+  const cv = $("cv-spec"); if (!A) return emptyScreen(cv, "load a sound");
+  const [g, w, h] = fit(cv), S = A.spec;
+  const fHi = zoomSpec ? A.f0 * 16.5 : Math.min(A.sr / 2, 16000), fLo = zoomSpec ? 0 : 30, logx = !zoomSpec;
+  frame(g, w, h, "spectrum @ " + fmtT(A.cursor), logx ? "dB · log Hz" : "dB · harmonic no.");
+  const pw = w - PAD.l - PAD.r;
+  const X = f => PAD.l + (logx ? Math.log(Math.max(f, fLo) / fLo) / Math.log(fHi / fLo) : f / fHi) * pw;
+  const Y = yAxis(g, w, h, -90, 3, 12, v => v.toFixed(0));
+  g.fillStyle = C["screen-dim"]; g.textAlign = "center"; g.textBaseline = "top"; g.font = "400 9.5px 'IBM Plex Mono', monospace";
+  if (logx) for (const f of [50, 100, 200, 500, 1000, 2000, 5000, 10000]) { if (f > fLo && f < fHi) g.fillText(f >= 1000 ? f / 1000 + "k" : String(f), X(f), h - PAD.b + 6); }
+  else for (let n = 1; n <= 16; n++) g.fillText(String(n), X(n * A.f0), h - PAD.b + 6);
+  // ideal harmonic ticks
+  g.strokeStyle = C["screen-accent"]; g.lineWidth = 1; g.beginPath();
+  for (let n = 1; n * A.f0 < fHi; n++) { const x = Math.round(X(n * A.f0)) + .5; g.moveTo(x, PAD.t); g.lineTo(x, PAD.t + 8); }
+  g.stroke();
+  g.save(); g.beginPath(); g.rect(PAD.l, PAD.t, pw, h - PAD.t - PAD.b); g.clip();
+  g.strokeStyle = C["screen-ink"]; g.lineWidth = 1.25; g.lineJoin = "round"; g.beginPath();
+  // draw max per pixel column
+  let lastX = -1, colMax = -Infinity, first = true;
+  for (let b = 1; b < S.S.length; b++) {
+    const f = b * S.bw; if (f < fLo) continue; if (f > fHi) break;
+    const x = Math.round(X(f)), v = S.S[b] - S.ref;
+    if (x !== lastX && lastX >= 0) { const y = Y(Math.max(-95, colMax)); first ? (g.moveTo(lastX, y), first = false) : g.lineTo(lastX, y); colMax = -Infinity; }
+    lastX = x; colMax = Math.max(colMax, v);
+  }
+  g.stroke();
+  // found peaks
+  g.fillStyle = C["screen-accent"];
+  for (const hh of S.H) { if (!hh.found || hh.f > fHi) continue; g.beginPath(); g.arc(X(hh.f), Y(hh.lvl), 3.5, 0, TAU); g.fill(); }
+  g.restore();
+  A._specMap = { X, fLo, fHi, logx, pw };
+}
+
+function drawTracks() {
+  const cv = $("cv-tracks"); if (!A) return emptyScreen(cv, "load a sound");
+  const [g, w, h] = fit(cv); frame(g, w, h, "harmonic levels", "dB");
+  const T = A.tracks8, top = Math.ceil(Math.max(...T.map(t => t.peakDb)) / 6) * 6 + 3, lo = top - 72;
+  const X = timeAxis(g, w, h, A.dur), Y = yAxis(g, w, h, lo, top, 12, v => v.toFixed(0));
+  g.save(); g.beginPath(); g.rect(PAD.l, PAD.t, w - PAD.l - PAD.r, h - PAD.t - PAD.b); g.clip();
+  for (let k = T.length - 1; k >= 0; k--) {
+    const t = T[k]; g.strokeStyle = RAMP[k]; g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
+    let started = false;
+    t.amp.forEach((a, i) => { const v = db(a); const x = X(A.frameT(i)), y = Y(Math.max(lo - 2, v)); started ? g.lineTo(x, y) : (g.moveTo(x, y), started = true); });
+    g.stroke();
+  }
+  // direct labels near each harmonic's peak, pushed apart so they never overlap
+  const labs = T.map((t, k) => ({ k, x: X(t.peakT) + 6, y: Y(t.peakDb) - 2 })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 12 && Math.abs(labs[i].x - labs[i - 1].x) < 30) labs[i].y = labs[i - 1].y + 12;
+  g.font = "600 10px 'IBM Plex Mono', monospace"; g.textAlign = "left"; g.textBaseline = "bottom";
+  for (const l of labs) { g.fillStyle = C.screen; g.fillRect(l.x - 1, l.y - 11, 19, 12); g.fillStyle = RAMP[l.k]; g.fillText("H" + T[l.k].n, l.x, l.y); }
+  g.restore();
+  cursorLine(g, X, h, A.cursor);
+  A._trackMap = { X, Y };
+}
+
+function drawPitch() {
+  const cv = $("cv-pitch"); if (!A) return emptyScreen(cv, "load a sound");
+  const [g, w, h] = fit(cv); frame(g, w, h, "pitch", "cents vs " + fmtHz(A.f0));
+  const pts = A.pitch.filter(p => isFinite(p.f)).map(p => ({ t: p.t, c: 1200 * Math.log2(p.f / A.f0) }));
+  if (!pts.length) { g.fillStyle = C["screen-dim"]; g.textAlign = "center"; g.fillText("NO STABLE PITCH FOUND", w / 2, h / 2); return; }
+  const mx = Math.max(20, ...pts.map(p => Math.min(300, Math.abs(p.c)))), lim = Math.ceil(mx / 10) * 10;
+  const step = lim <= 20 ? 5 : lim <= 60 ? 10 : lim <= 150 ? 25 : 50;
+  const X = timeAxis(g, w, h, A.dur), Y = yAxis(g, w, h, -lim, lim, step, v => (v > 0 ? "+" : "") + v);
+  g.save(); g.beginPath(); g.rect(PAD.l, PAD.t, w - PAD.l - PAD.r, h - PAD.t - PAD.b); g.clip();
+  g.strokeStyle = C["screen-dim"]; g.beginPath(); g.moveTo(PAD.l, Y(0) + .5); g.lineTo(w - PAD.r, Y(0) + .5); g.stroke();
+  g.strokeStyle = C["screen-ink"]; g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
+  let prev = null;
+  for (const p of pts) { const x = X(p.t), y = Y(p.c); if (prev && p.t - prev.t < 0.1) g.lineTo(x, y); else g.moveTo(x, y); prev = p; }
+  g.stroke(); g.restore();
+  cursorLine(g, X, h, A.cursor);
+}
+function drawCent() {
+  const cv = $("cv-cent"); if (!A) return emptyScreen(cv, "load a sound");
+  const [g, w, h] = fit(cv); frame(g, w, h, "centroid", "hz");
+  const vals = A.cent.filter(isFinite); if (!vals.length) return;
+  const hi = Math.max(...vals), top = Math.ceil(hi / 500) * 500 || 500, step = top <= 1000 ? 250 : top <= 3000 ? 500 : top <= 6000 ? 1000 : 2000;
+  const X = timeAxis(g, w, h, A.dur), Y = yAxis(g, w, h, 0, top, step, v => v >= 1000 ? v / 1000 + "k" : String(v));
+  g.save(); g.beginPath(); g.rect(PAD.l, PAD.t, w - PAD.l - PAD.r, h - PAD.t - PAD.b); g.clip();
+  g.strokeStyle = C["screen-ink"]; g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
+  let on = false; A.cent.forEach((c, i) => { if (!isFinite(c)) { on = false; return; } const x = X(A.frameT(i)), y = Y(c); on ? g.lineTo(x, y) : g.moveTo(x, y); on = true; });
+  g.stroke();
+  g.setLineDash([2, 3]); g.strokeStyle = C["screen-accent"]; g.lineWidth = 1; g.beginPath(); g.moveTo(PAD.l, Y(A.f0) + .5); g.lineTo(w - PAD.r, Y(A.f0) + .5); g.stroke(); g.setLineDash([]);
+  g.fillStyle = C["screen-accent"]; g.textAlign = "right"; g.textBaseline = "bottom"; g.fillText("f0", w - PAD.r - 2, Y(A.f0) - 2);
+  g.restore();
+  cursorLine(g, X, h, A.cursor);
+}
+
+/* ============== readouts ============== */
+function readout(id, items) { $(id).replaceChildren(...items.map(([k, v]) => { const s = el("span", null, k + " "); s.append(el("b", null, String(v))); return s; })); }
+function renderStats() {
+  const R = A, n = noteOf(R.f0);
+  const items = [
+    ["note", n.name + " " + (n.cents >= 0 ? "+" : "") + n.cents + "¢", fmtHz(R.f0)],
+    ["duration", R.dur.toFixed(2) + " s", R.meta.trimmed ? "first 30 s of " + R.meta.full.toFixed(1) + " s" : R.meta.ch + " ch → mono"],
+    ["sample rate", (R.sr / 1000).toFixed(1) + " kHz", "nyquist " + fmtHz(R.sr / 2)],
+    ["peak", db(R.peak).toFixed(1) + " dBFS", "loudest sample"],
+    ["rms", db(R.rms).toFixed(1) + " dBFS", "average level"],
+    ["crest factor", (db(R.peak) - db(R.rms)).toFixed(1) + " dB", "peak ÷ rms · punchiness"],
+    ["attack", fmtT(R.attack), "10 % → 90 % of peak"],
+    ["dc offset", (R.dc * 100).toFixed(2) + " %", Math.abs(R.dc) > 0.01 ? "check your recording" : "ok"],
+  ];
+  $("stats").replaceChildren(...items.map(([k, v, s]) => { const d = el("div", "stat"); d.append(el("span", null, k), el("b", null, v), el("i", null, s)); return d; }));
+  const e = R.early, l = R.late;
+  readout("ro-env", [
+    ["attack", fmtT(R.attack)],
+    ...(e ? [["early decay", e.m.toFixed(1) + " dB/s · first " + fmtT((R.earlyRange[1] - R.earlyRange[0]) * R.envHop / R.sr)]] : []),
+    [e ? "late decay" : "decay", l ? (l.m).toFixed(1) + " dB/s · T60 " + (l.m < 0 ? fmtT(-60 / l.m) : "—") : "—"],
+    ["tremolo", R.trem && R.trem.depth > 1.5 ? R.trem.rate.toFixed(2) + " Hz · " + R.trem.depth.toFixed(1) + " dB" : "none found"],
+    ["noise floor", R.floor.toFixed(0) + " dB"],
+  ]);
+  const pts = R.pitch.filter(p => isFinite(p.f));
+  const earlyP = pts.filter(p => p.t < R.onset + 0.08).map(p => 1200 * Math.log2(p.f / R.f0));
+  const lateP = pts.filter(p => p.t > R.onset + 0.3).map(p => 1200 * Math.log2(p.f / R.f0));
+  const med = a => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
+  const sd = a => { if (a.length < 3) return NaN; const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) * (y - m), 0) / a.length); };
+  readout("ro-pitch", [["attack offset (first 80 ms)", earlyP.length ? (med(earlyP) >= 0 ? "+" : "") + med(earlyP).toFixed(1) + "¢" : "—"], ["wobble (sd) after 300 ms", isFinite(sd(lateP)) ? sd(lateP).toFixed(1) + "¢" : "—"]]);
+  const cv = R.cent.map((c, i) => [R.frameT(i), c]).filter(p => isFinite(p[1]));
+  const cAt = t => { let best = cv[0]; for (const p of cv) if (Math.abs(p[0] - t) < Math.abs(best[0] - t)) best = p; return best ? best[1] : NaN; };
+  const c0 = cAt(R.onset + 0.02), c1 = cAt(R.onset + 1);
+  readout("ro-cent", [["at attack", isFinite(c0) ? fmtHz(c0) + " · " + (c0 / R.f0).toFixed(1) + "×f0" : "—"], ["after 1 s", isFinite(c1) ? fmtHz(c1) + " · " + (c1 / R.f0).toFixed(1) + "×f0" : "—"]]);
+}
+function renderHarm() {
+  const S = A.spec, H = S.H, found = H.filter(h => h.found);
+  readout("ro-spec", [
+    ["cursor", fmtT(A.cursor)],
+    ["harmonics found", found.length + " / " + H.length],
+    ["inharmonicity B", Math.abs(S.B) < 2e-5 ? "≈ 0 (harmonic)" : S.B.toExponential(2)],
+    ["odd/even balance", isFinite(S.oddEven) ? (S.oddEven >= 0 ? "+" : "") + S.oddEven.toFixed(1) + " dB" + (S.oddEven > 10 ? " · mostly odd" : S.oddEven < -6 ? " · mostly even" : "") : "odd only"],
+    ["harmonic energy", isFinite(S.harmFrac) ? (S.harmFrac * 100).toFixed(1) + " %" : "—"],
+  ]);
+  const T = A.tracks24, rows = [["n", "ideal", "measured", "cents", "level", "", "decay", "T60"]];
+  const tbl = $("tbl-harm"); tbl.replaceChildren();
+  const thead = el("thead"), tr = el("tr"); rows[0].forEach((t, i) => tr.append(el("th", null, t))); thead.append(tr);
+  const tb = el("tbody");
+  H.slice(0, 16).forEach((h, i) => {
+    const r = el("tr"), t = T[i];
+    const slope = t && isFinite(t.slope) && t.slope < -0.1 ? t.slope : NaN;
+    const cells = [
+      [String(h.n)], [fmtHz(h.pred)], [h.found ? fmtHz(h.f) : "not found", h.found ? "" : "miss"],
+      [h.found && isFinite(h.cents) ? (h.cents >= 0 ? "+" : "") + h.cents.toFixed(1) : "—", Math.abs(h.cents) > 10 ? "flag" : ""],
+      [h.found ? h.lvl.toFixed(1) + " dB" : "—"], [null],
+      [isFinite(slope) ? slope.toFixed(1) + " dB/s" : "—"], [isFinite(slope) ? fmtT(-60 / slope) : "—"],
+    ];
+    cells.forEach(([txt, cls], j) => {
+      const td = el("td", cls || null);
+      if (j === 5) { const b = el("span", "bars-cell"); b.style.width = h.found ? Math.max(1, (70 + h.lvl) / 70 * 80) + "px" : "0"; td.append(b); }
+      else td.textContent = txt;
+      r.append(td);
+    });
+    tb.append(r);
+  });
+  tbl.append(thead, tb);
+  $("legend-tracks").replaceChildren(...A.tracks8.map((t, i) => { const s = el("span"); const sw = el("i"); sw.style.background = RAMP[i]; s.append(sw, document.createTextNode("H" + t.n + " " + fmtHz(t.f))); return s; }));
+}
+
+function recomputeHarm() {
+  A.spec = findHarmonics(A);
+  A.tracks24 = trackHarmonics(A, A.spec, 24);
+  A.tracks8 = A.tracks24.slice(0, 8);
+  $("f0").value = A.f0.toFixed(2);
+  renderHarm(); drawAll();
+}
+function drawAll() { drawWave(); drawEnv(); drawSg(); drawSpec(); drawTracks(); drawPitch(); drawCent(); }
+
+/* ============== loading ============== */
+const status = (msg, err) => { const s = $("status"); s.textContent = msg; s.classList.toggle("err", !!err); };
+function setEnabled(on) { document.querySelectorAll("[data-play], #play-orig").forEach(b => b.disabled = !on); }
+function run(x, sr, meta) {
+  status("analysing…");
+  setTimeout(() => {
+    try {
+      const t0 = performance.now();
+      A = analyse(x, sr, meta); sgImg = null;
+      A.spec = findHarmonics(A);
+      // refine f0 with the measured first harmonic when it is clearly there
+      if (A.spec.H[0].found && Math.abs(1200 * Math.log2(A.spec.H[0].f / A.f0)) < 50) { A.f0 = A.spec.H[0].f; A.f0auto = A.f0; }
+      renderStats(); recomputeHarm();
+      setEnabled(true);
+      status("analysed " + meta.name + " in " + Math.round(performance.now() - t0) + " ms");
+    } catch (e) { console.error(e); status("analysis failed: " + e.message, true); }
+  }, 30);
+}
+async function loadFile(file) {
+  if (!file) return;
+  status("decoding " + file.name + "…");
+  try {
+    ensureCtx();
+    const buf = await file.arrayBuffer();
+    const ab = await new Promise((res, rej) => { const p = ctx.decodeAudioData(buf, res, rej); if (p && p.catch) p.catch(rej); });
+    const sr = ab.sampleRate, full = ab.duration, n = Math.min(ab.length, Math.round(MAX_SEC * sr));
+    const x = new Float32Array(n);
+    for (let c = 0; c < ab.numberOfChannels; c++) { const d = ab.getChannelData(c); for (let i = 0; i < n; i++) x[i] += d[i] / ab.numberOfChannels; }
+    run(x, sr, { name: file.name, ch: ab.numberOfChannels, full, trimmed: full > MAX_SEC });
+  } catch (e) {
+    status("could not decode " + file.name + ". Try WAV or MP3, or a different export.", true);
+  }
+}
+$("file").addEventListener("change", e => loadFile(e.target.files[0]));
+const drop = $("drop");
+["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => loadFile(e.dataTransfer.files[0]));
+const EXN = { epiano: "e-piano tine model (synthetic)", piano: "struck string (synthetic)", pluck: "plucked string (synthetic)" };
+document.querySelectorAll("[data-ex]").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("[data-ex]").forEach(o => o.setAttribute("aria-pressed", String(o === b)));
+  const { x, sr } = makeExample(b.dataset.ex); run(x, sr, { name: EXN[b.dataset.ex], ch: 1, full: x.length / sr });
+}));
+$("play-orig").addEventListener("click", () => A && playArray(A.x, A.sr));
+document.querySelectorAll("[data-play]").forEach(b => b.addEventListener("click", () => {
+  if (!A) return;
+  const k = b.dataset.play;
+  if (k === "orig") return playArray(A.x, A.sr);
+  status("building " + k + " resynthesis…");
+  setTimeout(() => { playArray(resynth(k), A.sr); status("playing " + k + " resynthesis · " + (k === "static" ? A.spec.H.slice(0, 24).filter(h => h.found).length : A.tracks24.length) + " partials"); }, 20);
+}));
+
+// f0 controls
+const setF0 = f => { if (!A || !(f > 15 && f < 5000)) return; A.f0 = f; recomputeHarm(); };
+$("f0").addEventListener("change", e => setF0(+e.target.value));
+$("f0-half").addEventListener("click", () => A && setF0(A.f0 / 2));
+$("f0-dbl").addEventListener("click", () => A && setF0(A.f0 * 2));
+$("f0-auto").addEventListener("click", () => A && setF0(A.f0auto));
+$("zoom-spec").addEventListener("click", e => { zoomSpec = !zoomSpec; e.currentTarget.setAttribute("aria-pressed", String(zoomSpec)); drawSpec(); });
+
+/* ============== pointer: cursor + tooltips ============== */
+function tipFor(cv) { let t = cv.parentElement.querySelector(".tip"); if (!t) { t = el("div", "tip"); t.hidden = true; cv.parentElement.append(t); } return t; }
+function showTip(cv, e, text) {
+  const t = tipFor(cv), r = cv.getBoundingClientRect(); t.textContent = text; t.hidden = false;
+  const x = e.clientX - r.left, y = e.clientY - r.top;
+  t.style.left = Math.min(x + 12, r.width - t.offsetWidth - 4) + "px"; t.style.top = Math.max(4, y - t.offsetHeight - 10) + "px";
+}
+const hideTip = cv => { const t = cv.parentElement.querySelector(".tip"); if (t) t.hidden = true; };
+function timeAt(cv, e) { const r = cv.getBoundingClientRect(); return Math.max(0, Math.min(A.dur, (e.clientX - r.left - PAD.l) / (r.width - PAD.l - PAD.r) * A.dur)); }
+let cursorTimer = null;
+function setCursor(t) {
+  A.cursor = Math.max(0.01, Math.min(A.dur - 0.01, t));
+  drawWave(); drawEnv(); drawSg(); drawTracks(); drawPitch(); drawCent();
+  clearTimeout(cursorTimer); cursorTimer = setTimeout(recomputeHarm, 40);
+}
+for (const id of ["cv-wave", "cv-env", "cv-sg", "cv-tracks", "cv-pitch", "cv-cent"]) {
+  const cv = $(id);
+  let drag = false;
+  cv.addEventListener("pointerdown", e => { if (!A) return; drag = true; cv.setPointerCapture(e.pointerId); setCursor(timeAt(cv, e)); });
+  cv.addEventListener("pointerup", () => drag = false);
+  cv.addEventListener("pointerleave", () => hideTip(cv));
+  cv.addEventListener("pointermove", e => {
+    if (!A) return;
+    const t = timeAt(cv, e);
+    if (drag) { setCursor(t); }
+    if (id === "cv-env") { const v = A.env[Math.round(t * A.sr / A.envHop)]; showTip(cv, e, fmtT(t) + "\n" + (v != null ? v.toFixed(1) + " dB" : "")); }
+    else if (id === "cv-sg" && A._sgMap) {
+      const r = cv.getBoundingClientRect(), m = A._sgMap, y = e.clientY - r.top - PAD.t;
+      if (y < 0 || y > m.phh) return hideTip(cv);
+      const f = m.fLo * Math.pow(m.fHi / m.fLo, 1 - y / m.phh), F = A.frames[Math.min(A.frames.length - 1, Math.round(t * A.sr / A.hop))], b = Math.round(f / (A.sr / A.N));
+      showTip(cv, e, fmtT(t) + "\n" + fmtHz(f) + " · " + noteOf(f).name + "\n≈ harmonic " + (f / A.f0).toFixed(2) + "\n" + db(F[b] || 1e-9).toFixed(1) + " dB");
+    }
+    else if (id === "cv-tracks") {
+      const i = Math.min(A.frames.length - 1, Math.round(t * A.sr / A.hop));
+      showTip(cv, e, fmtT(t) + "\n" + A.tracks8.map(tr => "H" + tr.n + "  " + db(tr.amp[i]).toFixed(1) + " dB").join("\n"));
+    }
+    else if (id === "cv-pitch") {
+      let best = null; for (const p of A.pitch) if (isFinite(p.f) && (!best || Math.abs(p.t - t) < Math.abs(best.t - t))) best = p;
+      if (best) showTip(cv, e, fmtT(best.t) + "\n" + fmtHz(best.f) + "\n" + (1200 * Math.log2(best.f / A.f0)).toFixed(1) + " ¢");
+    }
+    else if (id === "cv-cent") { const c = A.cent[Math.min(A.cent.length - 1, Math.round(t * A.sr / A.hop))]; showTip(cv, e, fmtT(t) + "\n" + (isFinite(c) ? fmtHz(c) + " · " + (c / A.f0).toFixed(1) + "×f0" : "below floor")); }
+    else showTip(cv, e, fmtT(t));
+  });
+}
+{
+  const cv = $("cv-spec");
+  cv.addEventListener("pointerleave", () => hideTip(cv));
+  cv.addEventListener("pointermove", e => {
+    if (!A || !A._specMap) return;
+    const r = cv.getBoundingClientRect(), m = A._specMap, u = (e.clientX - r.left - PAD.l) / m.pw;
+    if (u < 0 || u > 1) return hideTip(cv);
+    const f = m.logx ? m.fLo * Math.pow(m.fHi / m.fLo, u) : u * m.fHi;
+    const near = A.spec.H.reduce((b, h) => h.found && Math.abs(h.f - f) < Math.abs((b ? b.f : Infinity) - f) ? h : b, null);
+    const b = Math.round(f / A.spec.bw);
+    let txt = fmtHz(f) + " · " + noteOf(f).name + "\n" + (A.spec.S[b] - A.spec.ref).toFixed(1) + " dB";
+    if (near && Math.abs(near.f - f) < A.f0 * 0.3) txt += "\nharmonic " + near.n + ": " + fmtHz(near.f) + "\n" + (isFinite(near.cents) ? (near.cents >= 0 ? "+" : "") + near.cents.toFixed(1) + " ¢ from ideal" : "");
+    showTip(cv, e, txt);
+  });
+}
+
+/* ============== boot ============== */
+new ResizeObserver(() => drawAll()).observe(document.querySelector("main"));
+const rerender = () => { readColors(); drawAll(); };
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", rerender);
+new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const links = [...document.querySelectorAll("nav.index a")];
+const secIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-40% 0px -55% 0px" });
+document.querySelectorAll("section.ch").forEach(s => secIO.observe(s));
+// open in a working state: analyse the e-piano example
+document.querySelector('[data-ex="epiano"]').click();
+})();
+</script>
+</body>
+</html>
