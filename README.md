@@ -1,8 +1,8 @@
 # ClassAudio
 
-Interactive teaching pages for sound synthesis.
+Interactive teaching pages for sound synthesis. Open `index.html` for the landing page that links to all three parts.
 
-## Waves & Harmonics — `index.html`
+## Waves & Harmonics — `waves.html`
 
 A single-file guide (no build step, no dependencies) that shows a wave and its
 spectrum side by side and lets students hear it:
@@ -18,7 +18,7 @@ The graphs are calculated from the exact Fourier series, Bessel functions and
 Web Audio biquad formulas, so they stay steady on a projector. The sound comes from
 the Web Audio API using the same parameters.
 
-Open `index.html` in a browser, or serve it with GitHub Pages.
+Open any page in a browser, or serve the folder with GitHub Pages.
 
 ## Sound Microscope — `analyze.html`
 
