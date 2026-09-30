@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Colour &amp; Saturation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* layout: product-manual — sticky index rail on the left, one reading column of numbered chapters,
+   each chapter carries a hardware-style "lab": black display (wave | spectrum) above a strip of controls */
+:root {
+  --bg: #ececea;
+  --panel: #f7f7f5;
+  --ink: #141414;
+  --muted: #6d6d6a;
+  --line: #cbcbc7;
+  --accent: #ff4f00;
+  --on-accent: #ffffff;
+  --screen: #131415;
+  --screen-ink: #f2f2ef;
+  --screen-dim: #55585c;
+  --screen-grid: #25272a;
+  --screen-accent: #ff5a0f;
+  --f-sans: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111112; --panel: #19191b; --ink: #ececea; --muted: #8f8f8c; --line: #313133;
+    --accent: #ff6a1f; --on-accent: #111112; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111112; --panel: #19191b; --ink: #ececea; --muted: #8f8f8c; --line: #313133;
+  --accent: #ff6a1f; --on-accent: #111112; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 16px/1.55 var(--f-sans);
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- top bar ---------- */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 10px 20px; background: var(--bg); border-bottom: 1px solid var(--line);
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .08em;
+}
+.bar .brand { font-weight: 500; }
+.bar .brand b { color: var(--accent); font-weight: 500; }
+.bar .spacer { flex: 1; }
+.bar label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.bar input[type=range] { width: 110px; }
+
+/* ---------- page grid ---------- */
+.page {
+  display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px;
+  max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 0 96px;
+}
+nav.index {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 56px); align-self: start;
+  padding-top: 40px; font: 400 12px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em;
+}
+nav.index ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.index a { display: grid; grid-template-columns: 28px 1fr; padding: 6px 0; text-decoration: none; color: var(--muted); }
+nav.index a:hover, nav.index a.on { color: var(--ink); }
+nav.index a.on span:first-child { color: var(--accent); }
+main { min-width: 0; }
+
+/* ---------- type ---------- */
+header.hero { padding-block: 56px 32px; border-bottom: 1px solid var(--ink); }
+.eyebrow { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+h1 {
+  font: 700 clamp(44px, 7.5vw, 88px)/.92 var(--f-sans); letter-spacing: -.035em;
+  margin: 18px 0 20px; text-wrap: balance;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 19px; line-height: 1.5; max-width: 34em; margin: 0; }
+section.ch { padding-block: 56px 8px; border-bottom: 1px solid var(--line); scroll-margin-top: 48px; }
+.ch-head { display: grid; grid-template-columns: 64px minmax(0,1fr); gap: 0; align-items: baseline; }
+.ch-num { font: 500 13px/1 var(--f-mono); color: var(--accent); }
+h2 { font: 600 34px/1.05 var(--f-sans); letter-spacing: -.02em; margin: 0 0 18px; text-wrap: balance; }
+h3 { font: 600 18px/1.25 var(--f-sans); margin: 32px 0 8px; display: flex; gap: 12px; align-items: baseline; }
+h3 .n { font: 500 12px/1 var(--f-mono); color: var(--muted); min-width: 40px; }
+.prose { max-width: 40em; }
+.prose p { margin: 0 0 14px; }
+.prose ul { margin: 0 0 14px; padding-left: 20px; }
+.prose li { margin-bottom: 6px; }
+.indent { padding-left: 64px; }
+code, .mono { font-family: var(--f-mono); font-size: .88em; }
+kbd {
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em;
+  border: 1px solid var(--ink); border-radius: 999px; padding: 3px 8px; white-space: nowrap;
+}
+.note {
+  position: relative; padding: 12px 0 0 34px; margin: 20px 0; max-width: 40em;
+  border-top: 1px solid var(--ink); font-size: 15px;
+}
+.note::before {
+  content: "i"; position: absolute; left: 0; top: 12px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent); font: 600 12px/1 var(--f-mono);
+}
+.note.try::before { content: "→"; }
+
+/* ---------- lab (the "device") ---------- */
+.lab {
+  margin: 28px 0 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px;
+}
+.lab-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.lab-name { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; }
+.lab-top .spacer { flex: 1; }
+.play {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .08em;
+  background: var(--accent); color: var(--on-accent); border: 0; border-radius: 999px; padding: 9px 14px 9px 10px;
+}
+.play i { width: 14px; height: 14px; display: grid; place-items: center; font-style: normal; }
+.play[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.screens {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--screen-grid);
+  border-radius: 8px; overflow: hidden; border: 2px solid var(--screen);
+}
+.screens canvas { display: block; width: 100%; height: 230px; background: var(--screen); }
+.readout {
+  display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 2px 2px;
+  font: 400 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout b { color: var(--ink); font-weight: 500; }
+.controls {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px 22px;
+  margin-top: 12px; padding-top: 14px; border-top: 1px dashed var(--line);
+}
+.ctl { display: grid; gap: 8px; min-width: 0; }
+.ctl.wide { grid-column: 1 / -1; }
+.ctl-label {
+  display: flex; justify-content: space-between; gap: 8px;
+  font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted);
+}
+.ctl-label output { color: var(--ink); font-variant-numeric: tabular-nums; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.key {
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em;
+  background: transparent; color: var(--ink); border: 1px solid var(--ink); border-radius: 999px;
+  padding: 7px 11px; cursor: pointer;
+}
+.key:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.key[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.key.hot[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+input[type=range] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; cursor: pointer;
+}
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--ink); }
+input[type=range]::-moz-range-track { height: 2px; background: var(--ink); }
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; margin-top: -8px; border-radius: 50%;
+  background: var(--panel); border: 2px solid var(--ink);
+}
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--panel); border: 2px solid var(--ink); }
+input[type=range]:active::-webkit-slider-thumb { background: var(--accent); border-color: var(--accent); }
+input[type=range]:active::-moz-range-thumb { background: var(--accent); border-color: var(--accent); }
+
+/* additive fader bank */
+.bank { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 4px; touch-action: none; user-select: none; }
+.fader {
+  position: relative; height: 130px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg);
+  cursor: ns-resize; overflow: hidden;
+}
+.fader .fill { position: absolute; left: 0; right: 0; bottom: 0; background: var(--ink); }
+.fader:focus-visible .fill, .fader.lit .fill { background: var(--accent); }
+.bank-foot { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 4px; }
+.bank-foot span { text-align: center; font: 500 10px/1 var(--f-mono); color: var(--muted); padding-top: 6px; }
+.bank-foot button {
+  font: 500 10px/1 var(--f-mono); background: transparent; color: var(--muted); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 0; cursor: pointer; margin-top: 4px;
+}
+.bank-foot button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+
+/* legend diagram */
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; max-width: 820px; }
+.legend figure { margin: 0; }
+.legend svg { width: 100%; height: auto; display: block; background: var(--screen); border-radius: 8px; }
+.legend figcaption { font-size: 14px; color: var(--muted); padding-top: 8px; }
+.legend figcaption b { color: var(--ink); font-weight: 600; }
+
+/* reference table */
+.tbl-wrap { overflow-x: auto; margin: 20px 0; }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); border-bottom-color: var(--ink); }
+td.mono { font-variant-numeric: tabular-nums; }
+
+footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+
+@media (max-width: 960px) {
+  .page { grid-template-columns: minmax(0,1fr); gap: 0; }
+  nav.index { display: none; }
+}
+@media (max-width: 700px) {
+  .screens { grid-template-columns: 1fr; }
+  .screens canvas { height: 190px; }
+  .ch-head { grid-template-columns: minmax(0,1fr); }
+  .ch-num { margin-bottom: 10px; }
+  .indent { padding-left: 0; }
+  .legend { grid-template-columns: 1fr; }
+  .fader { height: 110px; }
+  .bank, .bank-foot { gap: 2px; }
+  .bar { padding: 10px 16px; }
+  .page { padding-inline: 16px; }
+  .bar input[type=range] { width: 80px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* page-specific: three screens per lab — wave | device curve | spectrum */
+.screens.three { grid-template-columns: 1.15fr .8fr 1.15fr; }
+.screens.three canvas { height: 220px; }
+.bar a { text-decoration: none; }
+.bar a:hover { color: var(--accent); }
+.drop-inline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.file-btn { position: relative; overflow: hidden; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.stage { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); }
+.ctl.stage-ctl { gap: 10px; }
+.ctl { align-content: start; }
+.seg { align-items: flex-start; align-content: flex-start; }
+.ctl > .key { justify-self: start; }
+.kinds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 24px 0; }
+.kinds > div { background: var(--panel); padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.kinds .k-tag { font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--accent); }
+.kinds h4 { margin: 0; font: 600 18px/1.2 var(--f-sans); }
+.kinds p { margin: 0; font-size: 14.5px; }
+.kinds .eg { font: 400 11px/1.5 var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+@media (max-width: 1100px) { .screens.three { grid-template-columns: 1fr 1fr; } .screens.three canvas.curve { grid-column: 1 / -1; order: 3; } }
+@media (max-width: 700px) { .screens.three { grid-template-columns: 1fr; } .screens.three canvas { height: 190px; } .kinds { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span class="brand">ClassAudio <b>/</b> <a href="index.html">guide</a> <b>/</b> <a href="analyze.html">microscope</a> <b>/</b> colour &amp; saturation</span>
+  <span class="spacer"></span>
+  <label for="master-vol">volume <input id="master-vol" type="range" min="0" max="1" step="0.01" value="0.5"></label>
+  <button class="key" id="stop-all" type="button">stop all</button>
+</div>
+
+<div class="page">
+  <nav class="index" aria-label="Chapters">
+    <ol>
+      <li><a href="#kinds"><span>1</span><span>three kinds of change</span></a></li>
+      <li><a href="#drive"><span>2</span><span>overdrive &amp; clipping</span></a></li>
+      <li><a href="#xfmr"><span>3</span><span>transformers</span></a></li>
+      <li><a href="#tape"><span>4</span><span>tape</span></a></li>
+      <li><a href="#chorus"><span>5</span><span>chorus &amp; flanger</span></a></li>
+      <li><a href="#chain"><span>6</span><span>the rhodes chain</span></a></li>
+      <li><a href="#ref"><span>7</span><span>quick reference</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div class="eyebrow">sound design guide · part 3 · effects</div>
+      <h1>colour &amp;<br><em>saturation</em></h1>
+      <p class="lede">Iron, tape and valves change a sound even when you do not ask them to. This page shows what each one does to the wave and to its harmonics, and why "warm" is something you can measure.</p>
+    </header>
+
+    <!-- 1 -->
+    <section class="ch" id="kinds">
+      <div class="ch-head"><span class="ch-num">1</span><h2>three kinds of change</h2></div>
+      <div class="indent">
+        <div class="prose"><p>Every effect on this page falls into one of three families. Knowing the family tells you in advance what will happen to the spectrum.</p></div>
+        <div class="kinds">
+          <div><span class="k-tag">linear</span><h4>Only turns things up or down</h4><p>Filters and EQ. They change the level of the harmonics that are already there. They never create a new frequency.</p><span class="eg">eq · filter · the tone knob</span></div>
+          <div><span class="k-tag">non-linear</span><h4>Creates harmonics</h4><p>Overdrive, transformers, tape saturation. The output is a bent copy of the input, and bending a wave adds harmonics. With two notes it also adds sum and difference tones.</p><span class="eg">drive · iron · tape · valves</span></div>
+          <div><span class="k-tag">time-varying</span><h4>Moves things around</h4><p>Chorus, flanger, tape wow and flutter. The effect changes over time, so each partial is smeared or split into sidebands, like the FM lab in the guide.</p><span class="eg">chorus · flanger · vibrato · wow</span></div>
+        </div>
+        <div class="note">Real gear is usually all three at once. A tape machine saturates (non-linear), loses treble (linear) and wobbles in speed (time-varying). The labs let you hear each part separately.</div>
+        <div class="note">Each lab shows three screens: the <b>wave</b> (grey is the input, white is the output), the <b>device curve</b> in the middle, and the <b>spectrum</b> (hollow grey bars are the input, white is the output).</div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="ch" id="drive">
+      <div class="ch-head"><span class="ch-num">2</span><h2>overdrive &amp; clipping</h2></div>
+      <div class="indent">
+        <div class="prose"><p>An overdrive is a curve. Every input value is looked up on the curve and replaced by the output value. The middle screen shows the curve. The orange stretch is the part of it your signal actually uses. While the signal stays on the straight middle part, nothing happens. Push it into the bends and harmonics appear.</p></div>
+        <div class="lab" data-lab="drive"></div>
+        <h3><span class="n">2.1</span>soft, hard, and the shape of the knee</h3>
+        <div class="prose"><p><b>Soft</b> clipping (a smooth curve, like a valve or a tape) adds harmonics gradually, and they fall off quickly with number. <b>Hard</b> clipping (a transistor or an op-amp hitting its rails) flattens the top of the wave suddenly. The sharp corner sprays harmonics far up the spectrum, which sounds harsh and buzzy.</p></div>
+        <h3><span class="n">2.2</span>even and odd: symmetry</h3>
+        <div class="prose"><p>A curve that treats positive and negative the same way can only add <b>odd</b> harmonics (3, 5, 7…), as in a square wave. Turn up <kbd>asymmetry</kbd> and the curve bends more on one side. That adds <b>even</b> harmonics (2, 4, 6…), which sit an octave and an octave-plus-fifth above the note and blend with it. This is a big part of why single-ended valve stages are called "warm". The <kbd>fuzz</kbd> curve is asymmetric by design.</p></div>
+        <h3><span class="n">2.3</span>chords: intermodulation</h3>
+        <div class="prose"><p>Switch the source to <kbd>two tones</kbd>. A distorted pair of notes produces not only harmonics of each note, but also <b>sum and difference</b> tones: f<sub>2</sub> − f<sub>1</sub>, 2f<sub>1</sub> − f<sub>2</sub> and more. With a fifth (3:2) those products land on the note one octave below the root, which still sounds consonant. That is why guitarists play power chords. With a major third (5:4) they land two octaves below the root and in between, which sounds muddy.</p></div>
+        <h3><span class="n">2.4</span>aliasing</h3>
+        <div class="prose"><p>Hard clipping creates harmonics above 24 kHz, higher than a 48 kHz digital system can store. They fold back down as <b>aliases</b>: clean-looking lines that are not on the harmonic grid. Set <kbd>hard</kbd>, drive up, source <kbd>saw</kbd> at a high pitch, and compare <kbd>1×</kbd> with <kbd>4×</kbd> oversampling. Good plugins process at a higher rate internally for exactly this reason.</p></div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="ch" id="xfmr">
+      <div class="ch-head"><span class="ch-num">3</span><h2>transformers</h2></div>
+      <div class="indent">
+        <div class="prose"><p>An audio transformer is two coils on an iron core. The audio becomes magnetism in the iron and back again. Iron can only hold so much magnetism. Past that point it <b>saturates</b>, and the output stops following the input. The middle screen plots the core's magnetisation against the magnetic drive: its B–H curve.</p></div>
+        <div class="lab" data-lab="xfmr"></div>
+        <h3><span class="n">3.1</span>low notes saturate first</h3>
+        <div class="prose"><p>Unlike an overdrive, a transformer's distortion depends on <b>frequency</b>. The magnetism builds up over each half cycle, so a slow bass wave pushes the core much further than a fast treble wave at the same level. Keep the level fixed and sweep the pitch down. The harmonics grow as the note drops. This is the "weight" and "thickness" that people hear on bass through vintage consoles like the Neve 1073 or the Pultec, while the top end stays clean.</p></div>
+        <h3><span class="n">3.2</span>hysteresis and dc</h3>
+        <div class="prose"><p>Iron also "remembers" which way it was magnetised. The B–H curve opens into a loop, called <b>hysteresis</b>. That adds a little distortion even at low levels. A <b>DC bias</b> current, found in single-ended valve amplifiers where the valve current flows through the output transformer, shifts the loop off-centre. That adds even harmonics, just like asymmetry in the overdrive.</p></div>
+        <div class="note try">Set pitch to 40 Hz, level to +6 dB, and switch <kbd>core</kbd> from large to small. Small cheap transformers saturate much earlier. This is part of why a guitar amp's output transformer is part of its sound.</div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="ch" id="tape">
+      <div class="ch-head"><span class="ch-num">4</span><h2>tape</h2></div>
+      <div class="indent">
+        <div class="prose"><p>Magnetic tape is the whole family in one box. Each part can be switched off to hear it alone:</p>
+          <ul>
+            <li><b>Saturation with hysteresis</b> (non-linear). The tape particles saturate softly and remember their direction. The loop in the middle screen is the tape's transfer curve. It rounds peaks gently and adds mostly odd harmonics.</li>
+            <li><b>Head bump and treble loss</b> (linear). Playback heads boost a band of low frequencies, and the tape loses highs. Both depend on tape speed in inches per second (ips). Slower tape means an earlier treble roll-off.</li>
+            <li><b>Wow and flutter</b> (time-varying). The motor and capstan are never perfectly steady. Slow speed drift (wow, ~0.5 Hz) and fast flutter (~7 Hz) bend the pitch up and down. On the spectrum this is FM: small sidebands appear right next to each partial.</li>
+            <li><b>Hiss</b>. The random magnetic grain of the tape. A noise floor under everything.</li>
+          </ul>
+        </div>
+        <div class="lab" data-lab="tape"></div>
+        <div class="note try">Pick <kbd>zoom ×2</kbd> on the spectrum and turn up wow &amp; flutter. The single line at the fundamental grows skirts of sidebands 7 Hz apart. That is flutter, drawn as FM.</div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="ch" id="chorus">
+      <div class="ch-head"><span class="ch-num">5</span><h2>chorus &amp; flanger</h2></div>
+      <div class="indent">
+        <div class="prose"><p>A chorus mixes the sound with copies of itself that are delayed by a few milliseconds, where the delay keeps sweeping up and down (middle screen). A changing delay is a changing pitch, like a moving car horn. Each copy is detuned slightly and the copies drift against the original, like several players on the same part.</p></div>
+        <div class="lab" data-lab="chorus"></div>
+        <h3><span class="n">5.1</span>no new harmonics, but every line gets wider</h3>
+        <div class="prose"><p>A chorus is linear, so it cannot create harmonics. The spectrum shows something else: each partial is smeared into a small cluster, and the level of each one moves up and down as the copies beat against the original. On the wave screen the shape keeps changing while the pitch stays.</p></div>
+        <h3><span class="n">5.2</span>the flanger is the same circuit</h3>
+        <div class="prose"><p>Make the delay very short (around 1 ms) and feed some output back in, and the chorus becomes a <b>flanger</b>. A short delay mixed with the original cancels a whole series of frequencies at once. This is a <b>comb filter</b>, and its notches sweep through the harmonics. Use the <kbd>flanger</kbd> preset with the saw source to hear the jet-plane sweep.</p></div>
+        <div class="note">The Rhodes Suitcase had a stereo tremolo, not a chorus. The chorus most people link with the Rhodes came later, from pedals like the Boss CE-1 and the Roland Jazz Chorus amp. Chapter 6 lets you add one.</div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="ch" id="chain">
+      <div class="ch-head"><span class="ch-num">6</span><h2>the rhodes chain</h2></div>
+      <div class="indent">
+        <div class="prose"><p>A classic recorded Rhodes goes through a preamp, an output or console transformer, a tape machine and often a chorus. Here all four stages run in order on a short e-piano phrase, or on <b>your own recording</b>. Switch stages on and off and compare the spectra: the hollow grey bars show the sound before the chain.</p></div>
+        <div class="lab" data-lab="chain"></div>
+        <div class="note try">Load a dry Rhodes recording, then open the <a href="analyze.html">Sound Microscope</a> in another tab. Measure the dry file, then measure the same file after you record the output of this chain. The odd/even balance, harmonic energy and decay numbers will all move.</div>
+        <div class="note">The built-in phrase is generated by code (a simple tine-and-pickup model), not recorded. Your own file is processed in the browser and never uploaded. Only the first 8 seconds are used.</div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="ch" id="ref">
+      <div class="ch-head"><span class="ch-num">7</span><h2>quick reference</h2></div>
+      <div class="indent">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>effect</th><th>family</th><th>what happens to the spectrum</th><th>what to listen for</th></tr></thead>
+            <tbody>
+              <tr><td>soft clip / valve</td><td>non-linear</td><td>harmonics that fall off fast; even ones if asymmetric</td><td>thicker, louder-sounding, "warm"</td></tr>
+              <tr><td>hard clip / fuzz</td><td>non-linear</td><td>many high harmonics, aliasing without oversampling</td><td>buzzy, bright, compressed</td></tr>
+              <tr><td>transformer</td><td>non-linear, frequency-dependent</td><td>harmonics mainly on low notes; hysteresis at low level</td><td>weight in the bass, top end untouched</td></tr>
+              <tr><td>tape</td><td>all three</td><td>soft odd harmonics, head bump, treble loss, flutter sidebands, hiss</td><td>glued, rounded transients, slight wobble</td></tr>
+              <tr><td>chorus</td><td>time-varying</td><td>each partial smeared into a moving cluster</td><td>width, shimmer, "more players"</td></tr>
+              <tr><td>flanger</td><td>time-varying + feedback</td><td>sweeping comb-filter notches</td><td>jet-plane swoosh</td></tr>
+              <tr><td>eq / filter</td><td>linear</td><td>levels change, no new frequencies</td><td>tone only</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>term</th><th>meaning</th></tr></thead>
+            <tbody>
+              <tr><td>THD+N</td><td>Total harmonic distortion plus noise. Everything in the output that is not the input tone(s), as a percentage of the tone.</td></tr>
+              <tr><td>transfer curve</td><td>The graph of output against input for a non-linear device. A straight diagonal line means no distortion.</td></tr>
+              <tr><td>hysteresis</td><td>The output depends on where the input came from, not only where it is. It draws a loop instead of a line.</td></tr>
+              <tr><td>intermodulation</td><td>Sum and difference tones created when two or more notes pass through a non-linear device together.</td></tr>
+              <tr><td>aliasing</td><td>Frequencies above half the sample rate folding back down as unrelated tones.</td></tr>
+              <tr><td>wow / flutter</td><td>Slow / fast speed variations of a tape or record, heard as pitch wobble.</td></tr>
+              <tr><td>comb filter</td><td>A series of evenly spaced notches, caused by mixing a signal with a delayed copy.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <footer>ClassAudio · every screen and every sound on this page comes from the same JavaScript models, rendered at 48 kHz in your browser · the models are simplified for teaching, not measured from specific hardware.</footer>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+"use strict";
+const SR = 48000, TAU = Math.PI * 2, WARM = 0.5, LOOP = 4;
+const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const noteName = f => { const m = Math.round(69 + 12 * Math.log2(f / 440)); return NOTES[(m % 12 + 12) % 12] + (Math.floor(m / 12) - 1); };
+const fmtHz = f => f >= 1000 ? (f / 1000).toFixed(2) + " kHz" : f.toFixed(f < 100 ? 1 : 0) + " Hz";
+const dB = v => 20 * Math.log10(Math.max(v, 1e-12));
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+/* ============== DSP building blocks ============== */
+class Biquad {
+  constructor(type, f, Q = 0.707, g = 0) { this.z1 = this.z2 = 0; this.set(type, f, Q, g); }
+  set(type, f, Q, g) {
+    const w = TAU * Math.min(f, SR * 0.49) / SR, c = Math.cos(w), s = Math.sin(w), al = s / (2 * Q), A = Math.pow(10, g / 40);
+    let b0, b1, b2, a0, a1, a2;
+    if (type === "lp") { b0 = (1 - c) / 2; b1 = 1 - c; b2 = b0; a0 = 1 + al; a1 = -2 * c; a2 = 1 - al; }
+    else if (type === "hp") { b0 = (1 + c) / 2; b1 = -(1 + c); b2 = b0; a0 = 1 + al; a1 = -2 * c; a2 = 1 - al; }
+    else { b0 = 1 + al * A; b1 = -2 * c; b2 = 1 - al * A; a0 = 1 + al / A; a1 = -2 * c; a2 = 1 - al / A; } // peaking
+    this.b0 = b0 / a0; this.b1 = b1 / a0; this.b2 = b2 / a0; this.a1 = a1 / a0; this.a2 = a2 / a0;
+    return this;
+  }
+  run(x) { const y = this.b0 * x + this.z1; this.z1 = this.b1 * x - this.a1 * y + this.z2; this.z2 = this.b2 * x - this.a2 * y; return y; }
+}
+function rng(seed) { let s = seed; return () => ((s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff) * 2 - 1; }
+
+/* ---- sources (every periodic source repeats exactly every LOOP seconds, so loops are seamless) ---- */
+function epianoNote(x, t0, f0, vel) {
+  const start = Math.round(t0 * SR), len = Math.round(2.2 * SR), r = rng(Math.round(f0 * 100));
+  let lp = 0;
+  for (let i = Math.max(0, -start); i < len && start + i < x.length; i++) {
+    const t = i / SR;
+    const amp = vel * (0.55 * Math.exp(-t / 0.28) + 0.45 * Math.exp(-t / 1.6)) * (1 - Math.exp(-t / 0.0012)) * (t > 1.9 ? Math.max(0, 1 - (t - 1.9) / 0.3) : 1);
+    const tine = amp * Math.sin(TAU * f0 * t) + 0.3 * vel * Math.exp(-t / 0.03) * Math.sin(TAU * f0 * 6.27 * t);
+    lp += 0.25 * (r() - lp);
+    x[start + i] += 0.45 * (Math.tanh(2.2 * (tine * 0.9 + 0.2)) - Math.tanh(0.44)) * Math.min(1, t / 0.3 + (amp > 0.05 ? 1 : 0)) + (t < 0.015 ? lp * 0.08 * Math.exp(-t / 0.004) : 0);
+  }
+}
+let userAudio = null; // { x: Float32Array at SR, name }
+function makeSource(s, total) {
+  const n = Math.round(total * SR), x = new Float32Array(n);
+  if (s.src === "sine") for (let i = 0; i < n; i++) x[i] = Math.sin(TAU * s.f0 * i / SR);
+  else if (s.src === "two") { const f2 = s.f0 * s.interval; for (let i = 0; i < n; i++) x[i] = 0.5 * (Math.sin(TAU * s.f0 * i / SR) + Math.sin(TAU * f2 * i / SR)); }
+  else if (s.src === "saw") {
+    const dt = s.f0 / SR; let ph = 0;
+    const blep = (t) => t < dt ? (t /= dt, t + t - t * t - 1) : t > 1 - dt ? (t = (t - 1) / dt, t * t + t + t + 1) : 0;
+    for (let i = 0; i < n; i++) { x[i] = 0.8 * (2 * ph - 1 - blep(ph)); ph += dt; if (ph >= 1) ph -= 1; }
+  } else if (s.src === "epiano") {
+    const seq = [[0, 220, 0.9], [1, 277.18, 0.6], [2, 329.63, 0.8], [3, 440, 1]];
+    for (const [k, f, v] of [[-1, 440, 1], ...seq]) epianoNote(x, WARM + k, f, v);
+  } else if (s.src === "file" && userAudio) {
+    const u = userAudio.x, L = u.length, off = Math.round(WARM * SR);
+    for (let i = 0; i < n; i++) x[i] = u[((i - off) % L + L) % L];
+  }
+  return x;
+}
+const loopOf = s => s.src === "file" && userAudio ? userAudio.x.length / SR : LOOP;
+
+/* ---- overdrive ---- */
+const SHAPES = {
+  soft: v => Math.tanh(v),
+  hard: v => Math.max(-1, Math.min(1, v)),
+  fuzz: v => v > 0 ? 1 - Math.exp(-v) : -0.45 * (1 - Math.exp(2.2 * v)),
+};
+const shapeFn = s => { const f = SHAPES[s.mode], b = s.bias, g = Math.pow(10, s.drive / 20) * 0.25, o = f(b); return x => f(x * g + b) - o; };
+function overdrive(x, s, cap) {
+  const f = shapeFn(s), n = x.length, y = new Float32Array(n), dc = new Biquad("hp", 12), tone = new Biquad("lp", s.tone, 0.707);
+  if (s.os === 4) {
+    const aa = [0, 1, 2, 3].map(() => new Biquad("lp", 20000 / 4, 0.54)), ai = [0, 1, 2, 3].map(() => new Biquad("lp", 20000 / 4, 0.54));
+    // filters are designed at SR but run at 4×SR, so 5 kHz here = 20 kHz in the oversampled domain
+    for (let i = 0; i < n; i++) {
+      let out = 0;
+      for (let k = 0; k < 4; k++) {
+        let u = k === 0 ? x[i] * 4 : 0;            // zero-stuff + gain
+        for (const b of ai) u = b.run(u);
+        let v = f(u);
+        for (const b of aa) v = b.run(v);
+        if (k === 3) out = v;
+      }
+      y[i] = tone.run(dc.run(out)) * 0.8;
+    }
+  } else for (let i = 0; i < n; i++) y[i] = tone.run(dc.run(f(x[i]))) * 0.8;
+  if (cap) cap.curve = { kind: "static", f, amp: Math.max(...x.subarray(Math.round(WARM * SR), Math.round(WARM * SR) + 4800).map(Math.abs)) };
+  return y;
+}
+
+/* ---- transformer: flux = integral of voltage, core saturates on flux, output = d(flux)/dt ---- */
+function transformer(x, s, cap) {
+  const n = x.length, y = new Float32Array(n), gain = Math.pow(10, s.level / 20);
+  const k = TAU * 50 / SR, leak = TAU * 8 / SR, g = { large: 0.8, medium: 1.4, small: 2.4 }[s.core], h = s.hyst, b = s.bias;
+  const dc = new Biquad("hp", 10), hf = new Biquad("lp", 22000, 0.9);
+  let phi = 0, zp = 0, sp = 0, env = 0; const pts = [], rel = 1 - 1 / (SR * 0.1);
+  // the loop width grows with how hard the core is driven, so small signals stay nearly clean
+  const sat = (z, dz, wdt) => Math.tanh(g * (z - wdt * Math.tanh(dz / k * 1.5))) / g;
+  const s0 = sat(b, 0, 0);
+  for (let i = 0; i < n; i++) {
+    phi = phi * (1 - leak) + x[i] * gain * k;
+    env = Math.max(Math.abs(phi), env * rel);
+    const z = phi + b, sv = sat(z, z - zp, h * env * Math.min(1, env * g)) - s0;
+    y[i] = hf.run(dc.run((sv - sp) / k)) / gain;   // undo the input level so the screens compare shape, not volume
+    if (cap && i > n - SR * 0.5) pts.push(z, sv);
+    zp = z; sp = sv;
+  }
+  if (cap) cap.curve = { kind: "loop", pts, xl: "flux H", yl: "magnetisation B" };
+  return y;
+}
+
+/* ---- tape ---- */
+const TAPE = { 7.5: { lp: 9000, bump: 45 }, 15: { lp: 15000, bump: 85 }, 30: { lp: 20000, bump: 160 } };
+function tape(x, s, cap) {
+  const n = x.length, y = new Float32Array(n), gain = Math.pow(10, s.level / 20), T = TAPE[s.speed], r = rng(7);
+  const bump = new Biquad("peak", T.bump, 1.1, s.eq ? 3 : 0), lp1 = new Biquad("lp", s.eq ? T.lp : 23000, 0.55), lp2 = new Biquad("lp", s.eq ? T.lp * 1.2 : 23000, 0.8);
+  const hissHp = new Biquad("hp", 300), hiss = s.hiss === "off" ? 0 : Math.pow(10, (s.hiss === "low" ? -62 : -46) / 20);
+  const B = 8192, buf = new Float32Array(B); let w = 0, up = 0; const pts = [];
+  const wowD = s.wow * 0.0015, flD = s.wow * 0.00004;
+  for (let i = 0; i < n; i++) {
+    const u = x[i] * gain, du = (u - up) * SR / (TAU * 300);
+    let v = s.sat ? Math.tanh(1.3 * (u - 0.12 * Math.tanh(du))) / 1.3 : u;
+    if (cap && i > n - SR * 0.5) pts.push(u, v);
+    up = u;
+    v = lp2.run(lp1.run(bump.run(v)));
+    buf[w] = v;
+    const t = i / SR, d = (0.004 + wowD * Math.sin(TAU * 0.5 * t) + flD * Math.sin(TAU * 7 * t + 0.4 * Math.sin(TAU * 1.5 * t))) * SR;
+    const rp = w - d, i0 = Math.floor(rp), fr = rp - i0, a = buf[(i0 + B) % B], c = buf[(i0 + 1 + B) % B];
+    y[i] = a + (c - a) * fr + hiss * hissHp.run(r());
+    w = (w + 1) % B;
+  }
+  if (cap) cap.curve = { kind: "loop", pts, xl: "record level", yl: "tape magnetisation" };
+  return y;
+}
+
+/* ---- chorus / flanger ---- */
+function chorus(x, s, cap) {
+  const n = x.length, y = new Float32Array(n), B = 4096, buf = new Float32Array(B), V = s.voices;
+  let w = 0, fbv = 0; const trace = [];
+  for (let i = 0; i < n; i++) {
+    buf[w] = x[i] + s.fb * fbv;
+    const t = i / SR; let wet = 0;
+    for (let v = 0; v < V; v++) {
+      const dms = s.base + s.depth * 0.5 * (1 + Math.sin(TAU * s.rate * t + v * TAU / V));
+      const rp = w - dms * SR / 1000, i0 = Math.floor(rp), fr = rp - i0, a = buf[(i0 + B) % B], c = buf[(i0 + 1 + B) % B];
+      wet += a + (c - a) * fr;
+      if (cap && v === 0 && i % 240 === 0) trace.push(t);
+    }
+    wet /= V; fbv = wet;
+    y[i] = (x[i] + s.mix * wet) / (1 + s.mix);
+    w = (w + 1) % B;
+  }
+  if (cap) cap.curve = { kind: "delay", s: { ...s } };
+  return y;
+}
+
+/* ============== spectrum ============== */
+const twC = new Map();
+function fft(re, im) {
+  const n = re.length; let tw = twC.get(n);
+  if (!tw) { tw = [new Float64Array(n / 2), new Float64Array(n / 2)]; for (let i = 0; i < n / 2; i++) { tw[0][i] = Math.cos(TAU * i / n); tw[1][i] = -Math.sin(TAU * i / n); } twC.set(n, tw); }
+  for (let i = 1, j = 0; i < n; i++) { let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+  for (let len = 2; len <= n; len <<= 1) { const h = len >> 1, st = n / len; for (let i = 0; i < n; i += len) for (let k = 0; k < h; k++) { const a = i + k, b = a + h, wr = tw[0][k * st], wi = tw[1][k * st], xr = re[b] * wr - im[b] * wi, xi = re[b] * wi + im[b] * wr; re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi; } }
+}
+const FN = 16384;
+const HANN = Float64Array.from({ length: FN }, (_, i) => 0.5 - 0.5 * Math.cos(TAU * i / FN));
+function spectrum(x, start) {
+  const re = new Float64Array(FN), im = new Float64Array(FN);
+  for (let i = 0; i < FN; i++) { const j = start + i; re[i] = (j >= 0 && j < x.length ? x[j] : 0) * HANN[i]; }
+  fft(re, im);
+  const out = new Float32Array(FN / 2); for (let i = 0; i < FN / 2; i++) out[i] = Math.hypot(re[i], im[i]) * 4 / FN;
+  return out;
+}
+const BW = SR / FN;
+function peakAt(S, f) { const c = Math.round(f / BW); let m = 0; for (let b = c - 3; b <= c + 3; b++) if (b > 0 && b < S.length) m = Math.max(m, S[b]); return m; }
+function powerNear(S, f, span = 4) { const c = Math.round(f / BW); let p = 0; for (let b = c - span; b <= c + span; b++) if (b > 0 && b < S.length) p += S[b] * S[b]; return p; }
+
+/* ============== audio ============== */
+let ctx = null, master = null, current = null;
+const vol = document.getElementById("master-vol");
+const volCurve = () => Math.pow(+vol.value, 2) * 0.8;
+function ensureCtx() {
+  if (!ctx) {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = volCurve();
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -8; comp.ratio.value = 10;
+    master.connect(comp).connect(ctx.destination);
+  }
+  if (ctx.state === "suspended") ctx.resume();
+}
+vol.addEventListener("input", () => { if (master) master.gain.setTargetAtTime(volCurve(), ctx.currentTime, 0.02); });
+document.getElementById("stop-all").addEventListener("click", () => current && current.stop());
+
+let C = {};
+function readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ["screen", "screen-ink", "screen-dim", "screen-grid", "screen-accent"]) C[k] = cs.getPropertyValue("--" + k).trim(); }
+readColors();
+
+/* ============== lab ============== */
+const DEF = {
+  drive:  { title: "lab 2 · overdrive", src: "sine", f0: 220, interval: 1.5, zoom: 16, freq: "lin", mode: "soft", drive: 12, bias: 0, tone: 12000, os: 1 },
+  xfmr:   { title: "lab 3 · transformer", src: "sine", f0: 60, interval: 1.5, zoom: 16, freq: "lin", level: -6, core: "medium", hyst: 0.05, bias: 0 },
+  tape:   { title: "lab 4 · tape machine", src: "sine", f0: 220, interval: 1.5, zoom: 16, freq: "lin", level: 0, speed: 15, sat: true, eq: true, wow: 0.3, hiss: "low" },
+  chorus: { title: "lab 5 · chorus / flanger", src: "saw", f0: 110, interval: 1.5, zoom: 32, freq: "lin", rate: 0.75, depth: 3, base: 12, voices: 2, mix: 0.8, fb: 0 },
+  chain:  { title: "lab 6 · preamp → transformer → tape → chorus", src: "epiano", f0: 220, interval: 1.5, zoom: 16, freq: "log",
+            pre: true, preAmt: 0.35, xf: true, xfAmt: 0.5, tp: true, tpAmt: 0.5, ch: false, chAmt: 0.5 },
+};
+function chainProcess(x, s, cap) {
+  let y = x;
+  if (s.pre) y = overdrive(y, { mode: "soft", drive: 4 + s.preAmt * 20, bias: 0.35, tone: 9000, os: 1 });
+  if (s.xf) y = transformer(y, { level: -10 + s.xfAmt * 22, core: "medium", hyst: 0.04, bias: 0.05 });
+  if (s.tp) y = tape(y, { level: -6 + s.tpAmt * 14, speed: 15, sat: true, eq: true, wow: s.tpAmt * 0.5, hiss: "low" });
+  if (s.ch) y = chorus(y, { rate: 0.6, depth: 3.5, base: 10, voices: 2, mix: s.chAmt, fb: 0 });
+  if (cap) cap.curve = { kind: "overview" };
+  return y;
+}
+const PROC = { drive: overdrive, xfmr: transformer, tape, chorus, chain: chainProcess };
+
+class Lab {
+  constructor(root, kind) {
+    this.root = root; this.kind = kind; this.s = { ...DEF[kind] }; this.playing = false; this.inputs = {};
+    this.build(); this.recompute();
+    new ResizeObserver(() => this.draw()).observe(this.cvW);
+  }
+  build() {
+    const top = el("div", "lab-top"); top.append(el("span", "lab-name", this.s.title), el("span", "spacer"));
+    this.btn = el("button", "play"); this.btn.type = "button"; this.btn.addEventListener("click", () => this.playing ? this.stop() : this.start()); top.append(this.btn); this.setBtn();
+    const sc = el("div", "screens three");
+    this.cvW = el("canvas"); this.cvC = el("canvas", "curve"); this.cvS = el("canvas");
+    this.cvW.setAttribute("aria-label", "waveform"); this.cvC.setAttribute("aria-label", "device curve"); this.cvS.setAttribute("aria-label", "spectrum");
+    sc.append(this.cvW, this.cvC, this.cvS);
+    this.ro = el("div", "readout"); this.ctls = el("div", "controls");
+    this.root.append(top, sc, this.ro, this.ctls);
+    const k = this.kind, pitch = fmt => this.range("f0", "pitch", k === "xfmr" ? 25 : 40, k === "xfmr" ? 1000 : 1200, { log: true, int: true, fmt: v => fmtHz(v) + " · " + noteName(v) });
+    if (k === "chain") {
+      this.seg("src", "source", [["epiano", "e-piano phrase"], ["file", "your file"]], v => { if (v === "file" && !userAudio) { this.s.src = "epiano"; this.inputs.src.sync(); this.fileInput.click(); } });
+      const [g] = this.group("load audio");
+      const row = el("div", "drop-inline"), lab = el("span", "key file-btn", "choose file");
+      this.fileInput = el("input"); this.fileInput.type = "file"; this.fileInput.accept = "audio/*"; this.fileInput.setAttribute("aria-label", "choose audio file");
+      this.fileInput.addEventListener("change", e => this.loadFile(e.target.files[0]));
+      lab.append(this.fileInput); this.fileName = el("span", "ctl-label", "none loaded"); row.append(lab, this.fileName); g.append(row);
+      for (const [key, amt, name] of [["pre", "preAmt", "preamp drive"], ["xf", "xfAmt", "transformer level"], ["tp", "tpAmt", "tape level + wow"], ["ch", "chAmt", "chorus mix"]]) {
+        const [gg] = this.group(name); gg.classList.add("stage-ctl");
+        this.toggleInto(gg, key, "on");
+        this.rangeInto(gg, amt, 0, 1, { step: 0.01, fmt: v => Math.round(v * 100) + " %" });
+      }
+      this.seg("freq", "frequency axis", [["log", "log"], ["lin", "linear"]]);
+      return;
+    }
+    this.seg("src", "source", k === "chorus" ? [["saw", "saw"], ["sine", "sine"], ["two", "two tones"], ["epiano", "e-piano"]] : [["sine", "sine"], ["two", "two tones"], ["saw", "saw"], ["epiano", "e-piano"]]);
+    pitch();
+    this.seg("interval", "two-tone interval", [[1.5, "fifth 3:2"], [1.25, "third 5:4"]]);
+    if (k === "drive") {
+      this.seg("mode", "curve", [["soft", "soft"], ["hard", "hard"], ["fuzz", "fuzz"]]);
+      this.range("drive", "drive", 0, 40, { step: 0.5, fmt: v => "+" + v.toFixed(1) + " dB" });
+      this.range("bias", "asymmetry", 0, 0.8, { step: 0.01, fmt: v => v.toFixed(2) });
+      this.range("tone", "tone (low pass)", 1000, 20000, { log: true, fmt: fmtHz });
+      this.seg("os", "oversampling", [[1, "1×"], [4, "4×"]]);
+    } else if (k === "xfmr") {
+      this.range("level", "level", -18, 18, { step: 0.5, fmt: v => (v > 0 ? "+" : "") + v.toFixed(1) + " dB" });
+      this.seg("core", "core", [["large", "large"], ["medium", "medium"], ["small", "small"]]);
+      this.range("hyst", "hysteresis", 0, 0.3, { step: 0.005, fmt: v => v.toFixed(3) });
+      this.range("bias", "dc bias", 0, 0.8, { step: 0.01, fmt: v => v.toFixed(2) });
+    } else if (k === "tape") {
+      this.range("level", "record level", -12, 18, { step: 0.5, fmt: v => (v > 0 ? "+" : "") + v.toFixed(1) + " dB" });
+      this.seg("speed", "tape speed", [[7.5, "7.5 ips"], [15, "15 ips"], [30, "30 ips"]]);
+      this.range("wow", "wow & flutter", 0, 1, { step: 0.01, fmt: v => (v * 0.47).toFixed(2) + " % peak" });
+      this.seg("hiss", "hiss", [["off", "off"], ["low", "low"], ["high", "high"]]);
+      const [g] = this.group("stages"); const row = el("div", "seg"); g.append(row);
+      this.toggleInto(row, "sat", "saturation"); this.toggleInto(row, "eq", "head bump + treble loss");
+    } else if (k === "chorus") {
+      this.range("rate", "rate", 0, 5, { step: 0.25, fmt: v => v.toFixed(2) + " Hz" });
+      this.range("depth", "depth", 0, 8, { step: 0.1, fmt: v => v.toFixed(1) + " ms" });
+      this.range("base", "delay", 0.3, 30, { step: 0.1, fmt: v => v.toFixed(1) + " ms" });
+      this.seg("voices", "voices", [[1, "1"], [2, "2"], [3, "3"]]);
+      this.range("mix", "mix", 0, 1, { step: 0.01, fmt: v => Math.round(v * 100) + " %" });
+      this.range("fb", "feedback", 0, 0.9, { step: 0.01, fmt: v => Math.round(v * 100) + " %" });
+      const [g] = this.group("presets"); const row = el("div", "seg"); g.append(row);
+      for (const [t, p] of [["chorus", { rate: 0.75, depth: 3, base: 12, voices: 2, mix: 0.8, fb: 0 }], ["flanger", { rate: 0.25, depth: 2.5, base: 0.5, voices: 1, mix: 1, fb: 0.6 }], ["wide", { rate: 0.4, depth: 6, base: 18, voices: 3, mix: 1, fb: 0 }]]) {
+        const b = el("button", "key", t); b.type = "button"; row.append(b);
+        b.addEventListener("click", () => { Object.assign(this.s, p); Object.values(this.inputs).forEach(i => i.sync && i.sync()); this.changed(); });
+      }
+    }
+    this.seg("zoom", "spectrum range", [[2, "×2"], [8, "×8"], [16, "×16"], [32, "×32"]]);
+    this.seg("freq", "frequency axis", [["lin", "linear"], ["log", "log"]]);
+  }
+  group(label) { const g = el("div", "ctl"), l = el("div", "ctl-label"); l.append(el("span", null, label)); g.append(l); this.ctls.append(g); return [g, l]; }
+  seg(key, label, opts, after) {
+    const [g] = this.group(label), row = el("div", "seg"), btns = [];
+    for (const [v, t] of opts) { const b = el("button", "key", t); b.type = "button"; b.addEventListener("click", () => { this.s[key] = v; sync(); if (after) after(v); this.changed(); }); btns.push([v, b]); row.append(b); }
+    const sync = () => btns.forEach(([v, b]) => b.setAttribute("aria-pressed", String(this.s[key] === v)));
+    g.append(row); this.inputs[key] = { sync }; sync();
+  }
+  toggleInto(parent, key, label) {
+    const b = el("button", "key hot", label); b.type = "button";
+    const sync = () => { b.setAttribute("aria-pressed", String(!!this.s[key])); b.className = "key" + (this.s[key] ? " hot" : ""); if (label === "on") b.textContent = this.s[key] ? "on" : "off"; };
+    b.addEventListener("click", () => { this.s[key] = !this.s[key]; sync(); this.changed(); });
+    parent.append(b); this.inputs[key] = { sync }; sync();
+  }
+  range(key, label, min, max, o) { const [g, l] = this.group(label); this.rangeInto(g, key, min, max, o, l); }
+  rangeInto(g, key, min, max, o, labelRow) {
+    const out = el("output"), inp = el("input"); inp.type = "range"; inp.id = this.kind + "-" + key; inp.setAttribute("aria-label", key);
+    const log = !!o.log;
+    if (log) { inp.min = 0; inp.max = 1000; inp.step = 1; } else { inp.min = min; inp.max = max; inp.step = o.step || 1; }
+    const toV = v => { let r = log ? min * Math.pow(max / min, v / 1000) : +v; return o.int ? Math.round(r) : r; };
+    const fromV = v => log ? Math.round(1000 * Math.log(v / min) / Math.log(max / min)) : v;
+    inp.addEventListener("input", () => { this.s[key] = toV(inp.value); out.textContent = o.fmt(this.s[key]); this.changed(); });
+    if (labelRow) labelRow.append(out); else { const row = el("div", "ctl-label"); row.append(el("span", null, ""), out); g.append(row); }
+    g.append(inp);
+    const sync = () => { inp.value = fromV(this.s[key]); out.textContent = o.fmt(this.s[key]); };
+    this.inputs[key] = { sync }; sync();
+  }
+  setBtn() { this.btn.replaceChildren(el("i", null, this.playing ? "■" : "▶"), document.createTextNode(this.playing ? "stop" : "play")); this.btn.setAttribute("aria-pressed", String(this.playing)); }
+
+  async loadFile(file) {
+    if (!file) return;
+    this.fileName.textContent = "decoding…";
+    try {
+      ensureCtx();
+      const ab = await new Promise(async (res, rej) => { try { const p = ctx.decodeAudioData(await file.arrayBuffer(), res, rej); if (p && p.catch) p.catch(rej); } catch (e) { rej(e); } });
+      const n = Math.min(ab.length, Math.round(8 * ab.sampleRate)), m = new Float32Array(n);
+      for (let c = 0; c < ab.numberOfChannels; c++) { const d = ab.getChannelData(c); for (let i = 0; i < n; i++) m[i] += d[i] / ab.numberOfChannels; }
+      const out = new Float32Array(Math.floor(n * SR / ab.sampleRate)), r = ab.sampleRate / SR;
+      for (let i = 0; i < out.length; i++) { const p = i * r, k = Math.floor(p), f = p - k; out[i] = (m[k] || 0) * (1 - f) + (m[k + 1] || 0) * f; }
+      let pk = 0; for (const v of out) pk = Math.max(pk, Math.abs(v)); if (pk > 0) for (let i = 0; i < out.length; i++) out[i] *= 0.7 / pk;
+      userAudio = { x: out, name: file.name };
+      this.fileName.textContent = file.name + " · " + (out.length / SR).toFixed(1) + " s";
+      this.s.src = "file"; this.inputs.src.sync(); this.changed();
+    } catch (e) { this.fileName.textContent = "could not decode this file, try WAV or MP3"; }
+  }
+
+  /* ---------- render ---------- */
+  render(total) {
+    const dry = makeSource(this.s, total), cap = {};
+    const wet = PROC[this.kind](dry, this.s, cap);
+    return { dry, wet, cap };
+  }
+  recompute() {
+    const L = loopOf(this.s);
+    const dispLen = this.kind === "chorus" || this.kind === "chain" || this.kind === "tape" || this.s.src === "epiano" || this.s.src === "file" ? WARM + L : WARM + 0.9;
+    this.R = this.render(dispLen); this.loopLen = L;
+    this.anT = 0;
+    this.analyse(); this.draw();
+  }
+  changed() {
+    clearTimeout(this.tmr);
+    this.tmr = setTimeout(() => { this.recompute(); if (this.playing) this.refreshAudio(); }, this.kind === "chain" ? 120 : 16);
+  }
+  specStart() {
+    // periodic sources: a fixed window after warm-up; phrases: follow the play head
+    const R = this.R, moving = this.kind === "chorus" || this.s.src === "epiano" || this.s.src === "file";
+    if (!moving) return Math.round(WARM * SR);
+    const t = this.playT();
+    const st = Math.round((WARM + t) * SR) - (this.s.src === "epiano" || this.s.src === "file" ? 2048 : FN / 2);
+    return Math.max(0, Math.min(R.wet.length - FN, st));
+  }
+  playT() { if (this.playing && ctx) return ((ctx.currentTime - this.t0) % this.loopLen + this.loopLen) % this.loopLen; return this.kind === "chorus" ? this.anT : (this.s.src === "epiano" ? 0.02 : 0.2); }
+  analyse() {
+    const st = this.specStart();
+    this.Sd = spectrum(this.R.dry, st); this.Sw = spectrum(this.R.wet, st);
+    let ref = 0; for (const v of this.Sd) ref = Math.max(ref, v); for (const v of this.Sw) ref = Math.max(ref, v); this.ref = ref || 1;
+    const s = this.s, items = [];
+    if (s.src === "sine" || s.src === "two" || s.src === "saw") {
+      const tones = s.src === "two" ? [s.f0, s.f0 * s.interval] : [s.f0];
+      let ptot = 0, psig = 0; for (let b = Math.round(15 / BW); b < this.Sw.length && b * BW < 20000; b++) ptot += this.Sw[b] * this.Sw[b];
+      if (s.src === "saw") {
+        let ph = 0, pd = 0, dtot = 0;
+        for (let n = 1; n * s.f0 < 20000; n++) { ph += powerNear(this.Sw, n * s.f0); pd += powerNear(this.Sd, n * s.f0); }
+        for (let b = Math.round(15 / BW); b < this.Sd.length && b * BW < 20000; b++) dtot += this.Sd[b] * this.Sd[b];
+        items.push([this.kind === "chorus" ? "energy smeared off the harmonics" : "off-grid energy", dB(Math.sqrt(Math.max(1e-12, ptot - ph) / ptot)).toFixed(1) + " dB" + (this.kind === "drive" ? " (aliasing)" : "")]);
+        items.push(["brightness change", (10 * Math.log10(this.hfRatio(this.Sw) / this.hfRatio(this.Sd))).toFixed(1) + " dB above 2 kHz"]);
+      } else {
+        for (const f of tones) psig += powerNear(this.Sw, f);
+        const thd = Math.sqrt(Math.max(0, ptot - psig) / psig);
+        items.push(["thd+n", (thd * 100).toFixed(thd < 0.01 ? 3 : 2) + " %"]);
+        if (s.src === "sine") {
+          const f1 = peakAt(this.Sw, s.f0);
+          const hd = n => n * s.f0 < 20000 ? dB(peakAt(this.Sw, n * s.f0) / f1) : -Infinity;
+          items.push(["h2", fmtDb(hd(2))], ["h3", fmtDb(hd(3))], ["h5", fmtDb(hd(5))]);
+          let pe = 0, po = 0; for (let n = 2; n * s.f0 < 20000 && n < 40; n++) (n % 2 ? (po += powerNear(this.Sw, n * s.f0)) : (pe += powerNear(this.Sw, n * s.f0)));
+          items.push(["even vs odd", pe + po > 1e-14 ? (10 * Math.log10((pe + 1e-20) / (po + 1e-20))).toFixed(1) + " dB" : "—"]);
+          let ph = 0; for (let n = 1; n * s.f0 < 20000; n++) ph += powerNear(this.Sw, n * s.f0);
+          if (this.kind === "drive") items.push(["off-grid energy", dB(Math.sqrt(Math.max(1e-14, ptot - ph) / ptot)).toFixed(1) + " dB (aliasing)"]);
+        } else {
+          const [f1, f2] = tones, diff = f2 - f1;
+          const pd = peakAt(this.Sw, diff), p1 = peakAt(this.Sw, f1);
+          items.push(["difference tone " + fmtHz(diff) + " (" + noteName(diff) + ")", fmtDb(dB(pd / p1))]);
+          items.push(["2f1 − f2 = " + fmtHz(2 * f1 - f2), fmtDb(dB(peakAt(this.Sw, 2 * f1 - f2) / p1))]);
+        }
+      }
+    } else {
+      items.push(["brightness change", (10 * Math.log10(this.hfRatio(this.Sw) / this.hfRatio(this.Sd))).toFixed(1) + " dB above 2 kHz"]);
+      let pw = 0, pd = 0; for (let i = 0; i < this.Sw.length; i++) { pw += this.Sw[i] * this.Sw[i]; pd += this.Sd[i] * this.Sd[i]; }
+      items.push(["level change", (10 * Math.log10(pw / pd)).toFixed(1) + " dB"]);
+    }
+    if (this.kind === "xfmr") items.push(["core flux at this pitch", (Math.pow(10, s.level / 20) * 50 / s.f0).toFixed(2) + " × rated"]);
+    if (this.kind === "tape") items.push(["treble −3 dB near", s.eq ? fmtHz(TAPE[s.speed].lp) : "off"], ["head bump", s.eq ? "+3 dB @ " + fmtHz(TAPE[s.speed].bump) : "off"]);
+    if (this.kind === "chorus") items.push(["pitch swing", s.rate > 0 ? "±" + (1200 * Math.log2(1 + TAU * s.rate * s.depth / 2000)).toFixed(1) + " ¢" : "0 ¢ (static comb)"], ["first comb notch", fmtHz(1000 / (2 * (s.base + s.depth / 2)))]);
+    this.ro.replaceChildren(...items.map(([k, v]) => { const sp = el("span", null, k + " "); sp.append(el("b", null, String(v))); return sp; }));
+  }
+  hfRatio(S) { let a = 0, t = 0; for (let b = 1; b < S.length; b++) { const p = S[b] * S[b]; t += p; if (b * BW > 2000) a += p; } return (a + 1e-20) / (t + 1e-20); }
+
+  /* ---------- drawing ---------- */
+  fit(cv) { const d = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight; if (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); } const g = cv.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.fillStyle = C.screen; g.fillRect(0, 0, w, h); return [g, w, h]; }
+  label(g, a, b, w) { g.font = "500 10px 'IBM Plex Mono', monospace"; g.textBaseline = "top"; g.textAlign = "left"; g.fillStyle = C["screen-ink"]; g.fillText(a.toUpperCase(), 10, 8); g.textAlign = "right"; g.fillStyle = C["screen-dim"]; g.fillText(b.toUpperCase(), w - 10, 8); }
+  draw() { if (!this.cvW.clientWidth || !this.R) return; this.drawWave(); this.drawCurve(); this.drawSpec(); }
+  drawWave() {
+    const [g, w, h] = this.fit(this.cvW), s = this.s, R = this.R;
+    const periodic = s.src === "sine" || s.src === "two" || s.src === "saw";
+    const span = periodic ? (s.src === "two" ? 2 * (s.interval === 1.5 ? 2 : 4) / s.f0 : 2 / s.f0) : 0.03;
+    let start = Math.round((WARM + (periodic && this.kind !== "chorus" ? 0.1 : this.playT())) * SR);
+    if (periodic) { for (let i = 0; i < SR / s.f0 * 2 && start < R.dry.length - 2; i++, start++) if (R.dry[start - 1] < 0 && R.dry[start] >= 0) break; }
+    const N = Math.round(span * SR), mid = 22 + (h - 34) / 2, half = (h - 34) / 2;
+    let pk = 0; for (let i = start; i < start + N && i < R.wet.length; i++) pk = Math.max(pk, Math.abs(R.wet[i]), Math.abs(R.dry[i]));
+    const sc = pk ? 0.92 * half / pk : 1;
+    g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath(); g.moveTo(0, mid + .5); g.lineTo(w, mid + .5); g.stroke();
+    const line = (x, col, lw) => { g.strokeStyle = col; g.lineWidth = lw; g.lineJoin = "round"; g.beginPath(); const step = Math.max(1, N / (w * 1.5)); for (let k = 0; k <= N; k += step) { const i = start + Math.floor(k), X = k / N * w, Y = mid - (x[i] || 0) * sc; k ? g.lineTo(X, Y) : g.moveTo(X, Y); } g.stroke(); };
+    line(R.dry, C["screen-dim"], 1.5); line(R.wet, C["screen-ink"], 2);
+    this.label(g, "wave", periodic ? (span * 1000).toFixed(1) + " ms" : "30 ms @ " + this.playT().toFixed(2) + " s", w);
+  }
+  drawCurve() {
+    const [g, w, h] = this.fit(this.cvC), cv = this.R.cap.curve, s = this.s;
+    const pad = 26, size = Math.min(w - 2 * pad, h - pad - 14), ox = (w - size) / 2, oy = pad;
+    const axes = (xl, yl) => {
+      g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath();
+      g.moveTo(ox, oy + size / 2 + .5); g.lineTo(ox + size, oy + size / 2 + .5); g.moveTo(ox + size / 2 + .5, oy); g.lineTo(ox + size / 2 + .5, oy + size); g.stroke();
+      g.strokeRect(ox + .5, oy + .5, size, size);
+      g.fillStyle = C["screen-dim"]; g.font = "400 9px 'IBM Plex Mono', monospace"; g.textAlign = "right"; g.textBaseline = "bottom"; g.fillText(xl.toUpperCase() + " →", ox + size - 2, oy + size - 2);
+      g.textAlign = "left"; g.textBaseline = "top"; g.fillText("↑ " + yl.toUpperCase(), ox + 3, oy + 3);
+    };
+    if (cv.kind === "static") {
+      axes("input", "output");
+      const X = v => ox + (v + 1.2) / 2.4 * size, Y = v => oy + size - (v + 1.2) / 2.4 * size;
+      g.setLineDash([2, 3]); g.strokeStyle = C["screen-dim"]; g.beginPath(); g.moveTo(X(-1.2), Y(-1.2)); g.lineTo(X(1.2), Y(1.2)); g.stroke(); g.setLineDash([]);
+      const A = cv.amp * Math.pow(10, s.drive / 20) * 0.25, draw = (lo, hi, col, lw) => { g.strokeStyle = col; g.lineWidth = lw; g.beginPath(); for (let i = 0; i <= 200; i++) { const u = lo + (hi - lo) * i / 200, v = cv.f(u); i ? g.lineTo(X(u), Y(v)) : g.moveTo(X(u), Y(v)); } g.stroke(); };
+      // x axis is the signal before gain, so the curve steepens with drive
+      draw(-1.2, 1.2, C["screen-ink"], 1.5); draw(-cv.amp, cv.amp, C["screen-accent"], 3);
+      this.label(g, "transfer curve", "gain ×" + (Math.pow(10, s.drive / 20) * 0.25).toFixed(1), w);
+    } else if (cv.kind === "loop") {
+      axes(cv.xl, cv.yl);
+      const P = cv.pts; let mx = 0.3; for (let i = 0; i < P.length; i++) mx = Math.max(mx, Math.abs(P[i]));
+      const X = v => ox + size / 2 + v / mx * size / 2 * 0.95, Y = v => oy + size / 2 - v / mx * size / 2 * 0.95;
+      g.strokeStyle = C["screen-accent"]; g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
+      const step = Math.max(2, Math.floor(P.length / 2 / 1500) * 2);
+      for (let i = 0; i < P.length; i += step) { i ? g.lineTo(X(P[i]), Y(P[i + 1])) : g.moveTo(X(P[i]), Y(P[i + 1])); }
+      g.stroke();
+      this.label(g, this.kind === "xfmr" ? "b–h loop" : "tape transfer", "", w);
+    } else if (cv.kind === "delay") {
+      const S = cv.s, T = LOOP, pl = 30, pr = 10, pt = 26, pb = 20, maxD = Math.max(1, S.base + S.depth) * 1.15;
+      const X = t => pl + t / T * (w - pl - pr), Y = d => h - pb - d / maxD * (h - pt - pb);
+      g.fillStyle = C["screen-dim"]; g.font = "400 9px 'IBM Plex Mono', monospace"; g.textAlign = "right"; g.textBaseline = "middle";
+      g.strokeStyle = C["screen-grid"]; g.beginPath();
+      const stp = maxD > 20 ? 10 : maxD > 8 ? 5 : maxD > 3 ? 1 : 0.5;
+      for (let d = 0; d <= maxD; d += stp) { g.moveTo(pl, Y(d) + .5); g.lineTo(w - pr, Y(d) + .5); g.fillText(String(d), pl - 4, Y(d)); }
+      g.stroke();
+      g.textAlign = "center"; g.textBaseline = "top"; for (let t = 0; t <= T; t++) g.fillText(t + "s", X(t), h - pb + 5);
+      const cols = [C["screen-ink"], C["screen-accent"], C["screen-dim"]];
+      for (let v = 0; v < S.voices; v++) { g.strokeStyle = cols[v]; g.lineWidth = 2; g.beginPath(); for (let i = 0; i <= 300; i++) { const t = i / 300 * T, d = S.base + S.depth * 0.5 * (1 + Math.sin(TAU * S.rate * t + v * TAU / S.voices)); i ? g.lineTo(X(t), Y(d)) : g.moveTo(X(t), Y(d)); } g.stroke(); }
+      const t = this.playT() % T; g.strokeStyle = C["screen-ink"]; g.lineWidth = 1; g.beginPath(); g.moveTo(X(t) + .5, pt); g.lineTo(X(t) + .5, h - pb); g.stroke();
+      this.label(g, "delay (ms)", S.voices + " voice" + (S.voices > 1 ? "s" : ""), w);
+    } else {
+      // overview of the processed phrase with the play head
+      const R = this.R, off = Math.round(WARM * SR), n = R.wet.length - off, pl = 10, pr = 10, pt = 26, pb = 14, mid = pt + (h - pt - pb) / 2, half = (h - pt - pb) / 2;
+      let pk = 0; for (let i = off; i < R.wet.length; i++) pk = Math.max(pk, Math.abs(R.wet[i]));
+      const cols = Math.floor(w - pl - pr), per = n / cols;
+      g.fillStyle = C["screen-ink"];
+      for (let c = 0; c < cols; c++) { let mn = 0, mx = 0; for (let i = off + Math.floor(c * per); i < off + Math.floor((c + 1) * per); i++) { const v = R.wet[i]; if (v < mn) mn = v; if (v > mx) mx = v; } g.fillRect(pl + c, mid - mx / pk * half, 1, Math.max(1, (mx - mn) / pk * half)); }
+      const x = pl + this.playT() / this.loopLen * cols; g.fillStyle = C["screen-accent"]; g.fillRect(Math.round(x), pt, 2, h - pt - pb);
+      this.label(g, "output", (this.s.src === "file" && userAudio ? userAudio.name : "e-piano phrase") + " · " + this.loopLen.toFixed(1) + " s", w);
+    }
+  }
+  drawSpec() {
+    const [g, w, h] = this.fit(this.cvS), s = this.s, pl = 34, pr = 10, pt = 24, pb = 20;
+    const periodic = s.src === "sine" || s.src === "two" || s.src === "saw";
+    const logx = s.freq === "log" || !periodic;
+    const fLo = logx ? 20 : 0, fHi = logx ? 20000 : s.f0 * s.zoom + s.f0 * 0.5;
+    const X = f => pl + (logx ? Math.log(Math.max(f, fLo) / fLo) / Math.log(fHi / fLo) : f / fHi) * (w - pl - pr);
+    const lo = -100, Y = v => h - pb - (Math.max(lo, Math.min(0, v)) - lo) / -lo * (h - pt - pb);
+    g.font = "400 9px 'IBM Plex Mono', monospace"; g.fillStyle = C["screen-dim"]; g.textAlign = "right"; g.textBaseline = "middle";
+    g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath();
+    for (let d = 0; d >= lo; d -= 20) { const y = Math.round(Y(d)) + .5; g.moveTo(pl, y); g.lineTo(w - pr, y); g.fillText(String(d), pl - 4, y); }
+    g.stroke();
+    g.textAlign = "center"; g.textBaseline = "top";
+    if (logx) for (const f of [50, 100, 200, 500, 1000, 2000, 5000, 10000]) g.fillText(f >= 1000 ? f / 1000 + "k" : String(f), X(f), h - pb + 5);
+    else { const every = s.zoom > 16 ? 4 : s.zoom > 8 ? 2 : 1; for (let n = 1; n * s.f0 < fHi; n++) if (n % every === 0 || n === 1) g.fillText(String(n), X(n * s.f0), h - pb + 5); if (s.zoom === 2) { g.fillStyle = C["screen-accent"]; g.fillText(fmtHz(s.f0), X(s.f0), pt + 2); } }
+    const curve = (S, col, lw) => {
+      g.strokeStyle = col; g.lineWidth = lw; g.lineJoin = "round"; g.beginPath();
+      let lastX = -1, cm = -Infinity, first = true;
+      for (let b = 1; b < S.length; b++) {
+        const f = b * BW; if (f < fLo) continue; if (f > fHi) break;
+        const x = Math.round(X(f)), v = dB(S[b] / this.ref);
+        if (x !== lastX && lastX >= 0) { const y = Y(cm); first ? (g.moveTo(lastX, y), first = false) : g.lineTo(lastX, y); cm = -Infinity; }
+        lastX = x; cm = Math.max(cm, v);
+      }
+      g.stroke();
+    };
+    g.save(); g.beginPath(); g.rect(pl, pt, w - pl - pr, h - pt - pb); g.clip();
+    curve(this.Sd, C["screen-dim"], 1.25); curve(this.Sw, C["screen-ink"], 1.5);
+    g.restore();
+    this.label(g, "spectrum", "dB · " + (logx ? "log hz" : "harmonic no."), w);
+  }
+
+  /* ---------- audio ---------- */
+  makeBuffer() {
+    const L = loopOf(this.s), R = this.render(WARM + L), off = Math.round(WARM * SR), n = Math.round(L * SR);
+    const b = ctx.createBuffer(1, n, SR), d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = R.wet[off + i] * 0.8;
+    return b;
+  }
+  start() {
+    ensureCtx(); if (current && current !== this) current.stop();
+    this.gain = ctx.createGain(); this.gain.connect(master);
+    const b = this.makeBuffer(); this.loopLen = b.duration;
+    this.src = ctx.createBufferSource(); this.src.buffer = b; this.src.loop = true; this.src.connect(this.gain);
+    this.t0 = ctx.currentTime; this.src.start();
+    this.gain.gain.setValueAtTime(0, this.t0); this.gain.gain.linearRampToValueAtTime(1, this.t0 + 0.03);
+    this.playing = true; current = this; this.setBtn();
+  }
+  refreshAudio() {
+    const b = this.makeBuffer(), t = ctx.currentTime, pos = ((t - this.t0) % this.loopLen + this.loopLen) % this.loopLen;
+    const old = this.src, og = this.gain;
+    const ng = ctx.createGain(); ng.connect(master); ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(1, t + 0.04);
+    const ns = ctx.createBufferSource(); ns.buffer = b; ns.loop = true; ns.connect(ng);
+    const newLen = b.duration; ns.start(t, pos % newLen);
+    og.gain.cancelScheduledValues(t); og.gain.setValueAtTime(og.gain.value, t); og.gain.linearRampToValueAtTime(0, t + 0.04); old.stop(t + 0.06);
+    this.src = ns; this.gain = ng; this.t0 = t - (pos % newLen); this.loopLen = newLen;
+  }
+  stop() {
+    if (!this.playing) return;
+    const t = ctx.currentTime; this.gain.gain.cancelScheduledValues(t); this.gain.gain.setValueAtTime(this.gain.gain.value, t); this.gain.gain.linearRampToValueAtTime(0, t + 0.04); this.src.stop(t + 0.06);
+    this.playing = false; if (current === this) current = null; this.setBtn(); this.analyse(); this.draw();
+  }
+  tick(dt) {
+    const moving = this.kind === "chorus" || this.s.src === "epiano" || this.s.src === "file" || this.kind === "chain";
+    if (!moving) return;
+    if (!this.playing && this.kind !== "chorus") return;
+    if (!this.playing) this.anT = (this.anT + dt * 0.5) % this.loopLen;   // chorus drifts slowly even when silent
+    this.analyse(); this.draw();
+  }
+}
+const fmtDb = v => !isFinite(v) ? "—" : v < -100 ? "< −100 dB" : v.toFixed(1) + " dB";
+
+const labs = [...document.querySelectorAll("[data-lab]")].map(n => new Lab(n, n.dataset.lab));
+const visible = new Set();
+const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+labs.forEach(l => io.observe(l.root));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let last = performance.now(), acc = 0;
+(function loop(now) {
+  const dt = (now - last) / 1000; last = now; acc += dt;
+  if (acc > 1 / 30) { for (const l of labs) if (visible.has(l.root) && (l.playing || !reduce)) l.tick(acc); acc = 0; }
+  requestAnimationFrame(loop);
+})(last);
+
+const rerender = () => { readColors(); labs.forEach(l => l.draw()); };
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", rerender);
+new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const links = [...document.querySelectorAll("nav.index a")];
+const secIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-40% 0px -55% 0px" });
+document.querySelectorAll("section.ch").forEach(s => secIO.observe(s));
+})();
+</script>
+</body>
+</html>

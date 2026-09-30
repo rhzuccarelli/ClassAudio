@@ -32,3 +32,15 @@ Load a recording of a single note (or one of three synthetic examples) and take 
 6. **Pitch & brightness**: YIN pitch track in cents and spectral centroid.
 7. **Resynthesis**: compare static vs. tracked additive rebuilds with the original.
 8. **How deep can we go**: what is measurable, what makes a Rhodes hard to simulate, and the limits.
+
+## Colour & Saturation — `effects.html`
+
+What effects do to a wave and its harmonics. Each lab shows the wave (input vs. output), the device curve and the spectrum, with live sound:
+
+1. **Three kinds of change**: linear, non-linear and time-varying.
+2. **Overdrive**: soft, hard and fuzz curves, drive, asymmetry (even harmonics), two-tone intermodulation (fifth vs. third), and aliasing with 1×/4× oversampling.
+3. **Transformer**: flux-based core saturation that grows as the pitch drops, a hysteresis B–H loop, and DC bias.
+4. **Tape**: hysteresis saturation, head bump and treble loss per tape speed, wow & flutter sidebands, and hiss.
+5. **Chorus & flanger**: modulated delay voices, feedback comb filtering, presets.
+6. **The Rhodes chain**: preamp → transformer → tape → chorus on a built-in e-piano phrase or your own audio file.
+7. **Quick reference** and glossary.
