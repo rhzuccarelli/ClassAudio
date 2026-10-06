@@ -131,6 +131,9 @@ kbd {
   border-radius: 8px; overflow: hidden; border: 2px solid var(--screen);
 }
 .screens canvas { display: block; width: 100%; height: 230px; background: var(--screen); }
+.screens.one { grid-template-columns: 1fr; }
+.screens.one canvas { height: 180px; }
+@media (max-width: 560px) { .screens.one canvas { height: 300px; } }
 .readout {
   display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 2px 2px;
   font: 400 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
@@ -236,11 +239,12 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
   <nav class="index" aria-label="Chapters">
     <ol>
       <li><a href="#read"><span>1</span><span>reading the display</span></a></li>
-      <li><a href="#osc"><span>2</span><span>oscillator</span></a></li>
-      <li><a href="#additive"><span>3</span><span>additive synthesis</span></a></li>
-      <li><a href="#fm"><span>4</span><span>fm synthesis</span></a></li>
-      <li><a href="#filter"><span>5</span><span>filters</span></a></li>
-      <li><a href="#ref"><span>6</span><span>quick reference</span></a></li>
+      <li><a href="#series"><span>2</span><span>harmonic or inharmonic</span></a></li>
+      <li><a href="#osc"><span>3</span><span>oscillator</span></a></li>
+      <li><a href="#additive"><span>4</span><span>additive synthesis</span></a></li>
+      <li><a href="#fm"><span>5</span><span>fm synthesis</span></a></li>
+      <li><a href="#filter"><span>6</span><span>filters</span></a></li>
+      <li><a href="#ref"><span>7</span><span>quick reference</span></a></li>
     </ol>
   </nav>
 
@@ -292,7 +296,7 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
           </figure>
         </div>
         <div class="prose">
-          <p>Joseph Fourier showed that any repeating wave can be rebuilt by adding sine waves at whole-number multiples of its frequency: 1×, 2×, 3×, and so on. Those multiples are the harmonic series. The pitch you hear is set by the fundamental. The <em>timbre</em>, the colour of the sound, is set by how loud each harmonic is.</p>
+          <p>Joseph Fourier showed that any repeating wave can be rebuilt by adding sine waves at whole-number multiples of its frequency: 1×, 2×, 3×, and so on. Those multiples are the harmonic series. The pitch you hear is set by the fundamental. The <em>timbre</em>, the colour of the sound, is set by how loud each harmonic is. Chapter 2 shows where the whole numbers come from, and what happens to sounds whose partials are not whole numbers.</p>
         </div>
         <div class="note">Press <kbd>▶ play</kbd> on any lab to hear it. Only one lab plays at a time. Use the volume in the top bar, and start low if you are on speakers in a classroom.</div>
         <div class="note">The <kbd>lin</kbd> / <kbd>db</kbd> switch changes the spectrum scale. Linear shows loudness the way the maths writes it. Decibels (dB) squash big differences so you can see quiet high harmonics, closer to how the ear hears.</div>
@@ -300,14 +304,42 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
     </section>
 
     <!-- 2 -->
+    <section class="ch" id="series">
+      <div class="ch-head"><span class="ch-num">2</span><h2>harmonic or inharmonic</h2></div>
+      <div class="indent">
+        <div class="prose">
+          <p>The word <b>harmonic</b> has a strict meaning: a partial at an exact whole-number multiple of the fundamental, 1×, 2×, 3×, 4× and so on. A sound can also contain partials at ×3.2 or ×4.7. Those are still partials (also called overtones), but they are <b>inharmonic</b>: they are not harmonics at all. Whether the partials land on whole numbers decides whether a sound has one clear pitch, or sounds like a bell, a drum or a piece of metal.</p>
+        </div>
+        <div class="lab" data-strlab></div>
+        <h3><span class="n">2.1</span>why a string makes whole numbers</h3>
+        <div class="prose"><p>A string is tied down at both ends, so the ends cannot move. It can only vibrate in shapes that start and finish at zero: one half-wave along its length, two half-waves, three half-waves, and so on. Each shape is a <b>mode</b>. Fitting one more half-wave makes the frequency go up by exactly one step of the fundamental, so the modes are exactly 1×, 2×, 3×… Nothing in between fits. Pick <kbd>in-between</kbd> in the lab: a ×3.2 shape would need 3.2 half-waves, and its end misses the fixed point (orange dot). A string fixed at both ends cannot vibrate like that.</p></div>
+        <h3><span class="n">2.2</span>whole numbers make the wave repeat</h3>
+        <div class="prose"><p>When every partial is a whole-number multiple, they all line up again after exactly one cycle of the fundamental. The wave repeats, and the ear hears one clear pitch. The wave screen shows four cycles and lays an orange copy of the first cycle over each of the others. With harmonics the copy sits exactly under the wave. With inharmonic partials the wave never repeats, the copies drift apart, and the pitch becomes vague or seems to be several notes at once, as in a bell.</p></div>
+        <h3><span class="n">2.3</span>bars, drums and bells</h3>
+        <div class="prose">
+          <ul>
+            <li><b>Bar free at both ends</b> (glockenspiel, vibraphone): modes at 1, 2.76, 5.40… Marimba and xylophone makers carve an arch under each bar to pull the second mode onto 4× (marimba) or 3× (xylophone), so the bar sounds pitched.</li>
+            <li><b>Bar clamped at one end</b> (a Rhodes tine, a kalimba key, a tuning fork prong): 1, 6.27, 17.55. Those high modes are the bright "clang" at the attack. They die out quickly and leave an almost pure fundamental.</li>
+            <li><b>Drum skin</b>: 1, 1.59, 2.14, 2.30… Here the still parts are lines and circles across the skin instead of points. This is why most drums have a vague pitch. Timpani use the air in the kettle to push their main modes close to whole-number ratios, which is why they can play tuned notes.</li>
+            <li><b>Bells</b> are carefully tuned, yet their strong "tierce" partial sits a minor third above the main note. That is why church bells sound slightly sad.</li>
+          </ul>
+        </div>
+        <h3><span class="n">2.4</span>real strings are slightly inharmonic</h3>
+        <div class="prose"><p>A real string is also a little stiff, a bit like a bar. Stiffness pushes the upper modes slightly sharp. Pick <kbd>stiff string</kbd> and turn up the stiffness. Pianos do this, most of all in the low bass and the top octave, and piano tuners "stretch" their octaves to match. The <a href="analyze.html">Sound Microscope</a> measures this stretch on a recording as the inharmonicity coefficient B.</p></div>
+        <div class="note">Guitarists say <b>natural harmonics</b> for a related trick. Touching the string lightly at half its length forces a still point (a <b>node</b>) there. Only the modes that already have a node at that spot keep ringing: 2×, 4×, 6×… At a third of the length you get 3×, 6×, 9×. The dots in the lab's top screen are those nodes.</div>
+        <div class="note try">Play <kbd>ideal string</kbd>, then <kbd>in-between</kbd>. Both have six partials with the same loudness, but only the first has a clear pitch. Then try <kbd>drum skin</kbd> and switch its modes on one at a time.</div>
+      </div>
+    </section>
+
+    <!-- 3 -->
     <section class="ch" id="osc">
-      <div class="ch-head"><span class="ch-num">2</span><h2>oscillator</h2></div>
+      <div class="ch-head"><span class="ch-num">3</span><h2>oscillator</h2></div>
       <div class="indent">
         <div class="prose">
           <p>An oscillator repeats one shape over and over. How many times per second it repeats is its frequency, measured in hertz (Hz), and that is the pitch. The four classic shapes come from early analog circuits. Each one has its own harmonic recipe.</p>
         </div>
         <div class="lab" data-lab="osc"></div>
-        <h3><span class="n">2.1</span>four shapes, four recipes</h3>
+        <h3><span class="n">3.1</span>four shapes, four recipes</h3>
         <div class="prose">
           <ul>
             <li><b>Sine.</b> One bar only. No harmonics, so it sounds pure and plain, like a tuning fork or a whistle.</li>
@@ -321,19 +353,19 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
       </div>
     </section>
 
-    <!-- 3 -->
+    <!-- 4 -->
     <section class="ch" id="additive">
-      <div class="ch-head"><span class="ch-num">3</span><h2>additive synthesis</h2></div>
+      <div class="ch-head"><span class="ch-num">4</span><h2>additive synthesis</h2></div>
       <div class="indent">
         <div class="prose">
           <p>Additive synthesis runs Fourier forwards. You set the loudness of each harmonic yourself, and the wave is the sum of those sine waves. The 16 faders below are harmonics 1 to 16. Drag across them to draw a spectrum.</p>
         </div>
         <div class="lab" data-lab="additive"></div>
-        <h3><span class="n">3.1</span>building a saw, one sine at a time</h3>
+        <h3><span class="n">4.1</span>building a saw, one sine at a time</h3>
         <div class="prose">
           <p>Pick <kbd>saw</kbd>, then press <kbd>build</kbd>. The lab starts from a single sine and adds one harmonic every half second, each at 1/n of the fundamental. Watch the thin grey partials stack up in the wave view. The wave gets closer to a ramp with every step. The little ripple that stays near the jump is called the Gibbs effect. It only disappears with infinitely many harmonics.</p>
         </div>
-        <h3><span class="n">3.2</span>phase: same sound, different shape</h3>
+        <h3><span class="n">4.2</span>phase: same sound, different shape</h3>
         <div class="prose">
           <p>The <kbd>0°</kbd> / <kbd>180°</kbd> buttons under the faders flip a harmonic upside down. The triangle preset needs every other odd harmonic flipped. Flip them back and the shape changes a lot, but the spectrum bars stay exactly the same. On a steady tone the ear barely notices, because hearing mostly follows the spectrum, not the shape.</p>
         </div>
@@ -341,15 +373,15 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
       </div>
     </section>
 
-    <!-- 4 -->
+    <!-- 5 -->
     <section class="ch" id="fm">
-      <div class="ch-head"><span class="ch-num">4</span><h2>fm synthesis</h2></div>
+      <div class="ch-head"><span class="ch-num">5</span><h2>fm synthesis</h2></div>
       <div class="indent">
         <div class="prose">
           <p>FM (frequency modulation) makes many harmonics from just two sine waves. The <b>modulator</b> wobbles the pitch of the <b>carrier</b> so fast that you no longer hear a wobble. You hear new frequencies called <b>sidebands</b> instead. John Chowning found this at Stanford in 1967, and Yamaha built the DX7 on it.</p>
         </div>
         <div class="lab" data-lab="fm"></div>
-        <h3><span class="n">4.1</span>the two controls that matter</h3>
+        <h3><span class="n">5.1</span>the two controls that matter</h3>
         <div class="prose">
           <ul>
             <li><b>Ratio (C:M)</b> sets <i>where</i> the sidebands land. They appear at the carrier frequency plus and minus whole multiples of the modulator: f<sub>c</sub> ± 1·f<sub>m</sub>, f<sub>c</sub> ± 2·f<sub>m</sub>… Whole-number ratios (1, 2, 3) put them on the harmonic series and sound pitched. Ratios like 1.41 or 3.5 scatter them between harmonics. The result is <em>inharmonic</em> and sounds like bells, metal or noise.</li>
@@ -361,26 +393,26 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
       </div>
     </section>
 
-    <!-- 5 -->
+    <!-- 6 -->
     <section class="ch" id="filter">
-      <div class="ch-head"><span class="ch-num">5</span><h2>filters</h2></div>
+      <div class="ch-head"><span class="ch-num">6</span><h2>filters</h2></div>
       <div class="indent">
         <div class="prose">
           <p>A filter does not create harmonics. It only turns existing ones up or down, depending on their frequency. This is <em>subtractive synthesis</em>: start with a bright, harmonic-rich wave like a saw, then carve it. The orange curve is the filter's response. Each harmonic is multiplied by the height of the curve at its frequency. The hollow grey bars and the grey wave show the sound before the filter.</p>
         </div>
         <div class="lab" data-lab="filter"></div>
-        <h3><span class="n">5.1</span>low pass</h3>
+        <h3><span class="n">6.1</span>low pass</h3>
         <div class="prose">
           <p>A low pass filter lets low frequencies through and turns high ones down. Harmonics above the <b>cutoff</b> fade away, and the wave loses its sharp corners. A saw with a low cutoff becomes rounder and darker. With the cutoff below harmonic 2, only the fundamental is left and the wave is almost a sine.</p>
         </div>
-        <h3><span class="n">5.2</span>slope and resonance</h3>
+        <h3><span class="n">6.2</span>slope and resonance</h3>
         <div class="prose">
           <ul>
             <li><b>Slope</b> is how steeply the filter cuts past the cutoff. A <kbd>12 db</kbd> filter halves the level about every half octave. A <kbd>24 db</kbd> filter cuts twice as hard. That is the classic Moog ladder sound.</li>
             <li><b>Resonance</b> adds a peak right at the cutoff. Any harmonic sitting on that peak gets louder than the rest. Sweep the cutoff with high resonance and you hear the harmonics called out one by one. That is the "wah" or "squelch" of acid bass lines.</li>
           </ul>
         </div>
-        <h3><span class="n">5.3</span>high pass and band pass</h3>
+        <h3><span class="n">6.3</span>high pass and band pass</h3>
         <div class="prose">
           <p>A high pass filter does the opposite: it removes the fundamental and low harmonics, leaving a thin, buzzy sound. Notice the <em>pitch doesn't change</em> even when the fundamental is almost gone. Your brain fills it in from the spacing of the harmonics. A band pass filter keeps only a narrow slice around the cutoff, like talking through a telephone or a cardboard tube.</p>
         </div>
@@ -388,14 +420,16 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
       </div>
     </section>
 
-    <!-- 6 -->
+    <!-- 7 -->
     <section class="ch" id="ref">
-      <div class="ch-head"><span class="ch-num">6</span><h2>quick reference</h2></div>
+      <div class="ch-head"><span class="ch-num">7</span><h2>quick reference</h2></div>
       <div class="indent">
         <div class="tbl-wrap">
           <table>
             <thead><tr><th>source</th><th>harmonics present</th><th>level of harmonic n</th><th>sounds like</th></tr></thead>
             <tbody>
+              <tr><td>ideal string</td><td>all: 1, 2, 3… (modes)</td><td class="mono">depends on pluck</td><td>clear pitch</td></tr>
+              <tr><td>bar, drum, bell</td><td>inharmonic: e.g. 1, 2.76, 5.40</td><td class="mono">depends on strike</td><td>metallic, bell, vague pitch</td></tr>
               <tr><td>sine</td><td>1 only</td><td class="mono">—</td><td>whistle, tuning fork, sub bass</td></tr>
               <tr><td>triangle</td><td>odd: 1, 3, 5…</td><td class="mono">1/n²</td><td>soft flute, ocarina</td></tr>
               <tr><td>square</td><td>odd: 1, 3, 5…</td><td class="mono">1/n</td><td>clarinet, hollow, 8-bit</td></tr>
@@ -410,7 +444,10 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
             <thead><tr><th>term</th><th>meaning</th></tr></thead>
             <tbody>
               <tr><td>fundamental</td><td>The lowest frequency in a pitched sound. It sets the note you hear.</td></tr>
-              <tr><td>harmonic / partial</td><td>A sine component of a sound. Harmonics are exact whole-number multiples of the fundamental; partials can be anywhere.</td></tr>
+              <tr><td>partial / overtone</td><td>Any sine component of a sound. "Overtone" usually means a partial above the fundamental.</td></tr>
+              <tr><td>harmonic</td><td>A partial at an exact whole-number multiple of the fundamental: 1×, 2×, 3×… Together they form the harmonic series.</td></tr>
+              <tr><td>inharmonic</td><td>A partial that is not a whole-number multiple, such as ×2.76 on a bar or ×1.59 on a drum skin. Many of them give a bell-like or unpitched sound.</td></tr>
+              <tr><td>mode / node</td><td>A mode is one natural way an object can vibrate, with its own frequency. A node is a point (or line) that stays still in that mode.</td></tr>
               <tr><td>spectrum</td><td>The list of every partial with its frequency and level. Computed with the Fourier transform.</td></tr>
               <tr><td>cutoff</td><td>The frequency where a filter starts turning the signal down.</td></tr>
               <tr><td>resonance (Q)</td><td>A boost right at the cutoff frequency.</td></tr>
@@ -569,7 +606,7 @@ class Lab {
 
   /* ---------- UI ---------- */
   build() {
-    const r = this.root, names = { osc: "lab 2 · oscillator", additive: "lab 3 · additive", fm: "lab 4 · fm operator pair", filter: "lab 5 · oscillator → filter" };
+    const r = this.root, names = { osc: "lab 3 · oscillator", additive: "lab 4 · additive", fm: "lab 5 · fm operator pair", filter: "lab 6 · oscillator → filter" };
     const top = el("div", "lab-top");
     top.append(el("span", "lab-name", names[this.kind]), el("span", "spacer"));
     this.btn = el("button", "play"); this.btn.type = "button"; this.btn.setAttribute("aria-pressed", "false");
@@ -941,6 +978,247 @@ class Lab {
 
 document.querySelectorAll("[data-lab]").forEach(n => labs.push(new Lab(n, n.dataset.lab)));
 
+/* ================= harmonic vs inharmonic: vibrating objects ================= */
+const OBJ = {
+  string:  { label: "ideal string",  shape: "string", r: () => [1, 2, 3, 4, 5, 6], a: [1, .5, .33, .25, .2, .17] },
+  stiff:   { label: "stiff string",  shape: "string", r: s => [1, 2, 3, 4, 5, 6].map(n => n * Math.sqrt((1 + s.B * n * n) / (1 + s.B))), a: [1, .5, .33, .25, .2, .17] },
+  between: { label: "in-between",    shape: "string", r: () => [1, 2.25, 3.2, 4.7, 5.35, 6.8], a: [1, .5, .33, .25, .2, .17] },
+  freebar: { label: "free bar",      shape: "free",   r: () => [1, 2.756, 5.404, 8.933, 13.344, 18.638], a: [1, .55, .35, .22, .15, .1],
+             beta: [4.7300, 7.8532, 10.9956, 14.1372, 17.2788, 20.4204] },
+  tine:    { label: "clamped bar (tine)", shape: "clamped", r: () => [1, 6.267, 17.547, 34.386, 56.843, 84.913], a: [1, .35, .15, .08, .05, .03],
+             beta: [1.8751, 4.6941, 7.8548, 10.9955, 14.1372, 17.2788] },
+  drum:    { label: "drum skin",     shape: "drum",   r: () => [1, 1.594, 2.136, 2.296, 2.653, 2.918], a: [1, .7, .55, .45, .4, .35],
+             mn: [[0, 2.4048], [1, 3.8317], [2, 5.1356], [0, 5.5201], [3, 6.3802], [1, 7.0156]] },
+};
+function beam(shape, b, u) {
+  const ch = Math.cosh(b * u), c = Math.cos(b * u), sh = Math.sinh(b * u), s = Math.sin(b * u);
+  if (shape === "free") { const sg = (Math.cosh(b) - Math.cos(b)) / (Math.sinh(b) - Math.sin(b)); return ch + c - sg * (sh + s); }
+  const sg = (Math.cosh(b) + Math.cos(b)) / (Math.sinh(b) + Math.sin(b)); return ch - c - sg * (sh - s);
+}
+const hexRgb = h => { const m = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(m.slice(i, i + 2), 16)); };
+
+class StringLab {
+  constructor(root) {
+    this.root = root; this.playing = false; this.inputs = {};
+    this.s = { obj: "string", f0: 220, B: 0.004, on: [true, true, true, true, true, true], motion: !matchMedia("(prefers-reduced-motion: reduce)").matches };
+    this.drumCache = new Map();
+    this.build(); this.changed();
+    new ResizeObserver(() => this.draw(0)).observe(this.cvM);
+  }
+  get o() { return OBJ[this.s.obj]; }
+  ratios() { return this.o.r(this.s); }
+  build() {
+    const top = el("div", "lab-top"); top.append(el("span", "lab-name", "lab 2 · vibrating objects"), el("span", "spacer"));
+    this.btn = el("button", "play"); this.btn.type = "button"; this.btn.addEventListener("click", () => this.playing ? this.stop() : this.start());
+    top.append(this.btn); this.setBtn();
+    const m = el("div", "screens one"); this.cvM = el("canvas"); this.cvM.setAttribute("aria-label", "vibration modes of the chosen object"); m.append(this.cvM);
+    const sc = el("div", "screens"); this.cvW = el("canvas"); this.cvS = el("canvas");
+    this.cvW.setAttribute("aria-label", "waveform over four cycles"); this.cvS.setAttribute("aria-label", "partials against the harmonic series");
+    sc.append(this.cvW, this.cvS); sc.style.marginTop = "6px";
+    this.ro = el("div", "readout"); this.ctls = el("div", "controls");
+    this.root.append(top, m, sc, this.ro, this.ctls);
+
+    const grp = (label, wide) => { const g = el("div", "ctl" + (wide ? " wide" : "")), l = el("div", "ctl-label"); l.append(el("span", null, label)); g.append(l); this.ctls.append(g); return [g, l]; };
+    { const [g] = grp("object", true), row = el("div", "seg"), btns = [];
+      for (const k of Object.keys(OBJ)) { const b = el("button", "key", OBJ[k].label); b.type = "button"; b.addEventListener("click", () => { this.s.obj = k; sync(); this.changed(); }); btns.push([k, b]); row.append(b); }
+      const sync = () => btns.forEach(([k, b]) => b.setAttribute("aria-pressed", String(this.s.obj === k))); sync(); g.append(row); }
+    { const [g] = grp("modes on / off", true); this.modeRow = el("div", "seg"); g.append(this.modeRow); this.modeBtns = [];
+      for (let i = 0; i < 6; i++) { const b = el("button", "key"); b.type = "button"; b.addEventListener("click", () => { this.s.on[i] = !this.s.on[i]; this.changed(); }); this.modeBtns.push(b); this.modeRow.append(b); } }
+    const range = (key, label, min, max, o) => {
+      const [g, l] = grp(label), out = el("output"), inp = el("input"); inp.type = "range"; inp.id = "series-" + key; inp.setAttribute("aria-label", label);
+      if (o.log) { inp.min = 0; inp.max = 1000; inp.step = 1; } else { inp.min = min; inp.max = max; inp.step = o.step; }
+      const toV = v => o.log ? min * Math.pow(max / min, v / 1000) : +v, fromV = v => o.log ? Math.round(1000 * Math.log(v / min) / Math.log(max / min)) : v;
+      inp.value = fromV(this.s[key]); out.textContent = o.fmt(this.s[key]);
+      inp.addEventListener("input", () => { this.s[key] = toV(inp.value); out.textContent = o.fmt(this.s[key]); this.changed(); });
+      l.append(out); g.append(inp);
+    };
+    range("f0", "pitch", 55, 880, { log: true, fmt: v => fmtHz(v) + " · " + noteName(v) });
+    range("B", "stiffness (stiff string)", 0, 0.03, { step: 0.0005, fmt: v => "B = " + v.toFixed(4) });
+    { const [g] = grp("motion"), row = el("div", "seg"), b = el("button", "key hot", "animate modes"); b.type = "button";
+      const sync = () => b.setAttribute("aria-pressed", String(this.s.motion)); sync();
+      b.addEventListener("click", () => { this.s.motion = !this.s.motion; sync(); this.draw(this.t || 0); }); row.append(b); g.append(row); }
+  }
+  setBtn() { this.btn.replaceChildren(el("i", null, this.playing ? "■" : "▶"), document.createTextNode(this.playing ? "stop" : "play")); this.btn.setAttribute("aria-pressed", String(this.playing)); }
+  changed() {
+    const r = this.ratios();
+    this.modeBtns.forEach((b, i) => { b.textContent = "×" + (Number.isInteger(r[i]) ? r[i] : r[i].toFixed(2)); b.setAttribute("aria-pressed", String(this.s.on[i])); });
+    this.drawWave(); this.drawSpec(); this.readout(); this.draw(this.t || 0);
+    if (this.playing) this.restart();
+  }
+  partials() { const r = this.ratios(), a = this.o.a; return r.map((x, i) => ({ r: x, a: a[i], i })).filter(p => this.s.on[p.i]); }
+
+  /* ---- top screen: the shape of each mode ---- */
+  fit(cv) { const d = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight; if (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); } const g = cv.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.fillStyle = C.screen; g.fillRect(0, 0, w, h); return [g, w, h]; }
+  draw(t) {
+    if (!this.cvM.clientWidth) return;
+    this.t = t;
+    const [g, w, h] = this.fit(this.cvM), o = this.o, r = this.ratios(), cols = w < 560 ? 3 : 6, rows = cols === 3 ? 2 : 1;
+    const cw = w / cols, chh = (h - 4) / rows;
+    for (let i = 0; i < 6; i++) {
+      const x0 = (i % cols) * cw, y0 = 2 + Math.floor(i / cols) * chh, on = this.s.on[i];
+      const th = this.s.motion ? TAU * r[i] * 0.35 * t : 0, amp = Math.cos(th);
+      g.globalAlpha = on ? 1 : 0.28;
+      if (i % cols) { g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath(); g.moveTo(Math.round(x0) + .5, y0 + 6); g.lineTo(Math.round(x0) + .5, y0 + chh - 6); g.stroke(); }
+      g.font = "500 9.5px 'IBM Plex Mono', monospace"; g.textBaseline = "top"; g.textAlign = "left";
+      g.fillStyle = C["screen-dim"]; g.fillText("MODE " + (i + 1), x0 + 10, y0 + 6);
+      const off = Math.abs(r[i] - Math.round(r[i])) > 0.005;
+      g.fillStyle = off ? C["screen-accent"] : C["screen-ink"]; g.textAlign = "right"; g.fillText("×" + (off ? r[i].toFixed(2) : Math.round(r[i])), x0 + cw - 10, y0 + 6);
+      const ax = x0 + 14, aw = cw - 28, top = y0 + 24, ah = chh - 34, mid = top + ah / 2, half = ah / 2 * 0.8;
+      if (o.shape === "drum") this.drawDrum(g, i, x0 + cw / 2, mid, Math.min(aw, ah) / 2, amp);
+      else this.drawLine(g, o, i, r[i], ax, aw, mid, half, amp);
+    }
+    g.globalAlpha = 1;
+  }
+  drawLine(g, o, i, r, ax, aw, mid, half, amp) {
+    // a stiff string still fits whole half-waves; only its frequencies are stretched
+    const hw = o === OBJ.stiff ? i + 1 : r, N = 80, f = u => o.shape === "string" ? Math.sin(hw * Math.PI * u) : beam(o.shape, o.beta[i], u);
+    let mx = 0; for (let k = 0; k <= N; k++) mx = Math.max(mx, Math.abs(f(k / N)));
+    const Y = (u, a) => mid - f(u) / mx * half * a;
+    // envelope: the two extreme positions
+    g.setLineDash([2, 3]); g.strokeStyle = C["screen-dim"]; g.lineWidth = 1;
+    for (const s of [1, -1]) { g.beginPath(); for (let k = 0; k <= N; k++) { const x = ax + k / N * aw, y = Y(k / N, s); k ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); }
+    g.setLineDash([]);
+    g.strokeStyle = C["screen-ink"]; g.lineWidth = o.shape === "string" ? 2 : 4; g.lineCap = "round"; g.beginPath();
+    for (let k = 0; k <= N; k++) { const x = ax + k / N * aw, y = Y(k / N, amp); k ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke(); g.lineCap = "butt";
+    // supports: posts at both ends for a string, a clamp for the tine
+    g.fillStyle = C["screen-dim"];
+    if (o.shape === "string") { g.fillRect(ax - 3, mid - half - 4, 3, 2 * half + 8); g.fillRect(ax + aw, mid - half - 4, 3, 2 * half + 8); }
+    if (o.shape === "clamped") g.fillRect(ax - 8, mid - 10, 8, 20);
+    // nodes (still points)
+    g.fillStyle = C["screen-ink"];
+    let prev = f(0);
+    for (let k = 1; k <= 400; k++) { const u = k / 400, v = f(u); if (prev === 0 || Math.sign(v) !== Math.sign(prev)) { g.beginPath(); g.arc(ax + u * aw, mid, 2.5, 0, TAU); g.fill(); } prev = v; }
+    if (o.shape === "string") {
+      g.beginPath(); g.arc(ax, mid, 2.5, 0, TAU); g.fill();
+      const end = Math.sin(hw * Math.PI);
+      if (Math.abs(end) > 0.02) {
+        // the shape does not finish at the fixed end: it cannot exist on a string
+        const y = Y(1, 1);
+        g.fillStyle = C["screen-accent"]; g.beginPath(); g.arc(ax + aw, y, 4, 0, TAU); g.fill();
+        g.font = "500 9px 'IBM Plex Mono', monospace"; g.textAlign = "right"; g.textBaseline = "bottom"; g.fillText("DOESN'T FIT", ax + aw - 6, mid + half + 10);
+      } else { g.beginPath(); g.arc(ax + aw, mid, 2.5, 0, TAU); g.fill(); }
+    }
+  }
+  drawDrum(g, i, cx, cy, R, amp) {
+    const P = 56, key = this.s.obj + i;
+    let c = this.drumCache.get(key);
+    if (!c) {
+      const [m, j] = this.o.mn[i], v = new Float32Array(P * P); let mx = 0;
+      for (let y = 0; y < P; y++) for (let x = 0; x < P; x++) {
+        const dx = (x + .5) / P * 2 - 1, dy = (y + .5) / P * 2 - 1, rr = Math.hypot(dx, dy);
+        const val = rr > 1 ? NaN : besselJ(m, j * rr) * Math.cos(m * Math.atan2(dy, dx));
+        v[y * P + x] = val; if (val === val) mx = Math.max(mx, Math.abs(val));
+      }
+      for (let k = 0; k < v.length; k++) v[k] /= mx;
+      const oc = document.createElement("canvas"); oc.width = oc.height = P;
+      c = { v, oc, og: oc.getContext("2d"), img: null }; c.img = c.og.createImageData(P, P); this.drumCache.set(key, c);
+    }
+    const pos = hexRgb(C["screen-accent"]), neg = hexRgb(C["screen-ink"]), d = c.img.data;
+    for (let k = 0; k < c.v.length; k++) {
+      const v = c.v[k] * amp, o = k * 4;
+      if (v !== v) { d[o + 3] = 0; continue; }
+      const col = v >= 0 ? pos : neg; d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = Math.round(Math.min(1, Math.abs(v)) * 255);
+    }
+    c.og.putImageData(c.img, 0, 0);
+    g.imageSmoothingEnabled = true; g.drawImage(c.oc, cx - R, cy - R, 2 * R, 2 * R);
+    g.strokeStyle = C["screen-dim"]; g.lineWidth = 1; g.beginPath(); g.arc(cx, cy, R, 0, TAU); g.stroke();
+  }
+
+  /* ---- wave: four cycles, with cycle 1 copied under each of the others ---- */
+  drawWave() {
+    const [g, w, h] = this.fit(this.cvW), P = this.partials(), cyc = 4, N = Math.floor(w * 1.5), pt = 24, pb = 12, mid = pt + (h - pt - pb) / 2, half = (h - pt - pb) / 2;
+    const y = c => { let s = 0; for (const p of P) s += p.a * Math.sin(TAU * p.r * c); return s; };
+    let pk = 1e-9; for (let k = 0; k <= N; k++) pk = Math.max(pk, Math.abs(y(k / N * cyc)));
+    const sc = 0.9 * half / pk, X = c => c / cyc * w;
+    g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath(); g.moveTo(0, mid + .5); g.lineTo(w, mid + .5);
+    for (let k = 1; k < cyc; k++) { g.moveTo(Math.round(X(k)) + .5, pt); g.lineTo(Math.round(X(k)) + .5, h - pb); }
+    g.stroke();
+    g.strokeStyle = C["screen-accent"]; g.globalAlpha = 0.55; g.lineWidth = 5; g.lineJoin = "round";
+    for (let k = 1; k < cyc; k++) { g.beginPath(); for (let q = 0; q <= N / cyc; q++) { const c = q / (N / cyc), xx = X(k + c), yy = mid - y(c) * sc; q ? g.lineTo(xx, yy) : g.moveTo(xx, yy); } g.stroke(); }
+    g.globalAlpha = 1; g.strokeStyle = C["screen-ink"]; g.lineWidth = 2; g.beginPath();
+    for (let k = 0; k <= N; k++) { const c = k / N * cyc, xx = X(c), yy = mid - y(c) * sc; k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+    g.stroke();
+    g.font = "500 10px 'IBM Plex Mono', monospace"; g.textBaseline = "top"; g.textAlign = "left"; g.fillStyle = C["screen-ink"]; g.fillText("WAVE", 10, 8);
+    g.textAlign = "right"; g.fillStyle = C["screen-dim"]; g.fillText("4 CYCLES · ORANGE = COPY OF CYCLE 1", w - 10, 8);
+    // how different is cycle 4 from cycle 1?
+    let e = 0, s2 = 0; for (let k = 0; k <= 400; k++) { const c = k / 400, a = y(c), b = y(c + 3); e += (a - b) * (a - b); s2 += a * a; }
+    this.repeatErr = Math.sqrt(e / Math.max(s2, 1e-12));
+  }
+  /* ---- spectrum against the harmonic grid ---- */
+  drawSpec() {
+    const [g, w, h] = this.fit(this.cvS), P = this.partials(), all = this.ratios();
+    const want = Math.max(3.4, ...P.map(p => p.r)) + 0.6, xmax = Math.min(20, want), pl = 12, pr = 12, pt = 40, pb = 22;
+    const X = r => pl + r / xmax * (w - pl - pr), H = h - pt - pb;
+    g.font = "400 9.5px 'IBM Plex Mono', monospace"; g.textAlign = "center"; g.textBaseline = "top";
+    g.setLineDash([2, 3]); g.strokeStyle = C["screen-grid"]; g.lineWidth = 1;
+    const every = xmax > 12 ? 2 : 1;
+    for (let n = 1; n < xmax; n++) { const x = Math.round(X(n)) + .5; g.beginPath(); g.moveTo(x, pt - 6); g.lineTo(x, h - pb); g.stroke(); if (n % every === 0 || n === 1) { g.fillStyle = C["screen-dim"]; g.fillText(String(n), x, h - pb + 6); } }
+    g.setLineDash([]);
+    g.strokeStyle = C["screen-dim"]; g.beginPath(); g.moveTo(pl, h - pb + .5); g.lineTo(w - pr, h - pb + .5); g.stroke();
+    const bw = Math.max(4, Math.min(10, (w - pl - pr) / xmax * 0.18));
+    let hidden = 0, lastX = -1e9, lastY = 1e9;
+    for (const p of P) {
+      if (p.r > xmax) { hidden++; continue; }
+      const off = Math.abs(p.r - Math.round(p.r)) > 0.005, x = X(p.r), bh = p.a * H;
+      g.fillStyle = off ? C["screen-accent"] : C["screen-ink"]; g.fillRect(Math.round(x - bw / 2), h - pb - bh, Math.round(bw), bh);
+      g.textBaseline = "bottom"; g.font = "500 9.5px 'IBM Plex Mono', monospace";
+      let ly = h - pb - bh - 3;
+      if (x - lastX < 40) ly = Math.min(ly, lastY - 12);   // stack labels of partials that sit close together
+      lastX = x; lastY = ly;
+      g.fillText("×" + (off ? p.r.toFixed(2) : Math.round(p.r)), x, ly);
+    }
+    g.textBaseline = "top"; g.textAlign = "left"; g.font = "500 10px 'IBM Plex Mono', monospace"; g.fillStyle = C["screen-ink"]; g.fillText("PARTIALS", 10, 8);
+    g.textAlign = "right"; g.fillStyle = C["screen-dim"]; g.fillText("× f0 · dashed = harmonic series" .toUpperCase() + (hidden ? " · " + hidden + " OFF SCREEN →" : ""), w - 10, 8);
+  }
+  readout() {
+    const P = this.partials(), offs = P.map(p => Math.abs(p.r - Math.round(p.r))), worst = Math.max(0, ...offs), harmonic = worst < 0.005;
+    const items = [["fundamental", fmtHz(this.s.f0) + " · " + noteName(this.s.f0)],
+      ["partials", P.map(p => "×" + (Math.abs(p.r - Math.round(p.r)) < 0.005 ? Math.round(p.r) : p.r.toFixed(2))).join("  ") || "none"],
+      ["all on whole numbers", harmonic ? "yes · harmonic" : "no · inharmonic (furthest off: " + worst.toFixed(2) + ")"],
+      ["wave repeats every cycle", this.repeatErr < 0.01 ? "yes" : "no · cycle 4 differs " + Math.round(this.repeatErr * 100) + " %"]];
+    this.ro.replaceChildren(...items.map(([k, v]) => { const sp = el("span", null, k + " "); sp.append(el("b", null, String(v))); return sp; }));
+  }
+
+  /* ---- sound: a struck note, every partial with its own decay ---- */
+  buffer() {
+    const len = Math.round(SR * 2.4), x = new Float32Array(len), P = this.partials();
+    for (const p of P) {
+      const f = this.s.f0 * p.r; if (f > 18000) continue;
+      const w = TAU * f / SR, tau = 1.5 / Math.sqrt(p.r);
+      for (let i = 0; i < len; i++) { const t = i / SR; x[i] += p.a * Math.exp(-t / tau) * (1 - Math.exp(-t / 0.004)) * Math.sin(w * i); }
+    }
+    let m = 0; for (const v of x) m = Math.max(m, Math.abs(v)); if (m > 0) for (let i = 0; i < len; i++) x[i] *= 0.8 / m;
+    const b = ctx.createBuffer(1, len, SR); b.copyToChannel(x, 0); return b;
+  }
+  start() {
+    ensureCtx(); if (current && current !== this) current.stop();
+    this.out = ctx.createGain(); this.out.connect(master);
+    this.playing = true; current = this; this.setBtn(); this.restart();
+  }
+  restart() {
+    const t = ctx.currentTime;
+    if (this.src) { try { this.src.stop(t + 0.03); } catch (e) {} }
+    const g = ctx.createGain(); g.connect(this.out);
+    const s = ctx.createBufferSource(); s.buffer = this.buffer(); s.loop = true; s.connect(g); s.start(t + 0.03);
+    if (this.srcGain) { this.srcGain.gain.setTargetAtTime(0, t, 0.01); }
+    this.src = s; this.srcGain = g;
+  }
+  stop() {
+    if (!this.playing) return;
+    const t = ctx.currentTime; this.out.gain.setTargetAtTime(0, t, 0.015); try { this.src.stop(t + 0.1); } catch (e) {}
+    this.src = this.srcGain = null; this.playing = false; if (current === this) current = null; this.setBtn();
+  }
+}
+const strLabs = [...document.querySelectorAll("[data-strlab]")].map(n => new StringLab(n));
+const strVisible = new Set();
+const strIO = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? strVisible.add(e.target) : strVisible.delete(e.target)));
+strLabs.forEach(l => strIO.observe(l.root));
+(function strLoop(now) {
+  for (const l of strLabs) if (l.s.motion && strVisible.has(l.root)) l.draw(now / 1000);
+  requestAnimationFrame(strLoop);
+})(performance.now());
+
 let visible = new Set();
 const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
 labs.forEach(l => io.observe(l.root));
@@ -950,7 +1228,7 @@ labs.forEach(l => io.observe(l.root));
 })(performance.now());
 
 const mq = window.matchMedia("(prefers-color-scheme: dark)");
-const rerender = () => { readColors(); labs.forEach(l => l.render()); };
+const rerender = () => { readColors(); labs.forEach(l => l.render()); strLabs.forEach(l => l.changed()); };
 mq.addEventListener && mq.addEventListener("change", rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
