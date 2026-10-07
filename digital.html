@@ -1,0 +1,1371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Digital Sound</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* layout: product-manual — sticky index rail on the left, one reading column of numbered chapters,
+   each chapter carries a hardware-style "lab": black display (wave | spectrum) above a strip of controls */
+:root {
+  --bg: #ececea;
+  --panel: #f7f7f5;
+  --ink: #141414;
+  --muted: #6d6d6a;
+  --line: #cbcbc7;
+  --accent: #ff4f00;
+  --on-accent: #ffffff;
+  --screen: #131415;
+  --screen-ink: #f2f2ef;
+  --screen-dim: #55585c;
+  --screen-grid: #25272a;
+  --screen-accent: #ff5a0f;
+  --f-sans: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111112; --panel: #19191b; --ink: #ececea; --muted: #8f8f8c; --line: #313133;
+    --accent: #ff6a1f; --on-accent: #111112; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111112; --panel: #19191b; --ink: #ececea; --muted: #8f8f8c; --line: #313133;
+  --accent: #ff6a1f; --on-accent: #111112; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 16px/1.55 var(--f-sans);
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- top bar ---------- */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 10px 20px; background: var(--bg); border-bottom: 1px solid var(--line);
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .08em;
+}
+.bar .brand { font-weight: 500; }
+.bar .brand b { color: var(--accent); font-weight: 500; }
+.bar .spacer { flex: 1; }
+.bar label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.bar input[type=range] { width: 110px; }
+
+/* ---------- page grid ---------- */
+.page {
+  display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px;
+  max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 0 96px;
+}
+nav.index {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 56px); align-self: start;
+  padding-top: 40px; font: 400 12px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em;
+}
+nav.index ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.index a { display: grid; grid-template-columns: 28px 1fr; padding: 6px 0; text-decoration: none; color: var(--muted); }
+nav.index a:hover, nav.index a.on { color: var(--ink); }
+nav.index a.on span:first-child { color: var(--accent); }
+main { min-width: 0; }
+
+/* ---------- type ---------- */
+header.hero { padding-block: 56px 32px; border-bottom: 1px solid var(--ink); }
+.eyebrow { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+h1 {
+  font: 700 clamp(44px, 7.5vw, 88px)/.92 var(--f-sans); letter-spacing: -.035em;
+  margin: 18px 0 20px; text-wrap: balance;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 19px; line-height: 1.5; max-width: 34em; margin: 0; }
+section.ch { padding-block: 56px 8px; border-bottom: 1px solid var(--line); scroll-margin-top: 48px; }
+.ch-head { display: grid; grid-template-columns: 64px minmax(0,1fr); gap: 0; align-items: baseline; }
+.ch-num { font: 500 13px/1 var(--f-mono); color: var(--accent); }
+h2 { font: 600 34px/1.05 var(--f-sans); letter-spacing: -.02em; margin: 0 0 18px; text-wrap: balance; }
+h3 { font: 600 18px/1.25 var(--f-sans); margin: 32px 0 8px; display: flex; gap: 12px; align-items: baseline; }
+h3 .n { font: 500 12px/1 var(--f-mono); color: var(--muted); min-width: 40px; }
+.prose { max-width: 40em; }
+.prose p { margin: 0 0 14px; }
+.prose ul { margin: 0 0 14px; padding-left: 20px; }
+.prose li { margin-bottom: 6px; }
+.indent { padding-left: 64px; }
+code, .mono { font-family: var(--f-mono); font-size: .88em; }
+kbd {
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em;
+  border: 1px solid var(--ink); border-radius: 999px; padding: 3px 8px; white-space: nowrap;
+}
+.note {
+  position: relative; padding: 12px 0 0 34px; margin: 20px 0; max-width: 40em;
+  border-top: 1px solid var(--ink); font-size: 15px;
+}
+.note::before {
+  content: "i"; position: absolute; left: 0; top: 12px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent); font: 600 12px/1 var(--f-mono);
+}
+.note.try::before { content: "→"; }
+
+/* ---------- lab (the "device") ---------- */
+.lab {
+  margin: 28px 0 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px;
+}
+.lab-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.lab-name { font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; }
+.lab-top .spacer { flex: 1; }
+.play {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .08em;
+  background: var(--accent); color: var(--on-accent); border: 0; border-radius: 999px; padding: 9px 14px 9px 10px;
+}
+.play i { width: 14px; height: 14px; display: grid; place-items: center; font-style: normal; }
+.play[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.screens {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--screen-grid);
+  border-radius: 8px; overflow: hidden; border: 2px solid var(--screen);
+}
+.screens canvas { display: block; width: 100%; height: 230px; background: var(--screen); }
+.readout {
+  display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 2px 2px;
+  font: 400 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout b { color: var(--ink); font-weight: 500; }
+.controls {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px 22px;
+  margin-top: 12px; padding-top: 14px; border-top: 1px dashed var(--line);
+}
+.ctl { display: grid; gap: 8px; min-width: 0; }
+.ctl.wide { grid-column: 1 / -1; }
+.ctl-label {
+  display: flex; justify-content: space-between; gap: 8px;
+  font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted);
+}
+.ctl-label output { color: var(--ink); font-variant-numeric: tabular-nums; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.key {
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em;
+  background: transparent; color: var(--ink); border: 1px solid var(--ink); border-radius: 999px;
+  padding: 7px 11px; cursor: pointer;
+}
+.key:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.key[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.key.hot[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+input[type=range] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; cursor: pointer;
+}
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--ink); }
+input[type=range]::-moz-range-track { height: 2px; background: var(--ink); }
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; margin-top: -8px; border-radius: 50%;
+  background: var(--panel); border: 2px solid var(--ink);
+}
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--panel); border: 2px solid var(--ink); }
+input[type=range]:active::-webkit-slider-thumb { background: var(--accent); border-color: var(--accent); }
+input[type=range]:active::-moz-range-thumb { background: var(--accent); border-color: var(--accent); }
+
+/* legend diagram */
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; max-width: 820px; }
+.legend figure { margin: 0; }
+.legend svg { width: 100%; height: auto; display: block; background: var(--screen); border-radius: 8px; }
+.legend figcaption { font-size: 14px; color: var(--muted); padding-top: 8px; }
+.legend figcaption b { color: var(--ink); font-weight: 600; }
+
+/* reference table */
+.tbl-wrap { overflow-x: auto; margin: 20px 0; }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); border-bottom-color: var(--ink); }
+td.mono { font-variant-numeric: tabular-nums; }
+
+footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+
+@media (max-width: 960px) {
+  .page { grid-template-columns: minmax(0,1fr); gap: 0; }
+  nav.index { display: none; }
+}
+@media (max-width: 700px) {
+  .screens { grid-template-columns: 1fr; }
+  .screens canvas { height: 190px; }
+  .ch-head { grid-template-columns: minmax(0,1fr); }
+  .ch-num { margin-bottom: 10px; }
+  .indent { padding-left: 0; }
+  .legend { grid-template-columns: 1fr; }
+  .bar { padding: 10px 16px; }
+  .page { padding-inline: 16px; }
+  .bar input[type=range] { width: 80px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* page-specific: signal chain, midi keyboard and byte screen, figures */
+.bar a { text-decoration: none; }
+.bar a:hover { color: var(--accent); }
+.ctl { align-content: start; }
+.seg { align-items: flex-start; align-content: flex-start; }
+.ctl[hidden] { display: none; }
+.chain { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 24px 0; }
+.chain > div { background: var(--panel); padding: 14px 12px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.chain > div.dig { background: color-mix(in srgb, var(--accent) 8%, var(--panel)); }
+.chain .tag { font: 500 10px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }
+.chain .dig .tag { color: var(--accent); }
+.chain h4 { margin: 0; font: 600 15px/1.2 var(--f-sans); }
+.chain p { margin: 0; font-size: 13px; line-height: 1.45; }
+.kinds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 24px 0; }
+.kinds > div { background: var(--panel); padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.kinds .k-tag { font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--accent); }
+.kinds h4 { margin: 0; font: 600 18px/1.2 var(--f-sans); }
+.kinds p { margin: 0; font-size: 14.5px; }
+.kinds .eg { font: 400 11px/1.5 var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.fig { margin: 24px 0; max-width: 640px; }
+.fig svg { width: 100%; height: auto; display: block; background: var(--screen); border-radius: 8px; }
+.fig svg .w { fill: none; stroke: var(--screen-ink); stroke-width: 1.5; }
+.fig svg .r { fill: var(--screen); stroke: var(--screen-ink); stroke-width: 1.5; }
+.fig svg .hot { stroke: var(--screen-accent); }
+.fig svg text { font: 500 11px var(--f-mono); fill: var(--screen-ink); }
+.fig svg text.dim { fill: var(--screen-dim); }
+.fig svg text.acc { fill: var(--screen-accent); }
+.fig figcaption { font-size: 14px; color: var(--muted); padding-top: 8px; }
+.fig figcaption b { color: var(--ink); font-weight: 600; }
+
+/* midi lab */
+.midi-screen {
+  background: var(--screen); color: var(--screen-ink); height: 230px; padding: 10px; overflow: hidden;
+  display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 8px; font: 400 10.5px/1.45 var(--f-mono); text-transform: uppercase; letter-spacing: .05em;
+}
+.midi-screen .ttl { display: flex; justify-content: space-between; font-weight: 500; font-size: 10px; }
+.midi-screen .ttl span:last-child { color: var(--screen-dim); }
+.bytes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.byte { border: 1px solid var(--screen-grid); border-radius: 6px; padding: 7px 8px; display: grid; gap: 3px; min-width: 0; }
+.byte .hex { font-size: 20px; line-height: 1.1; font-weight: 500; }
+.byte .bin { color: var(--screen-dim); letter-spacing: .12em; }
+.byte .bin b { color: var(--screen-accent); font-weight: 500; }
+.byte .what { color: var(--screen-dim); overflow-wrap: anywhere; }
+.byte.empty { opacity: .35; }
+.log { overflow: hidden; color: var(--screen-dim); border-top: 1px solid var(--screen-grid); padding-top: 6px; }
+.log div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.log div:first-child { color: var(--screen-ink); }
+.log i { font-style: normal; color: var(--screen-accent); margin-right: 8px; }
+.kb { position: relative; display: flex; height: 132px; margin-top: 12px; user-select: none; -webkit-user-select: none; touch-action: none; }
+.kb .wk {
+  flex: 1; position: relative; border: 1px solid var(--ink); border-right-width: 0; background: var(--bg); cursor: pointer;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 6px; gap: 2px;
+  font: 500 9.5px/1 var(--f-mono); text-transform: uppercase; color: var(--muted);
+}
+.kb .wk:first-child { border-radius: 0 0 0 6px; }
+.kb .wk:last-of-type { border-right-width: 1px; border-radius: 0 0 6px 0; }
+.kb .wk b { color: var(--ink); font-weight: 500; }
+.kb .bk {
+  position: absolute; top: 0; height: 60%; background: var(--ink); border-radius: 0 0 4px 4px; z-index: 1; cursor: pointer;
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; font: 500 9px/1 var(--f-mono); text-transform: uppercase; color: var(--bg);
+}
+.kb .on { background: var(--accent) !important; color: var(--on-accent); }
+.kb .on b { color: var(--on-accent); }
+@media (max-width: 1100px) { .kinds { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .midi-screen { height: 250px; } .kb { height: 110px; } .kb .wk span { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span class="brand"><a href="index.html">ClassAudio</a> <b>/</b> <a href="waves.html">waves</a> <b>/</b> <a href="analyze.html">microscope</a> <b>/</b> <a href="effects.html">effects</a> <b>/</b> digital sound</span>
+  <span class="spacer"></span>
+  <label for="master-vol">volume <input id="master-vol" type="range" min="0" max="1" step="0.01" value="0.5"></label>
+  <button class="key" id="stop-all" type="button">stop all</button>
+</div>
+
+<div class="page">
+  <nav class="index" aria-label="Chapters">
+    <ol>
+      <li><a href="#chain"><span>1</span><span>the digital chain</span></a></li>
+      <li><a href="#sampling"><span>2</span><span>sampling &amp; aliasing</span></a></li>
+      <li><a href="#bits"><span>3</span><span>bit depth &amp; dither</span></a></li>
+      <li><a href="#adc"><span>4</span><span>inside the adc</span></a></li>
+      <li><a href="#dac"><span>5</span><span>inside the dac</span></a></li>
+      <li><a href="#dsp"><span>6</span><span>dsp</span></a></li>
+      <li><a href="#midi"><span>7</span><span>midi</span></a></li>
+      <li><a href="#ref"><span>8</span><span>quick reference</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div class="eyebrow">sound design guide · part 4 · digital</div>
+      <h1>digital<br><em>sound</em></h1>
+      <p class="lede">A computer cannot store a wave. It can only store a list of numbers. This page shows how a sound becomes numbers and back again, what can go wrong on the way, what a DSP does with the numbers, and why MIDI is not sound at all.</p>
+    </header>
+
+    <!-- 1 -->
+    <section class="ch" id="chain">
+      <div class="ch-head"><span class="ch-num">1</span><h2>the digital chain</h2></div>
+      <div class="indent">
+        <div class="prose"><p>Sound in the air is a pressure that changes smoothly. A microphone turns it into a voltage that changes in the same way. Everything up to that point is <b>analog</b>: it can take any value at any moment. A computer can only hold whole numbers, one after another. So every recording goes through the same chain, and every playback goes through it backwards:</p></div>
+        <div class="chain">
+          <div><span class="tag">analog · 1</span><h4>Microphone</h4><p>Air pressure becomes a voltage.</p></div>
+          <div><span class="tag">analog · 2</span><h4>Anti-alias filter</h4><p>Removes everything above half the sample rate.</p></div>
+          <div class="dig"><span class="tag">adc · 3</span><h4>Analog → digital</h4><p>Measures the voltage thousands of times a second and writes each measurement as a number.</p></div>
+          <div class="dig"><span class="tag">digital · 4</span><h4>DSP</h4><p>Maths on the numbers: EQ, compression, reverb, synthesis.</p></div>
+          <div class="dig"><span class="tag">dac · 5</span><h4>Digital → analog</h4><p>Turns each number back into a voltage.</p></div>
+          <div><span class="tag">analog · 6</span><h4>Reconstruction filter</h4><p>Smooths the steps between the numbers.</p></div>
+          <div><span class="tag">analog · 7</span><h4>Amp &amp; speaker</h4><p>Voltage becomes air pressure again.</p></div>
+        </div>
+        <div class="prose"><p>Going digital means answering three questions:</p></div>
+        <div class="kinds">
+          <div><span class="k-tag">how often?</span><h4>Sample rate</h4><p>How many measurements per second. It sets the highest frequency you can store: exactly half the sample rate.</p><span class="eg">44.1 kHz · 48 kHz · 96 kHz · chapter 2</span></div>
+          <div><span class="k-tag">how precisely?</span><h4>Bit depth</h4><p>How many different values each measurement can have. It sets how quiet the noise floor is: about 6 dB per bit.</p><span class="eg">16 bit · 24 bit · 32-bit float · chapter 3</span></div>
+          <div><span class="k-tag">what next?</span><h4>Processing</h4><p>Once sound is numbers, any effect is a recipe of multiplications and additions. A DSP is a chip built to do that fast.</p><span class="eg">filters · delays · plugins · chapter 6</span></div>
+        </div>
+        <div class="note">MIDI never enters this chain. It carries no sound at all, only instructions like "key 60 went down, this hard". Chapter 7 shows what those messages look like.</div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="ch" id="sampling">
+      <div class="ch-head"><span class="ch-num">2</span><h2>sampling &amp; aliasing</h2></div>
+      <div class="indent">
+        <div class="prose"><p>Sampling means measuring the voltage at regular moments and keeping only those measurements. In the left screen the grey line is the input, the orange dots are the samples, and the white line is what a DAC rebuilds from them. The right screen is the spectrum from 0 to 24 kHz. The dashed orange line marks half the sample rate.</p></div>
+        <div class="lab" data-lab="sampling"></div>
+        <h3><span class="n">2.1</span>the nyquist limit</h3>
+        <div class="prose"><p>To capture a wave you need more than two samples per cycle. So the highest frequency a sample rate can store is <b>half the sample rate</b>, called the <b>Nyquist frequency</b>. Human hearing stops near 20 kHz, so a CD uses 44.1 kHz: Nyquist is 22.05 kHz, with a little room left for the filter. Video and most studios use 48 kHz.</p>
+          <p>Below Nyquist the samples hold <i>everything</i>. Switch the output to <kbd>smooth</kbd>: the white line lands exactly on the grey one, even with only three or four dots per cycle. This is the sampling theorem, and it is why digital audio does not need millions of samples per second.</p></div>
+        <h3><span class="n">2.2</span>aliasing: frequencies fold back</h3>
+        <div class="prose"><p>Above Nyquist things go wrong. The samples of a 7 kHz sine taken at 8 kHz fit a 1 kHz sine exactly (just upside down). Once the numbers are stored, nothing can tell the two apart. So the 7 kHz tone comes out as 1 kHz. It folds back below Nyquist like a mirror: <code>f<sub>alias</sub> = |f − k·f<sub>s</sub>|</code>. It is the same effect as wagon wheels that seem to turn backwards in a film.</p></div>
+        <div class="note try">Pick <kbd>sine</kbd>, sample rate <kbd>8k</kbd>, and press <kbd>sweep</kbd>. The input rises all the way to 20 kHz. What you hear goes up to 4 kHz, then turns round and comes back down, again and again.</div>
+        <h3><span class="n">2.3</span>the anti-alias filter</h3>
+        <div class="prose"><p>A saw wave has harmonics far above Nyquist. Sampled as it is, all of them fold back onto random places in the spectrum: the orange lines. They are not on the harmonic grid, so they sound out of tune and metallic. The only cure is to remove those frequencies <b>before</b> sampling, with a steep low-pass filter. After sampling it is too late. Switch the <kbd>anti-alias filter</kbd> on: the orange lines disappear and the sound gets duller, but it is clean.</p>
+          <p>This is also why the overdrive lab in <a href="effects.html#drive">part 3</a> needs oversampling. Distortion creates new harmonics after the sound is already digital, so they can fold back too.</p></div>
+        <h3><span class="n">2.4</span>steps or smooth</h3>
+        <div class="prose"><p>A DAC holds each number until the next one arrives, which makes steps. The sharp corners of the steps are extra high frequencies, copies (<b>images</b>) of the spectrum mirrored around the sample rate. You can see them as hollow orange bars above Nyquist. The <b>reconstruction filter</b> after the DAC removes them, and the original smooth wave comes back.</p></div>
+        <div class="note">The lab always plays at 48 kHz. The lower sample rates are simulated: the samples are held (<kbd>steps</kbd>) or interpolated with an ideal filter (<kbd>smooth</kbd>) before playback.</div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="ch" id="bits">
+      <div class="ch-head"><span class="ch-num">3</span><h2>bit depth &amp; dither</h2></div>
+      <div class="indent">
+        <div class="prose"><p>Each sample has to be stored as a whole number, so it is rounded to the nearest of a fixed set of levels. With <i>N</i> bits there are 2<sup>N</sup> levels: 16 bits give 65,536 and 24 bits give 16,777,216. The wave screen zooms in on the signal, so you always see the steps, even at low levels. The orange line underneath is the rounding error.</p></div>
+        <div class="lab" data-lab="quant"></div>
+        <h3><span class="n">3.1</span>quantization noise: 6 dB per bit</h3>
+        <div class="prose"><p>Rounding is never more than half a step off, so the error is a small, fast wobble on top of the signal: <b>quantization noise</b>. Every extra bit halves the step size, which lowers the noise by 6 dB. For a sine at full level the signal-to-noise ratio is about <code>6.02 × N + 1.76 dB</code>: 98 dB for 16 bits and 146 dB for 24 bits. The 24-bit figure is better than any real analog circuit can manage, so the converter's own electronics set the real noise floor.</p></div>
+        <h3><span class="n">3.2</span>quiet sounds lose bits</h3>
+        <div class="prose"><p>The step size is fixed, so a quiet sound uses fewer of the levels. At −48 dBFS a 16-bit recording only has about 8 bits left. Worse, at very low levels the error is no longer random. It repeats with the wave, so it turns into <b>harmonic distortion</b>: extra lines in the spectrum, and a grainy, buzzy tail on fading notes.</p></div>
+        <h3><span class="n">3.3</span>dither</h3>
+        <div class="prose"><p>The fix sounds backwards: add a tiny bit of noise (about one step) <i>before</i> rounding. This is <b>dither</b>. The noise shakes the signal across the levels at random, so the error stops following the wave. The distortion lines in the spectrum melt into a smooth, quiet hiss, and you can even hear details smaller than one step. Every 16-bit master should be dithered as the very last step.</p></div>
+        <div class="note try">Choose <kbd>fading note</kbd>, 6 bits, <kbd>listen to the error only</kbd>. Without dither the error buzzes with the note and changes as it fades. Switch dither <kbd>on</kbd>: the error turns into plain hiss that has nothing to do with the note.</div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="ch" id="adc">
+      <div class="ch-head"><span class="ch-num">4</span><h2>inside the adc</h2></div>
+      <div class="indent">
+        <div class="prose"><p>An analog-to-digital converter only needs three parts:</p>
+          <ul>
+            <li>A <b>sample-and-hold</b>: a switch and a capacitor that freeze the voltage for a moment, so it stays still while it is measured.</li>
+            <li>A <b>comparator</b>: a circuit that answers one yes/no question: "is the input higher than this other voltage?"</li>
+            <li>A small <b>DAC</b> inside, which makes the voltages to compare against, plus some logic to choose them.</li>
+          </ul>
+          <p>The classic design, the <b>successive-approximation</b> (SAR) ADC, plays "guess the number". First guess: half of full scale. Too high? Then the top bit is 0. Too low? It is 1. The next guess splits the remaining half, and so on. Every comparison gives one bit, so an 8-bit result takes 8 comparisons.</p></div>
+        <div class="lab" data-lab="sar"></div>
+        <div class="note try">Press <kbd>step</kbd> one comparison at a time. On the left, the shaded band shows where the answer can still be. It halves with every step. Then switch to <kbd>12 bit</kbd>: four more steps, and a step size 16 times finer.</div>
+        <h3><span class="n">4.1</span>what audio interfaces really use: sigma-delta</h3>
+        <div class="prose"><p>Most audio ADCs today are <b>sigma-delta</b> (ΔΣ) converters. Instead of measuring precisely 48,000 times a second, they measure very roughly (1 to 5 bits) but very fast: 64 or 128 times the final rate, around 3 to 6 MHz. A feedback loop pushes the large rounding error up to ultrasonic frequencies (<b>noise shaping</b>). A digital filter then removes that noise and turns the fast, rough stream into 24-bit samples at 48 kHz (<b>decimation</b>). Bonus: because the first sampling is so fast, the analog anti-alias filter can be a simple, gentle one. The steep filtering is done in the digital filter.</p></div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="ch" id="dac">
+      <div class="ch-head"><span class="ch-num">5</span><h2>inside the dac</h2></div>
+      <div class="indent">
+        <div class="prose"><p>A digital-to-analog converter does the opposite. Each bit of the number switches on its own share of a reference voltage, and the shares add up. The top bit (MSB) is worth half of full scale, the next bit a quarter, then an eighth, and so on down to the smallest step (LSB). Click the bits to build a number and watch the voltage stack up.</p></div>
+        <div class="lab" data-lab="dac"></div>
+        <h3><span class="n">5.1</span>the r–2r ladder</h3>
+        <figure class="fig">
+          <svg viewBox="0 0 560 200" role="img" aria-label="A 4-bit R-2R resistor ladder: four switched 2R legs feed a chain of R resistors to the output">
+            <path class="w" d="M60 50 H175 M205 50 H275 M305 50 H375 M405 50 H500"/>
+            <rect class="r" x="175" y="44" width="30" height="12"/><rect class="r" x="275" y="44" width="30" height="12"/><rect class="r" x="375" y="44" width="30" height="12"/>
+            <text x="190" y="36" text-anchor="middle">R</text><text x="290" y="36" text-anchor="middle">R</text><text x="390" y="36" text-anchor="middle">R</text>
+            <path class="w" d="M60 50 V82 M60 112 V146 M48 146 H72 M53 152 H67 M58 158 H62"/>
+            <rect class="r" x="54" y="82" width="12" height="30"/><text x="74" y="101" class="dim">2R</text>
+            <path class="w" d="M140 50 V82 M140 112 V140 M240 50 V82 M240 112 V140 M340 50 V82 M340 112 V140"/>
+            <path class="w hot" d="M440 50 V82 M440 112 V140"/>
+            <rect class="r" x="134" y="82" width="12" height="30"/><rect class="r" x="234" y="82" width="12" height="30"/><rect class="r" x="334" y="82" width="12" height="30"/><rect class="r hot" x="434" y="82" width="12" height="30"/>
+            <text x="154" y="101" class="dim">2R</text><text x="254" y="101" class="dim">2R</text><text x="354" y="101" class="dim">2R</text><text x="454" y="101" class="dim">2R</text>
+            <rect class="r" x="122" y="140" width="36" height="22" rx="4"/><rect class="r" x="222" y="140" width="36" height="22" rx="4"/><rect class="r" x="322" y="140" width="36" height="22" rx="4"/><rect class="r hot" x="422" y="140" width="36" height="22" rx="4"/>
+            <text x="140" y="155" text-anchor="middle">b0</text><text x="240" y="155" text-anchor="middle">b1</text><text x="340" y="155" text-anchor="middle">b2</text><text x="440" y="155" text-anchor="middle" class="acc">b3</text>
+            <text x="140" y="182" text-anchor="middle" class="dim">1/16</text><text x="240" y="182" text-anchor="middle" class="dim">1/8</text><text x="340" y="182" text-anchor="middle" class="dim">1/4</text><text x="440" y="182" text-anchor="middle" class="acc">1/2</text>
+            <circle cx="500" cy="50" r="3" fill="var(--screen-accent)"/><text x="508" y="54">Vout</text>
+            <text x="24" y="182" class="dim">0 V</text>
+          </svg>
+          <figcaption><b>A 4-bit R–2R ladder.</b> Each switch connects its 2R leg to 0 V or to the reference voltage. Every step to the left halves that bit's share of the output, so b3 counts eight times as much as b0. It needs only two resistor values, R and 2R, which makes it easy to build accurately.</figcaption>
+        </figure>
+        <div class="prose"><p>The output holds each voltage until the next sample arrives. That makes the staircase in the right screen. The reconstruction filter (chapter 2.4) then smooths it back into a wave. Switch it on to see the curve it draws through the steps.</p></div>
+        <h3><span class="n">5.2</span>why most audio dacs are sigma-delta too</h3>
+        <div class="prose"><p>A ladder DAC is only as good as its resistors. If the MSB is 0.1 % too strong, the step from 127 to 128 is wrong every time the wave passes through the middle. That is distortion, right where quiet signals live. Most audio DACs therefore turn the samples into a very fast stream with only a few bits, and filter it. That is the sigma-delta trick from 4.1 in reverse. A few high-end "R-2R" or "multibit" DACs still use carefully trimmed ladders.</p></div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="ch" id="dsp">
+      <div class="ch-head"><span class="ch-num">6</span><h2>dsp</h2></div>
+      <div class="indent">
+        <div class="prose"><p><b>DSP</b> has two meanings. <b>Digital signal processing</b> is any maths done on the stream of samples: every EQ, compressor, reverb, synthesizer and plugin. <b>A DSP</b> is a chip designed to do that maths fast. Either way, almost every audio algorithm comes down to three things: <b>multiply</b> samples by numbers, <b>add</b> the results, and <b>remember</b> some old samples.</p>
+          <p>The lab runs four tiny algorithms. The left screen is the <b>impulse response</b>: what comes out if you feed in a single click. The right screen is the <b>frequency response</b>: how loud each frequency comes out. The frequency response is the Fourier transform of the impulse response, the same idea as the wave and spectrum screens in <a href="waves.html">part 1</a>.</p></div>
+        <div class="lab" data-lab="dsp"></div>
+        <h3><span class="n">6.1</span>a filter is just an average</h3>
+        <div class="prose"><p>The <b>moving average</b> outputs the mean of the last N samples. Fast wiggles cancel out in the average and slow changes survive, so it is a low-pass filter. Filters that only look at past <i>inputs</i> like this are called <b>FIR</b> (finite impulse response): their click response stops after N samples. Its frequency response has notches at multiples of 48000 / N Hz, where a whole number of cycles fits in the window and averages to zero.</p></div>
+        <h3><span class="n">6.2</span>feedback: one multiply instead of many</h3>
+        <div class="prose"><p>The <b>one-pole</b> filter mixes the new input with its own previous <i>output</i>. Because it feeds back, the click response decays forever (in theory). This is an <b>IIR</b> filter (infinite impulse response). It gives a smooth low pass with only two multiplications per sample. The filters in synths and EQs are built from IIR sections like this, usually the two-pole "biquad".</p></div>
+        <h3><span class="n">6.3</span>echo is memory</h3>
+        <div class="prose"><p>A delay just stores samples and plays them back later. 500 ms at 48 kHz is 24,000 numbers in memory. Feed some of the output back and you get repeating echoes. Make the delay very short (1–10 ms) and the echoes blur into a <b>comb filter</b>: the evenly spaced peaks on the right screen, the flanger from <a href="effects.html#chorus">part 3</a>.</p></div>
+        <h3><span class="n">6.4</span>dsp chips, buffers and latency</h3>
+        <div class="prose"><p>At 48 kHz a new sample arrives every 20.8 µs, and the work has to be done before the next one. DSP chips are built around a <b>multiply-accumulate</b> (MAC) unit that does <code>a = a + x × c</code> in one clock cycle, with special memory for delay lines. You find them in audio interfaces with built-in effects, guitar pedals, phones, hearing aids and mixing desks. Plugins on a computer run "native" on the main CPU instead.</p>
+          <p>Computers process audio in blocks (<b>buffers</b>) rather than one sample at a time, which is much more efficient but adds delay: <code>latency = buffer size ÷ sample rate</code>. That is why you lower the buffer size when recording, and raise it when mixing a big session.</p></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>buffer</th><th>at 44.1 kHz</th><th>at 48 kHz</th><th>at 96 kHz</th><th>feels like</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">64</td><td class="mono">1.5 ms</td><td class="mono">1.3 ms</td><td class="mono">0.7 ms</td><td>instant, but uses the most CPU</td></tr>
+              <tr><td class="mono">128</td><td class="mono">2.9 ms</td><td class="mono">2.7 ms</td><td class="mono">1.3 ms</td><td>fine for playing and singing</td></tr>
+              <tr><td class="mono">256</td><td class="mono">5.8 ms</td><td class="mono">5.3 ms</td><td class="mono">2.7 ms</td><td>like standing 2 m from your amp</td></tr>
+              <tr><td class="mono">1024</td><td class="mono">23.2 ms</td><td class="mono">21.3 ms</td><td class="mono">10.7 ms</td><td>too late to play along; good for mixing</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note">The times are one-way, for one buffer. A real interface adds its own converter and driver delay, often a few milliseconds on top for the round trip.</div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="ch" id="midi">
+      <div class="ch-head"><span class="ch-num">7</span><h2>midi</h2></div>
+      <div class="indent">
+        <div class="prose"><p><b>MIDI</b> (Musical Instrument Digital Interface, 1983) carries no sound. It describes a performance: which key went down, how hard, when it came up, where the mod wheel is. The instrument that receives the messages makes the sound. MIDI is to audio what sheet music is to a recording. Change the synth, the tempo or a wrong note, and the performance plays again with the change.</p>
+          <p>Play the keyboard below with the mouse, or with the computer keys <kbd>a</kbd> to <kbd>k</kbd> (black keys on <kbd>w e t y u</kbd>, octave on <kbd>z</kbd> / <kbd>x</kbd>). If you have a MIDI keyboard, plug it in and press <kbd>connect midi device</kbd> (Chrome or Edge). Every message appears on the right, byte by byte.</p></div>
+        <div class="lab" data-lab="midi"></div>
+        <h3><span class="n">7.1</span>anatomy of a message</h3>
+        <div class="prose"><p>Most messages are three bytes. The first is the <b>status byte</b>. It always starts with a 1 bit. Its top four bits say what kind of message it is, and its bottom four bits say which of the 16 <b>channels</b> it is for. The <b>data bytes</b> that follow always start with a 0 bit, so they can only hold 0 to 127. That is why so much in MIDI has 128 steps.</p></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>status</th><th>message</th><th>data 1</th><th>data 2</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">8n</td><td>note off</td><td>note number</td><td>release velocity</td></tr>
+              <tr><td class="mono">9n</td><td>note on (velocity 0 counts as note off)</td><td>note number</td><td>velocity 1–127</td></tr>
+              <tr><td class="mono">An</td><td>polyphonic aftertouch</td><td>note number</td><td>pressure</td></tr>
+              <tr><td class="mono">Bn</td><td>control change (CC)</td><td>controller number</td><td>value</td></tr>
+              <tr><td class="mono">Cn</td><td>program change</td><td>program (patch) number</td><td>—</td></tr>
+              <tr><td class="mono">Dn</td><td>channel aftertouch</td><td>pressure</td><td>—</td></tr>
+              <tr><td class="mono">En</td><td>pitch bend</td><td>low 7 bits</td><td>high 7 bits</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="prose"><p><i>n</i> is the channel, 0–F in hex, shown as channels 1–16. Channel 10 is the drum channel in General MIDI.</p></div>
+        <h3><span class="n">7.2</span>note numbers, velocity and controllers</h3>
+        <div class="prose">
+          <ul>
+            <li><b>Note number</b>: 60 is middle C (C4) and 69 is A4. Each step is one semitone, so the pitch is <code>f = 440 × 2<sup>(n − 69) / 12</sup></code>. Notes 0–127 cover 8 Hz to 12.5 kHz.</li>
+            <li><b>Velocity</b> is how fast the key went down. The synth decides what it means: usually louder, and often brighter. Here it also opens the filter.</li>
+            <li><b>Control change</b> messages move knobs and pedals: CC 1 is the mod wheel, 7 volume, 10 pan, 64 the sustain pedal, 74 brightness.</li>
+            <li><b>Pitch bend</b> uses both data bytes together, so it has 14 bits: 16,384 steps, with 8192 in the centre. 128 steps would make audible jumps in a slow bend.</li>
+          </ul></div>
+        <h3><span class="n">7.3</span>cables, speed and midi 2.0</h3>
+        <div class="prose"><p>The original 5-pin DIN cable runs at 31,250 bits per second. Each byte takes 10 bits on the wire, so one three-byte note-on takes about 1 ms. A 10-note chord is therefore spread over 10 ms, which some players can feel. USB MIDI is much faster. <b>MIDI 2.0</b> (2020) keeps the same ideas but adds 16-bit velocity, 32-bit controllers and two-way communication, and still works with MIDI 1.0 gear.</p>
+          <p>MIDI is also tiny. A minute of piano playing is a few kilobytes. The same minute as 48 kHz / 24-bit stereo audio is about 17 MB.</p></div>
+        <div class="note try">Hold a note and move the <kbd>pitch bend</kbd> slider. A stream of E0 messages appears, each with two data bytes. Then hold a note and raise the <kbd>mod wheel</kbd>: B0 01 messages, and the synth adds vibrato.</div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="ch" id="ref">
+      <div class="ch-head"><span class="ch-num">8</span><h2>quick reference</h2></div>
+      <div class="indent">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>format</th><th>used for</th><th>nyquist</th><th>dynamic range (theory)</th><th>data rate, stereo</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">44.1 kHz · 16 bit</td><td>CD, most streaming</td><td class="mono">22.05 kHz</td><td class="mono">98 dB</td><td class="mono">1,411 kbit/s · 10.6 MB/min</td></tr>
+              <tr><td class="mono">48 kHz · 24 bit</td><td>video, most studio work</td><td class="mono">24 kHz</td><td class="mono">146 dB</td><td class="mono">2,304 kbit/s · 17.3 MB/min</td></tr>
+              <tr><td class="mono">96 kHz · 24 bit</td><td>"hi-res", heavy processing</td><td class="mono">48 kHz</td><td class="mono">146 dB</td><td class="mono">4,608 kbit/s · 34.6 MB/min</td></tr>
+              <tr><td class="mono">32-bit float</td><td>inside DAWs and plugins: tracks cannot clip inside the mix</td><td>any rate</td><td class="mono">~1500 dB</td><td class="mono">3,072 kbit/s at 48 kHz</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>formula</th><th>meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">f<sub>nyquist</sub> = f<sub>s</sub> / 2</td><td>highest frequency a sample rate can store</td></tr>
+              <tr><td class="mono">f<sub>alias</sub> = |f − k·f<sub>s</sub>|</td><td>where a frequency above Nyquist lands (pick the k that puts it between 0 and f<sub>s</sub>/2)</td></tr>
+              <tr><td class="mono">SNR ≈ 6.02·N + 1.76 dB</td><td>best signal-to-noise ratio with N bits, for a full-scale sine</td></tr>
+              <tr><td class="mono">rate = f<sub>s</sub> × bits × channels</td><td>uncompressed data rate in bits per second</td></tr>
+              <tr><td class="mono">latency = buffer / f<sub>s</sub></td><td>delay added by one processing buffer</td></tr>
+              <tr><td class="mono">f = 440 × 2<sup>(n − 69)/12</sup></td><td>frequency of MIDI note n</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>term</th><th>meaning</th></tr></thead>
+            <tbody>
+              <tr><td>sample</td><td>One measurement of the signal, stored as a number.</td></tr>
+              <tr><td>sample rate (f<sub>s</sub>)</td><td>Samples per second, in Hz.</td></tr>
+              <tr><td>aliasing</td><td>Frequencies above Nyquist folding back down as false tones.</td></tr>
+              <tr><td>anti-alias filter</td><td>Low-pass filter before the ADC that removes everything above Nyquist.</td></tr>
+              <tr><td>reconstruction filter</td><td>Low-pass filter after the DAC that smooths the steps and removes the images.</td></tr>
+              <tr><td>bit depth</td><td>Number of bits per sample. N bits give 2<sup>N</sup> levels.</td></tr>
+              <tr><td>LSB / MSB</td><td>Least / most significant bit: the smallest step, and the bit worth half of full scale.</td></tr>
+              <tr><td>dBFS</td><td>Decibels relative to full scale. 0 dBFS is the loudest possible sample; everything else is negative.</td></tr>
+              <tr><td>quantization noise</td><td>The rounding error from storing samples with a limited number of levels.</td></tr>
+              <tr><td>dither</td><td>Low-level noise added before rounding, which turns quantization distortion into smooth hiss.</td></tr>
+              <tr><td>ADC / DAC</td><td>Analog-to-digital / digital-to-analog converter.</td></tr>
+              <tr><td>SAR</td><td>Successive-approximation ADC: finds each bit with one comparison, top bit first.</td></tr>
+              <tr><td>sigma-delta (ΔΣ)</td><td>Converter that samples very fast with few bits, shapes the noise up out of the audio band, then filters.</td></tr>
+              <tr><td>DSP</td><td>Digital signal processing, or a chip built for it.</td></tr>
+              <tr><td>MAC</td><td>Multiply-accumulate, a = a + x × c: the basic step of almost every audio algorithm.</td></tr>
+              <tr><td>FIR / IIR</td><td>Filters without / with feedback. Their impulse response is finite / goes on forever.</td></tr>
+              <tr><td>impulse response</td><td>What a system outputs for a single click. For linear systems it describes everything.</td></tr>
+              <tr><td>buffer / latency</td><td>The block of samples processed at once, and the delay this adds.</td></tr>
+              <tr><td>MIDI</td><td>A protocol for performance messages (notes, controllers), not audio.</td></tr>
+              <tr><td>status / data byte</td><td>In MIDI, the first byte (type + channel, starts with 1) and the values that follow (start with 0, so 0–127).</td></tr>
+              <tr><td>velocity</td><td>How fast a key was pressed, 1–127.</td></tr>
+              <tr><td>CC</td><td>Control change: a MIDI message for knobs, wheels and pedals.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <footer>ClassAudio · every screen and every sound on this page comes from small JavaScript models, played through the web audio api at 48 kHz · converters are simplified for teaching, real chips add filters, calibration and noise shaping.</footer>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+"use strict";
+const SR = 48000, TAU = Math.PI * 2;
+const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const midiName = n => NOTES[(n % 12 + 12) % 12] + (Math.floor(n / 12) - 1);
+const noteName = f => midiName(Math.round(69 + 12 * Math.log2(f / 440)));
+const fmtHz = f => f >= 1000 ? (f / 1000).toFixed(f >= 10000 ? 1 : 2) + " kHz" : f.toFixed(f < 100 ? 1 : 0) + " Hz";
+const dB = v => 20 * Math.log10(Math.max(v, 1e-12));
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const sinc = x => x === 0 ? 1 : Math.sin(Math.PI * x) / (Math.PI * x);
+const blackman = u => Math.abs(u) >= 1 ? 0 : 0.42 + 0.5 * Math.cos(Math.PI * u) + 0.08 * Math.cos(TAU * u);
+const frac = v => v - Math.floor(v);
+const hex = b => b.toString(16).toUpperCase().padStart(2, "0");
+const bin = (v, n) => v.toString(2).padStart(n, "0");
+function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+
+/* ============== spectrum ============== */
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) { let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = -TAU / len, wr = Math.cos(ang), wi = Math.sin(ang), h = len >> 1;
+    for (let i = 0; i < n; i += len) {
+      let cr = 1, ci = 0;
+      for (let k = 0; k < h; k++) {
+        const a = i + k, b = a + h, tr = re[b] * cr - im[b] * ci, ti = re[b] * ci + im[b] * cr;
+        re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti;
+        const nr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = nr;
+      }
+    }
+  }
+}
+const FN = 8192, BW = SR / FN;
+const HANN = Float64Array.from({ length: FN }, (_, i) => 0.5 - 0.5 * Math.cos(TAU * i / FN));
+// magnitudes scaled so that a full-scale sine reads 1 (0 dBFS)
+function spectrum(x, start) {
+  const re = new Float64Array(FN), im = new Float64Array(FN), L = x.length;
+  for (let i = 0; i < FN; i++) re[i] = x[(start + i) % L] * HANN[i];
+  fft(re, im);
+  const S = new Float64Array(FN / 2);
+  for (let k = 0; k < FN / 2; k++) S[k] = Math.hypot(re[k], im[k]) * 4 / FN;
+  return S;
+}
+
+/* ============== audio ============== */
+let ctx = null, master = null, current = null, midiLab = null;
+const vol = document.getElementById("master-vol");
+const volCurve = () => Math.pow(+vol.value, 2) * 0.8;
+function ensureCtx() {
+  if (!ctx) {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = volCurve();
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -8; comp.ratio.value = 10;
+    master.connect(comp).connect(ctx.destination);
+  }
+  if (ctx.state === "suspended") ctx.resume();
+}
+vol.addEventListener("input", () => { if (master) master.gain.setTargetAtTime(volCurve(), ctx.currentTime, 0.02); });
+document.getElementById("stop-all").addEventListener("click", () => { current && current.stop(); midiLab && midiLab.allOff(); });
+
+let C = {};
+function readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ["screen", "screen-ink", "screen-dim", "screen-grid", "screen-accent"]) C[k] = cs.getPropertyValue("--" + k).trim(); }
+readColors();
+function fit(cv) { const d = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight; if (cv.width !== Math.round(w * d) || cv.height !== Math.round(h * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); } const g = cv.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.fillStyle = C.screen; g.fillRect(0, 0, w, h); return [g, w, h]; }
+function label(g, a, b, w) { g.font = "500 10px 'IBM Plex Mono', monospace"; g.textBaseline = "top"; g.textAlign = "left"; g.fillStyle = C["screen-ink"]; g.fillText(a.toUpperCase(), 10, 8); g.textAlign = "right"; g.fillStyle = C["screen-dim"]; g.fillText(b.toUpperCase(), w - 10, 8); }
+function small(g, col) { g.font = "400 9px 'IBM Plex Mono', monospace"; g.fillStyle = col || C["screen-dim"]; }
+// horizontal dB grid with labels on the left
+function dbGrid(g, w, Y, lo, hi, step, pl, pr) {
+  small(g); g.textAlign = "right"; g.textBaseline = "middle"; g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath();
+  for (let d = hi; d >= lo; d -= step) { const y = Math.round(Y(d)) + .5; g.moveTo(pl, y); g.lineTo(w - pr, y); g.fillText(String(d), pl - 4, y); }
+  g.stroke();
+}
+const logTicks = (g, X, y) => { small(g); g.textAlign = "center"; g.textBaseline = "top"; for (const f of [50, 100, 200, 500, 1000, 2000, 5000, 10000]) g.fillText(f >= 1000 ? f / 1000 + "k" : String(f), X(f), y); };
+
+/* ============== lab base ============== */
+class Lab {
+  constructor(root, title, audio = true) {
+    this.root = root; this.inputs = {}; this.playing = false; this.debounce = 16;
+    const top = el("div", "lab-top"); top.append(el("span", "lab-name", title), el("span", "spacer"));
+    if (audio) { this.btn = el("button", "play"); this.btn.type = "button"; this.btn.addEventListener("click", () => this.playing ? this.stop() : this.start()); top.append(this.btn); this.setBtn(); }
+    this.top = top;
+    this.sc = el("div", "screens"); this.cvA = el("canvas"); this.cvB = el("canvas"); this.sc.append(this.cvA, this.cvB);
+    this.ro = el("div", "readout"); this.ctls = el("div", "controls");
+    root.append(top, this.sc, this.ro, this.ctls);
+    new ResizeObserver(() => this.draw()).observe(this.cvA);
+  }
+  group(label, wide) { const g = el("div", "ctl" + (wide ? " wide" : "")), l = el("div", "ctl-label"); l.append(el("span", null, label)); g.append(l); this.ctls.append(g); return [g, l]; }
+  seg(key, label, opts, after) {
+    const [g] = this.group(label), row = el("div", "seg"), btns = [];
+    for (const [v, t] of opts) { const b = el("button", "key", t); b.type = "button"; b.addEventListener("click", () => { this.s[key] = v; sync(); if (after) after(v); this.changed(); }); btns.push([v, b]); row.append(b); }
+    const sync = () => btns.forEach(([v, b]) => b.setAttribute("aria-pressed", String(this.s[key] === v)));
+    g.append(row); this.inputs[key] = { sync }; sync(); return g;
+  }
+  range(key, label, min, max, o) {
+    const [g, l] = this.group(label), out = el("output"), inp = el("input");
+    inp.type = "range"; inp.id = this.root.dataset.lab + "-" + key; inp.setAttribute("aria-label", label);
+    const log = !!o.log;
+    if (log) { inp.min = 0; inp.max = 1000; inp.step = 1; } else { inp.min = min; inp.max = max; inp.step = o.step || 1; }
+    const toV = v => { const r = log ? min * Math.pow(max / min, v / 1000) : +v; return o.int ? Math.round(r) : r; };
+    const fromV = v => log ? Math.round(1000 * Math.log(v / min) / Math.log(max / min)) : v;
+    inp.addEventListener("input", () => { this.s[key] = toV(inp.value); out.textContent = o.fmt(this.s[key]); if (o.onInput) o.onInput(); this.changed(); });
+    l.append(out); g.append(inp);
+    const sync = () => { inp.value = fromV(this.s[key]); out.textContent = o.fmt(this.s[key]); };
+    this.inputs[key] = { sync, inp }; sync(); return g;
+  }
+  toggle(parent, key, text) {
+    const b = el("button", "key hot", text); b.type = "button";
+    const sync = () => { b.setAttribute("aria-pressed", String(!!this.s[key])); if (text === "on") b.textContent = this.s[key] ? "on" : "off"; };
+    b.addEventListener("click", () => { this.s[key] = !this.s[key]; sync(); this.changed(); });
+    parent.append(b); this.inputs[key] = { sync }; sync(); return b;
+  }
+  actions(label, items) {
+    const [g] = this.group(label), row = el("div", "seg");
+    for (const [t, fn] of items) { const b = el("button", "key", t); b.type = "button"; b.addEventListener("click", fn); row.append(b); }
+    g.append(row); return g;
+  }
+  readout(items) { this.ro.replaceChildren(...items.map(([k, v]) => { const sp = el("span", null, k + " "); sp.append(el("b", null, String(v))); return sp; })); }
+  setBtn() { this.btn.replaceChildren(el("i", null, this.playing ? "■" : "▶"), document.createTextNode(this.playing ? "stop" : "play")); this.btn.setAttribute("aria-pressed", String(this.playing)); }
+  changed() { clearTimeout(this.tmr); this.tmr = setTimeout(() => { this.update(); this.draw(); if (this.playing) this.refreshAudio(); }, this.debounce); }
+  update() {}
+  draw() {}
+  tick() {}
+  playT() { return this.playing && ctx ? ((ctx.currentTime - this.t0) % this.loopLen + this.loopLen) % this.loopLen : 0; }
+
+  /* looped buffer playback with a short crossfade on every change */
+  makeBuffer() { const x = this.loop(), b = ctx.createBuffer(1, x.length, SR); b.getChannelData(0).set(x); return b; }
+  start() {
+    ensureCtx(); if (current && current !== this) current.stop();
+    this.gain = ctx.createGain(); this.gain.connect(master);
+    const b = this.makeBuffer(); this.loopLen = b.duration;
+    this.src = ctx.createBufferSource(); this.src.buffer = b; this.src.loop = true; this.src.connect(this.gain);
+    this.t0 = ctx.currentTime; this.src.start();
+    this.gain.gain.setValueAtTime(0, this.t0); this.gain.gain.linearRampToValueAtTime(1, this.t0 + 0.03);
+    this.playing = true; current = this; this.setBtn();
+  }
+  refreshAudio() {
+    const b = this.makeBuffer(), t = ctx.currentTime, pos = ((t - this.t0) % this.loopLen + this.loopLen) % this.loopLen;
+    const old = this.src, og = this.gain, newLen = b.duration, p = pos % newLen;
+    const ng = ctx.createGain(); ng.connect(master); ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(1, t + 0.04);
+    const ns = ctx.createBufferSource(); ns.buffer = b; ns.loop = true; ns.connect(ng); ns.start(t, p);
+    og.gain.cancelScheduledValues(t); og.gain.setValueAtTime(og.gain.value, t); og.gain.linearRampToValueAtTime(0, t + 0.04); old.stop(t + 0.06);
+    this.src = ns; this.gain = ng; this.t0 = t - p; this.loopLen = newLen;
+  }
+  stop() {
+    if (!this.playing) return;
+    const t = ctx.currentTime; this.gain.gain.cancelScheduledValues(t); this.gain.gain.setValueAtTime(this.gain.gain.value, t); this.gain.gain.linearRampToValueAtTime(0, t + 0.04); this.src.stop(t + 0.06);
+    this.playing = false; if (current === this) current = null; this.setBtn(); this.update(); this.draw();
+  }
+}
+
+/* ============== lab 1 · sampling ============== */
+const AMP = 0.6, AA_EDGE = 0.46;        // the anti-alias filter keeps partials below 0.46 fs
+const SWEEP_T = 8, SWEEP_LO = 100, SWEEP_HI = 20000, SW_R = SWEEP_HI / SWEEP_LO;
+const sweepF = t => SWEEP_LO * Math.pow(SW_R, t / SWEEP_T);
+const sweepCycles = t => SWEEP_LO * SWEEP_T / Math.log(SW_R) * (Math.pow(SW_R, t / SWEEP_T) - 1);
+const fold = (f, fs) => { const r = f % fs; return r > fs / 2 ? fs - r : r; };
+// one period of a band-limited saw with harmonics 1..K, built with a rotating phasor per harmonic
+function addSawPartial(t, n, TL) { const c = Math.cos(TAU * n / TL), sn = Math.sin(TAU * n / TL), a = (n % 2 ? 1 : -1) * AMP * 2 / Math.PI / n; let re = 1, im = 0; for (let i = 0; i < TL; i++) { t[i] += a * im; const r = re * c - im * sn; im = re * sn + im * c; re = r; } t[TL] = t[0]; }
+const tabLook = (tab, ph, TL) => { const p = ph * TL, i = Math.floor(p), f = p - i; return tab[i] + (tab[i + 1] - tab[i]) * f; };
+
+class SamplingLab extends Lab {
+  constructor(root) {
+    super(root, "lab 1 · sampling");
+    this.s = { wave: "sine", f: 440, fs: 8000, aa: false, recon: "steps", sweep: false };
+    this.anT = 0; this.debounce = 60;
+    this.seg("wave", "input", [["sine", "sine"], ["saw", "saw"]]);
+    this.range("f", "input frequency", 20, 20000, { log: true, int: true, fmt: v => fmtHz(v) + " · " + noteName(v), onInput: () => { if (this.s.sweep) { this.s.sweep = false; this.inputs.sweep.sync(); } } });
+    this.seg("fs", "sample rate", [[2000, "2k"], [4000, "4k"], [8000, "8k"], [12000, "12k"], [16000, "16k"], [24000, "24k"], [48000, "48k"]]);
+    const [g1] = this.group("anti-alias filter (before the adc)"); this.toggle(g1, "aa", "on");
+    this.seg("recon", "dac output", [["steps", "steps"], ["smooth", "smooth"]]);
+    const [g2] = this.group("motion"); this.toggle(g2, "sweep", "sweep 100 hz → 20 khz");
+    this.update();
+  }
+  fCur() { return this.s.sweep ? sweepF(this.playing ? this.playT() : this.anT) : this.s.f; }
+  partials(f) {
+    if (this.s.wave === "sine") return [{ f, a: AMP }];
+    const out = [], lim = Math.min(2000, Math.floor(30 * this.s.fs / f));
+    for (let n = 1; n <= lim; n++) out.push({ f: n * f, a: AMP * 2 / Math.PI / n });
+    return out;
+  }
+  // the signal the ADC actually measures (after the anti-alias filter, if it is on)
+  sampleFn(f) {
+    const s = this.s, K = Math.floor(AA_EDGE * s.fs / f);
+    if (s.wave === "sine") return s.aa && K < 1 ? () => 0 : t => AMP * Math.sin(TAU * f * t);
+    if (!s.aa) return t => AMP * (2 * frac(f * t + 0.5) - 1);
+    return t => { let v = 0; for (let n = 1; n <= K; n++) v += (n % 2 ? 1 : -1) * Math.sin(TAU * n * f * t) / n; return AMP * 2 / Math.PI * v; };
+  }
+  outLines(f) {
+    const s = this.s, fs = s.fs, map = new Map();
+    const add = (fr, a, kind) => { if (a < 1e-4 || fr > 24000) return; const k = Math.round(fr), e = map.get(k); if (e) { e.a += a; if (kind === "alias") e.kind = kind; } else map.set(k, { f: fr, a, kind }); };
+    for (const p of this.partials(f)) {
+      if (s.aa && p.f >= AA_EDGE * fs) continue;
+      const fa = fold(p.f, fs), steps = s.recon === "steps";
+      add(fa, p.a * (steps ? Math.abs(sinc(fa / fs)) : 1), Math.abs(fa - p.f) > 0.5 ? "alias" : "ok");
+      if (steps) for (let k = 1; k * fs - fa <= 24000; k++) { add(k * fs - fa, p.a * Math.abs(sinc((k * fs - fa) / fs)), "image"); add(k * fs + fa, p.a * Math.abs(sinc((k * fs + fa) / fs)), "image"); }
+    }
+    return [...map.values()];
+  }
+  update() {
+    const s = this.s, f = this.fCur(), nyq = s.fs / 2, items = [["nyquist", fmtHz(nyq)], ["input", fmtHz(f)], ["samples per cycle", (s.fs / f).toFixed(s.fs / f < 10 ? 2 : 1)]];
+    if (s.wave === "sine") items.push(f < nyq ? ["result", "below nyquist · captured"] : s.aa && f >= AA_EDGE * s.fs ? ["result", "removed by the filter"] : ["result", "alias at " + fmtHz(fold(f, s.fs))]);
+    else { const above = this.partials(f).filter(p => p.f > nyq && p.f <= 20000).length; items.push(["harmonics above nyquist (to 20 khz)", above ? above + (s.aa ? " · filtered out" : " · folded back") : "none"]); }
+    this.readout(items);
+  }
+  loop() {
+    const s = this.s, fs = s.fs, T = s.sweep ? SWEEP_T : 1, N = Math.round(fs * T), xs = new Float32Array(N);
+    const cyc = n => s.sweep ? sweepCycles(n / fs) : s.f * n / fs;
+    if (s.wave === "sine") {
+      for (let n = 0; n < N; n++) { const f = s.sweep ? sweepF(n / fs) : s.f; xs[n] = s.aa && f >= AA_EDGE * fs ? 0 : AMP * Math.sin(TAU * cyc(n)); }
+    } else if (!s.aa) {
+      for (let n = 0; n < N; n++) xs[n] = AMP * (2 * frac(cyc(n) + 0.5) - 1);
+    } else if (!s.sweep) {
+      const K = Math.floor(AA_EDGE * fs / s.f); let TL = 2048; while (TL < 4 * K) TL *= 2;
+      const tab = new Float32Array(TL + 1); for (let n = 1; n <= K; n++) addSawPartial(tab, n, TL);
+      for (let n = 0; n < N; n++) xs[n] = tabLook(tab, frac(cyc(n)), TL);
+    } else {
+      // sweep: one table per harmonic count, each adding one more harmonic than the last
+      const TL = 2048, Kmax = Math.floor(AA_EDGE * fs / SWEEP_LO), tabs = [new Float32Array(TL + 1)];
+      for (let n = 1; n <= Kmax; n++) { const t = tabs[n - 1].slice(); addSawPartial(t, n, TL); tabs.push(t); }
+      for (let n = 0; n < N; n++) { const K = Math.min(Kmax, Math.floor(AA_EDGE * fs / sweepF(n / fs))); xs[n] = tabLook(tabs[K], frac(cyc(n)), TL); }
+    }
+    // the dac: hold each sample (steps) or interpolate with a windowed sinc (smooth)
+    const L = SR / fs, M = N * L, out = new Float32Array(M);
+    if (s.recon === "steps" || L === 1) { for (let m = 0; m < M; m++) out[m] = xs[Math.floor(m / L)] * 0.8; return out; }
+    const HW = 24, ker = [];
+    for (let ph = 0; ph < L; ph++) { const k = new Float32Array(2 * HW); for (let j = 0; j < 2 * HW; j++) { const d = ph / L - (j - HW + 1); k[j] = sinc(d) * blackman(d / HW); } ker.push(k); }
+    for (let m = 0; m < M; m++) {
+      const n = Math.floor(m / L), k = ker[m - n * L]; let acc = 0;
+      for (let j = 0; j < 2 * HW; j++) { let i = n + j - HW + 1; if (i < 0) i += N; else if (i >= N) i -= N; acc += xs[i] * k[j]; }
+      out[m] = acc * 0.8;
+    }
+    return out;
+  }
+  draw() { if (!this.cvA.clientWidth) return; this.drawWave(); this.drawSpec(); }
+  drawWave() {
+    const [g, w, h] = fit(this.cvA), s = this.s, f = this.fCur(), fs = s.fs, xf = this.sampleFn(f);
+    const span = Math.min(0.02, Math.max(2.5 / f, 14 / fs)), mid = 22 + (h - 34) / 2, sc = (h - 34) / 2 * 0.85 / AMP;
+    const X = t => t / span * w, Y = v => mid - v * sc;
+    g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath(); g.moveTo(0, mid + .5); g.lineTo(w, mid + .5); g.stroke();
+    const xin = s.wave === "sine" ? t => AMP * Math.sin(TAU * f * t) : t => AMP * (2 * frac(f * t + 0.5) - 1);
+    g.strokeStyle = C["screen-dim"]; g.lineWidth = 1.5; g.lineJoin = "round"; g.beginPath();
+    const px = Math.ceil(w * 2); for (let i = 0; i <= px; i++) { const t = i / px * span; i ? g.lineTo(X(t), Y(xin(t))) : g.moveTo(X(t), Y(xin(t))); }
+    g.stroke();
+    const n1 = Math.ceil(span * fs), HW = 24, xs = new Map();
+    for (let n = -HW; n <= n1 + HW; n++) xs.set(n, xf(n / fs));
+    g.strokeStyle = C["screen-ink"]; g.lineWidth = 2; g.beginPath();
+    if (s.recon === "steps") {
+      for (let n = 0; n <= n1; n++) { const y = Y(xs.get(n)); n ? g.lineTo(X(n / fs), y) : g.moveTo(X(n / fs), y); g.lineTo(X((n + 1) / fs), y); }
+    } else {
+      for (let i = 0; i <= px; i++) {
+        const u = i / px * span * fs, n0 = Math.floor(u); let v = 0;
+        for (let k = n0 - HW + 1; k <= n0 + HW; k++) v += xs.get(k) * sinc(u - k) * blackman((u - k) / HW);
+        i ? g.lineTo(X(i / px * span), Y(v)) : g.moveTo(0, Y(v));
+      }
+    }
+    g.stroke();
+    g.fillStyle = C["screen-accent"]; g.strokeStyle = C["screen-accent"]; g.lineWidth = 1;
+    const stems = n1 <= 60;
+    for (let n = 0; n <= n1; n++) {
+      const x = X(n / fs), y = Y(xs.get(n));
+      if (stems) { g.beginPath(); g.moveTo(x, mid); g.lineTo(x, y); g.stroke(); }
+      g.beginPath(); g.arc(x, y, stems ? 3 : 2, 0, TAU); g.fill();
+    }
+    label(g, "wave", (span * 1000).toFixed(span < 0.001 ? 2 : 1) + " ms · " + n1 + " samples", w);
+  }
+  drawSpec() {
+    const [g, w, h] = fit(this.cvB), s = this.s, f = this.fCur(), fs = s.fs, nyq = fs / 2, FMAX = 24000;
+    const pl = 34, pr = 10, pt = 24, pb = 20, lo = -60, X = v => pl + v / FMAX * (w - pl - pr), Y = d => h - pb - (Math.max(lo, Math.min(0, d)) - lo) / -lo * (h - pt - pb);
+    if (nyq < FMAX) { g.fillStyle = C["screen-grid"]; g.globalAlpha = 0.45; g.fillRect(X(nyq), pt, X(FMAX) - X(nyq), h - pt - pb); g.globalAlpha = 1; }
+    dbGrid(g, w, Y, lo, 0, 20, pl, pr);
+    small(g); g.textAlign = "center"; g.textBaseline = "top"; for (let k = 0; k <= 24; k += 4) g.fillText(k ? k + "k" : "0", X(k * 1000), h - pb + 5);
+    const bw = Math.max(2, Math.min(4, (w - pl - pr) / 160)), bar = (fr, d) => [X(fr) - bw / 2, Y(d), bw, h - pb - Y(d)];
+    g.strokeStyle = C["screen-dim"]; g.lineWidth = 1;
+    for (const p of this.partials(f)) if (p.f <= FMAX) { const [x, y, ww, hh] = bar(p.f, dB(p.a / AMP)); g.strokeRect(x + .5, y + .5, ww, hh); }
+    for (const l of this.outLines(f)) {
+      const [x, y, ww, hh] = bar(l.f, dB(l.a / AMP));
+      if (l.kind === "image") { g.strokeStyle = C["screen-accent"]; g.strokeRect(x + .5, y + .5, ww, hh); }
+      else { g.fillStyle = l.kind === "alias" ? C["screen-accent"] : C["screen-ink"]; g.fillRect(x, y, ww, hh); }
+    }
+    if (nyq <= FMAX) {
+      g.strokeStyle = C["screen-accent"]; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(Math.round(X(nyq)) + .5, pt); g.lineTo(Math.round(X(nyq)) + .5, h - pb); g.stroke(); g.setLineDash([]);
+      small(g, C["screen-accent"]); g.textAlign = nyq > 20000 ? "right" : "left"; g.textBaseline = "top"; g.fillText("FS/2", X(nyq) + (nyq > 20000 ? -4 : 4), pt + 2);
+    }
+    label(g, "spectrum · dB", "white kept · orange alias", w);
+  }
+  tick(dt) { if (!this.s.sweep) return; if (!this.playing) this.anT = (this.anT + dt) % SWEEP_T; this.update(); this.draw(); }
+}
+
+/* ============== lab 2 · quantization ============== */
+const QF = 375;                    // exactly 128 samples per cycle, so the tone sits on one fft bin
+class QuantLab extends Lab {
+  constructor(root) {
+    super(root, "lab 2 · bit depth");
+    this.s = { src: "sine", bits: 4, level: -6, dither: false, listen: "signal" };
+    this.seg("src", "input", [["sine", "steady sine"], ["fade", "fading note"]]);
+    this.range("bits", "bit depth", 1, 16, { step: 1, fmt: v => v + " bit · " + (2 ** v).toLocaleString("en") + " levels" });
+    this.range("level", "input level", -60, 0, { step: 1, fmt: v => v + " dBFS" });
+    const [g] = this.group("dither (±1 step of noise)"); this.toggle(g, "dither", "on");
+    this.seg("listen", "listen to", [["signal", "the result"], ["error", "the error only"]]);
+    this.update();
+  }
+  update() {
+    const s = this.s, N = Math.round((s.src === "fade" ? 3 : 1) * SR), x = new Float32Array(N), y = new Float32Array(N);
+    const A = 10 ** (s.level / 20), q = 2 / 2 ** s.bits, half = 2 ** (s.bits - 1), r = rng(7);
+    for (let i = 0; i < N; i++) {
+      const t = i / SR, v = A * (s.src === "fade" ? Math.exp(-t / 0.45) : 1) * Math.sin(TAU * QF * t + 0.3);   // offset: keeps samples off the exact zero crossings
+      const d = s.dither ? (r() - r()) * q : 0;
+      const k = Math.max(-half, Math.min(half - 1, Math.floor((v + d) / q)));
+      x[i] = v; y[i] = (k + 0.5) * q;           // mid-rise quantizer: levels sit half a step either side of zero
+    }
+    this.x = x; this.y = y; this.q = q;
+    this.analyse();
+  }
+  specStart() { return this.s.src === "fade" ? Math.min(this.y.length - FN, Math.round(this.playT() * SR)) : 0; }
+  analyse() {
+    const s = this.s; this.S = spectrum(this.y, this.specStart());
+    let ps = 0, pe = 0; for (let i = 0; i < this.x.length; i++) { ps += this.x[i] * this.x[i]; pe += (this.y[i] - this.x[i]) ** 2; }
+    const items = [["1 step", (this.q * 100 / 2).toPrecision(2) + " % of full scale"], ["theory snr", (6.02 * s.bits + 1.76).toFixed(1) + " dB at 0 dBFS"]];
+    if (s.src === "sine") items.push(["measured snr", (10 * Math.log10(ps / Math.max(1e-30, pe))).toFixed(1) + " dB"]);
+    items.push(["bits in use", Math.max(0, s.bits + s.level / 6.02).toFixed(1)]);
+    this.readout(items);
+  }
+  loop() {
+    const s = this.s, out = new Float32Array(this.y.length);
+    if (s.listen === "signal") { for (let i = 0; i < out.length; i++) out[i] = this.y[i] * 0.8; return out; }
+    let pk = 0; for (let i = 0; i < out.length; i++) { out[i] = this.y[i] - this.x[i]; pk = Math.max(pk, Math.abs(out[i])); }
+    if (pk > 0) for (let i = 0; i < out.length; i++) out[i] *= 0.4 / pk;   // the error is tiny: boost it so it can be heard
+    return out;
+  }
+  draw() { if (!this.cvA.clientWidth) return; this.drawWave(); this.drawSpec(); }
+  drawWave() {
+    const [g, w, h] = fit(this.cvA), s = this.s, x = this.x, y = this.y, q = this.q, per = SR / QF, Nv = Math.round(2 * per);
+    let st = s.src === "fade" ? Math.round(this.playT() * SR) : 0; st = Math.max(0, Math.min(st, x.length - Nv - per - 2));
+    for (let i = 0; i < per; i++, st++) if (x[st] <= 0 && x[st + 1] > 0) break;
+    let pk = q / 2; for (let i = st; i < st + Nv; i++) pk = Math.max(pk, Math.abs(x[i]), Math.abs(y[i]));
+    const eb = 34, top = 22, mid = top + (h - top - eb - 6) / 2, half = (h - top - eb - 6) / 2, sc = half * 0.92 / pk;
+    const X = i => (i - st) / Nv * w, Y = v => mid - v * sc;
+    const nLev = 2 * pk / q;
+    if (nLev < 48) { g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath(); for (let k = Math.floor(-pk / q - 1); k <= pk / q; k++) { const yy = Math.round(Y((k + 0.5) * q)) + .5; if (yy > top && yy < mid + half) { g.moveTo(0, yy); g.lineTo(w, yy); } } g.stroke(); }
+    const line = (arr, col, lw, steps) => { g.strokeStyle = col; g.lineWidth = lw; g.lineJoin = "round"; g.beginPath(); for (let i = st; i <= st + Nv; i++) { const xx = X(i), yy = Y(arr[i]); if (i === st) g.moveTo(xx, yy); else { if (steps) g.lineTo(xx, Y(arr[i - 1])); g.lineTo(xx, yy); } } g.stroke(); };
+    line(x, C["screen-dim"], 1.5, false); line(y, C["screen-ink"], 2, true);
+    // error strip: ±1 step fills the strip
+    const ec = h - 6 - eb / 2, es = eb / 2 * 0.9 / q;
+    g.strokeStyle = C["screen-grid"]; g.beginPath(); g.moveTo(0, ec + .5); g.lineTo(w, ec + .5); g.stroke();
+    g.strokeStyle = C["screen-accent"]; g.lineWidth = 1.25; g.beginPath();
+    for (let i = st; i <= st + Nv; i++) { const yy = ec - Math.max(-q, Math.min(q, y[i] - x[i])) * es; i === st ? g.moveTo(X(i), yy) : g.lineTo(X(i), yy); }
+    g.stroke();
+    small(g, C["screen-accent"]); g.textAlign = "left"; g.textBaseline = "bottom"; g.fillText("ERROR · ±1 STEP", 10, h - eb - 4);
+    label(g, "wave · auto zoom", "view ±" + dB(pk / 0.92).toFixed(0) + " dBFS" + (s.src === "fade" ? " · " + this.playT().toFixed(2) + " s" : ""), w);
+  }
+  drawSpec() {
+    const [g, w, h] = fit(this.cvB), pl = 34, pr = 10, pt = 24, pb = 20, lo = -160, fLo = 20, fHi = 20000;
+    const X = f => pl + Math.log(Math.max(f, fLo) / fLo) / Math.log(fHi / fLo) * (w - pl - pr), Y = d => h - pb - (Math.max(lo, Math.min(0, d)) - lo) / -lo * (h - pt - pb);
+    dbGrid(g, w, Y, lo, 0, 40, pl, pr); logTicks(g, X, h - pb + 5);
+    g.save(); g.beginPath(); g.rect(pl, pt, w - pl - pr, h - pt - pb); g.clip();
+    g.strokeStyle = C["screen-ink"]; g.lineWidth = 1.5; g.lineJoin = "round"; g.beginPath();
+    let lastX = -1, cm = -Infinity, first = true;
+    for (let b = 1; b < this.S.length; b++) {
+      const f = b * BW; if (f < fLo) continue; if (f > fHi) break;
+      const xx = Math.round(X(f)), v = dB(this.S[b]);
+      if (xx !== lastX && lastX >= 0) { const yy = Y(cm); first ? (g.moveTo(lastX, yy), first = false) : g.lineTo(lastX, yy); cm = -Infinity; }
+      lastX = xx; cm = Math.max(cm, v);
+    }
+    g.stroke(); g.restore();
+    label(g, "spectrum · dBFS", "log hz", w);
+  }
+  tick() { if (this.s.src === "fade" && this.playing) { this.analyse(); this.draw(); } }
+}
+
+/* ============== lab 3 · successive-approximation adc ============== */
+const fracName = k => k === 1 ? "½" : k === 2 ? "¼" : k === 3 ? "⅛" : "1/" + 2 ** k;
+class SarLab extends Lab {
+  constructor(root) {
+    super(root, "lab 3 · successive-approximation adc", false);
+    this.s = { bits: 8, vin: 0.637 };
+    this.range("vin", "input voltage (held)", 0, 0.999, { step: 0.001, fmt: v => v.toFixed(3) + " V" });
+    this.seg("bits", "resolution", [[4, "4 bit"], [8, "8 bit"], [12, "12 bit"]]);
+    this.actions("convert", [["step", () => { this.halt(); this.step(); }], ["run", () => this.run()], ["reset", () => { this.halt(); this.reset(); }]]);
+    this.reset();
+  }
+  changed() { this.halt(); this.reset(); }
+  reset() { this.code = 0; this.i = this.s.bits - 1; this.hist = []; this.update(); this.draw(); }
+  halt() { clearInterval(this.timer); this.timer = null; }
+  run() { this.halt(); this.reset(); this.timer = setInterval(() => { this.step(); if (this.i < 0) this.halt(); }, 380); }
+  step() {
+    if (this.i < 0) return;
+    const N = 2 ** this.s.bits, trial = this.code | (1 << this.i), guess = trial / N, keep = guess <= this.s.vin;
+    if (keep) this.code = trial;
+    this.hist.push({ bit: this.i, guess, keep, code: this.code });
+    this.i--; this.update(); this.draw();
+  }
+  update() {
+    const b = this.s.bits, N = 2 ** b, done = this.i < 0;
+    this.readout([["1 step (lsb)", (1000 / N).toFixed(b > 8 ? 3 : 2) + " mV"], ["comparisons", this.hist.length + " of " + b],
+      ["code", this.code + " · " + bin(this.code, b)], [done ? "result" : "so far", (this.code / N).toFixed(4) + " V"],
+      ["error", done ? ((this.s.vin - this.code / N) * 1000).toFixed(2) + " mV (less than 1 step)" : "—"]]);
+  }
+  draw() {
+    if (!this.cvA.clientWidth) return;
+    const b = this.s.bits, N = 2 ** b, vin = this.s.vin;
+    { // binary search plot
+      const [g, w, h] = fit(this.cvA), pl = 40, pr = 12, pt = 26, pb = 22, cw = (w - pl - pr) / b;
+      const X = j => pl + j * cw, Y = v => h - pb - v * (h - pt - pb);
+      small(g); g.textAlign = "right"; g.textBaseline = "middle"; g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath();
+      for (let v = 0; v <= 1.001; v += 0.25) { const y = Math.round(Y(v)) + .5; g.moveTo(pl, y); g.lineTo(w - pr, y); g.fillText(v.toFixed(2), pl - 4, y); }
+      g.stroke();
+      g.textAlign = "center"; g.textBaseline = "top"; for (let j = 0; j < b; j++) g.fillText("b" + (b - 1 - j), X(j + 0.5), h - pb + 5);
+      let lo = 0, hi = 1;
+      this.hist.forEach((e, j) => {
+        g.fillStyle = C["screen-grid"]; g.fillRect(X(j) + 2, Y(hi), cw - 4, Y(lo) - Y(hi));
+        if (e.keep) lo = e.guess; else hi = e.guess;
+        g.strokeStyle = e.keep ? C["screen-ink"] : C["screen-dim"]; g.lineWidth = 2; g.beginPath(); g.moveTo(X(j) + 3, Y(e.guess)); g.lineTo(X(j + 1) - 3, Y(e.guess)); g.stroke();
+        small(g, e.keep ? C["screen-ink"] : C["screen-dim"]); g.textAlign = "center"; g.textBaseline = e.keep ? "top" : "bottom";
+        if (cw > 22) g.fillText(e.keep ? "1" : "0", X(j + 0.5), Y(e.guess) + (e.keep ? 4 : -4));
+      });
+      g.strokeStyle = C["screen-accent"]; g.lineWidth = 1.5; g.setLineDash([4, 3]); g.beginPath(); g.moveTo(pl, Y(vin)); g.lineTo(w - pr, Y(vin)); g.stroke(); g.setLineDash([]);
+      small(g, C["screen-accent"]); g.textAlign = "left"; g.textBaseline = "bottom"; g.fillText("INPUT " + vin.toFixed(3) + " V", pl + 4, Y(vin) - 3);
+      label(g, "binary search", "grey band = still possible", w);
+    }
+    { // the register
+      const [g, w, h] = fit(this.cvB), pad = 14, bw = Math.min(42, (w - 2 * pad) / b - 4), x0 = (w - b * (bw + 4) + 4) / 2, y0 = 48;
+      for (let j = 0; j < b; j++) {
+        const bit = b - 1 - j, x = x0 + j * (bw + 4), tried = bit > this.i, cur = bit === this.i, on = (this.code >> bit) & 1;
+        g.strokeStyle = cur ? C["screen-accent"] : C["screen-grid"]; g.lineWidth = cur ? 2 : 1; g.strokeRect(x + .5, y0 + .5, bw, 34);
+        g.font = "500 " + (bw > 30 ? 18 : 13) + "px 'IBM Plex Mono', monospace"; g.textAlign = "center"; g.textBaseline = "middle";
+        g.fillStyle = tried ? (on ? C["screen-ink"] : C["screen-dim"]) : cur ? C["screen-accent"] : C["screen-grid"];
+        g.fillText(tried ? String(on) : cur ? "?" : "·", x + bw / 2, y0 + 18);
+        small(g); g.textBaseline = "top"; if (bw > 26 || j % 2 === 0) g.fillText(fracName(b - bit), x + bw / 2, y0 + 40);
+      }
+      g.font = "400 11px 'IBM Plex Mono', monospace"; g.textAlign = "left"; g.textBaseline = "top";
+      const lines = [];
+      const last = this.hist[this.hist.length - 1];
+      if (last) lines.push([`tried bit ${last.bit}: dac ${last.guess.toFixed(4)} V`, C["screen-ink"]], [`${last.keep ? "≤" : ">"} input ${vin.toFixed(4)} V → ${last.keep ? "keep 1" : "set back to 0"}`, last.keep ? C["screen-ink"] : C["screen-dim"]]);
+      else lines.push(["press step: the first guess is half", C["screen-ink"]], ["of full scale, the top bit alone", C["screen-dim"]]);
+      if (this.i < 0) lines.push([`done · ${bin(this.code, b)} = ${this.code}`, C["screen-accent"]], [`= ${this.code} / ${N} V = ${(this.code / N).toFixed(4)} V`, C["screen-accent"]]);
+      else lines.push([`next: try bit ${this.i} (worth ${fracName(b - this.i)} V)`, C["screen-dim"]]);
+      lines.forEach(([t, c], k) => { g.fillStyle = c; g.fillText(t.toUpperCase(), pad, y0 + 64 + k * 17); });
+      label(g, "register", b + " bit · vref 1 V", w);
+    }
+  }
+}
+
+/* ============== lab 4 · binary-weighted dac ============== */
+class DacLab extends Lab {
+  constructor(root) {
+    super(root, "lab 4 · 8-bit dac", false);
+    this.s = { code: 163, recon: false };
+    const [g] = this.group("bits · click to switch", true), row = el("div", "seg"); this.bitBtns = [];
+    for (let bit = 7; bit >= 0; bit--) {
+      const b = el("button", "key hot"); b.type = "button"; b.addEventListener("click", () => { this.s.code ^= 1 << bit; this.changed(); });
+      row.append(b); this.bitBtns.push([bit, b]);
+    }
+    g.append(row);
+    this.actions("quick codes", [["0", () => this.setCode(0)], ["1", () => this.setCode(1)], ["127", () => this.setCode(127)], ["128", () => this.setCode(128)], ["255", () => this.setCode(255)], ["−1", () => this.setCode(this.s.code - 1)], ["+1", () => this.setCode(this.s.code + 1)]]);
+    const [g2] = this.group("reconstruction filter"); this.toggle(g2, "recon", "on");
+    this.update(); this.draw();
+  }
+  setCode(v) { this.s.code = Math.max(0, Math.min(255, v)); this.changed(); }
+  update() {
+    const c = this.s.code;
+    this.bitBtns.forEach(([bit, b]) => { const on = (c >> bit) & 1; b.textContent = "b" + bit + " · " + on; b.setAttribute("aria-pressed", String(!!on)); b.setAttribute("aria-label", "bit " + bit + " worth " + fracName(8 - bit) + " volt, " + (on ? "on" : "off")); });
+    this.readout([["code", c + " · " + bin(c, 8) + " · hex " + hex(c)], ["vout", (c / 256).toFixed(4) + " V"], ["1 step", (1000 / 256).toFixed(2) + " mV"], ["vref", "1 V"]]);
+  }
+  draw() {
+    if (!this.cvA.clientWidth) return;
+    const c = this.s.code;
+    { // stacked bit weights
+      const [g, w, h] = fit(this.cvA), pt = 26, pb = 14, bx = 46, bwid = Math.min(90, w * 0.22), Y = v => h - pb - v * (h - pt - pb);
+      small(g); g.textAlign = "right"; g.textBaseline = "middle"; g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath();
+      for (let v = 0; v <= 1.001; v += 0.25) { const y = Math.round(Y(v)) + .5; g.moveTo(bx, y); g.lineTo(w - 10, y); g.fillText(v.toFixed(2), bx - 4, y); }
+      g.stroke();
+      g.strokeStyle = C["screen-dim"]; g.strokeRect(bx + 10.5, Y(1) + .5, bwid, Y(0) - Y(1));
+      let acc = 0;
+      for (let bit = 7; bit >= 0; bit--) {
+        if (!((c >> bit) & 1)) continue;
+        const wgt = 2 ** bit / 256, y1 = Y(acc + wgt), y0 = Y(acc);
+        g.fillStyle = bit === 7 ? C["screen-accent"] : C["screen-ink"]; g.globalAlpha = 0.35 + 0.65 * (bit + 1) / 8; g.fillRect(bx + 11, y1, bwid - 1, Math.max(1, y0 - y1 - 1)); g.globalAlpha = 1;
+        if (y0 - y1 > 10) { small(g, C["screen-ink"]); g.textAlign = "left"; g.textBaseline = "middle"; g.fillText("B" + bit + " · " + fracName(8 - bit) + " V", bx + bwid + 18, (y0 + y1) / 2); }
+        acc += wgt;
+      }
+      g.strokeStyle = C["screen-accent"]; g.lineWidth = 2; g.beginPath(); g.moveTo(bx + 4, Math.round(Y(acc)) + .5); g.lineTo(bx + bwid + 16, Math.round(Y(acc)) + .5); g.stroke();
+      label(g, "vout = code / 256 × vref", (c / 256).toFixed(3) + " V", w);
+    }
+    { // the dac playing a sine, 10 samples per cycle
+      const [g, w, h] = fit(this.cvB), S = 10, cyc = 2.4, n1 = Math.ceil(S * cyc), mid = 22 + (h - 34) / 2, half = (h - 34) / 2 * 0.9;
+      const code = n => Math.round(127.5 + 127.5 * Math.sin(TAU * n / S)), v = n => (code(n) / 255 - 0.5) * 2;
+      const X = u => u / (S * cyc) * w, Y = val => mid - val * half;
+      g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath(); g.moveTo(0, mid + .5); g.lineTo(w, mid + .5); g.stroke();
+      g.strokeStyle = this.s.recon ? C["screen-dim"] : C["screen-ink"]; g.lineWidth = 2; g.beginPath();
+      for (let n = 0; n <= n1; n++) { const y = Y(v(n)); n ? g.lineTo(X(n), y) : g.moveTo(0, y); g.lineTo(X(n + 1), y); }
+      g.stroke();
+      if (this.s.recon) {
+        // reconstruction filter: delayed by half a sample, like a real hold-then-filter output
+        g.strokeStyle = C["screen-ink"]; g.lineWidth = 2; g.beginPath();
+        for (let i = 0; i <= w; i++) { const u = i / w * S * cyc - 0.5, n0 = Math.floor(u); let a = 0; for (let k = n0 - 15; k <= n0 + 16; k++) a += v(k) * sinc(u - k) * blackman((u - k) / 16); i ? g.lineTo(i, Y(a)) : g.moveTo(0, Y(a)); }
+        g.stroke();
+      }
+      g.fillStyle = C["screen-accent"]; for (let n = 0; n <= n1; n++) { g.beginPath(); g.arc(X(n), Y(v(n)), 2.5, 0, TAU); g.fill(); }
+      label(g, "dac output", this.s.recon ? "steps → filtered" : "raw steps (zero-order hold)", w);
+    }
+  }
+}
+
+/* ============== lab 5 · a tiny dsp ============== */
+class DspLab extends Lab {
+  constructor(root) {
+    super(root, "lab 5 · a tiny dsp");
+    this.s = { algo: "avg", taps: 8, cutoff: 800, delay: 250, fb: 0.5, src: "saw", bypass: false };
+    this.seg("algo", "algorithm", [["avg", "moving average"], ["onepole", "one-pole low pass"], ["diff", "difference"], ["echo", "echo"]], () => this.showParams());
+    this.pg = {
+      taps: this.range("taps", "taps (n)", 1, 64, { step: 1, fmt: v => v + " samples" }),
+      cutoff: this.range("cutoff", "cutoff", 50, 12000, { log: true, int: true, fmt: fmtHz }),
+      delay: this.range("delay", "delay", 1, 500, { step: 1, fmt: v => v + " ms" }),
+      fb: this.range("fb", "feedback", 0, 0.85, { step: 0.01, fmt: v => Math.round(v * 100) + " %" }),
+    };
+    this.seg("src", "source", [["saw", "saw 110 hz"], ["noise", "noise"], ["clicks", "clicks"]]);
+    const [g] = this.group("compare"); this.toggle(g, "bypass", "bypass");
+    this.srcCache = {}; this.debounce = 40;
+    this.showParams(); this.update();
+  }
+  showParams() { const a = this.s.algo; this.pg.taps.hidden = a !== "avg"; this.pg.cutoff.hidden = a !== "onepole"; this.pg.delay.hidden = this.pg.fb.hidden = a !== "echo"; }
+  source() {
+    const k = this.s.src; if (this.srcCache[k]) return this.srcCache[k];
+    const x = new Float32Array(SR);
+    if (k === "saw") { const TL = 4096, tab = new Float32Array(TL + 1); for (let n = 1; n * 110 < 20000; n++) addSawPartial(tab, n, TL); for (let i = 0; i < SR; i++) x[i] = tabLook(tab, frac(110 * i / SR), TL) * 0.8; }
+    else if (k === "noise") { const r = rng(3); for (let i = 0; i < SR; i++) x[i] = (r() * 2 - 1) * 0.35; }
+    else { x[0] = 0.9; x[SR / 2] = 0.9; }
+    return (this.srcCache[k] = x);
+  }
+  D() { return Math.max(1, Math.round(this.s.delay * SR / 1000)); }
+  a1() { return Math.exp(-TAU * this.s.cutoff / SR); }
+  process(x) {
+    const s = this.s, N = x.length, y = new Float32Array(N);
+    if (s.bypass) return x.slice();
+    if (s.algo === "avg") { const n = s.taps; let acc = 0; for (let k = 0; k < n; k++) acc += x[(N - k) % N]; for (let i = 0; i < N; i++) { if (i) acc += x[i] - x[(i - n + N) % N]; y[i] = acc / n; } }
+    else if (s.algo === "onepole") { const a = this.a1(); let z = 0; for (let pass = 0; pass < 2; pass++) for (let i = 0; i < N; i++) { z = (1 - a) * x[i] + a * z; y[i] = z; } }
+    else if (s.algo === "diff") { for (let i = 0; i < N; i++) y[i] = 0.5 * (x[i] - x[(i - 1 + N) % N]); }
+    else { const D = this.D(); for (let pass = 0; pass < 6; pass++) for (let i = 0; i < N; i++) y[i] = x[i] + s.fb * y[(i - D + N) % N]; for (let i = 0; i < N; i++) y[i] *= 0.7; }
+    return y;
+  }
+  loop() { return this.process(this.source()); }
+  // the system's response to a single click
+  impulse() {
+    const s = this.s;
+    if (s.algo === "avg") return { h: Array.from({ length: s.taps }, () => 1 / s.taps), M: Math.max(24, s.taps + 8) };
+    if (s.algo === "onepole") { const a = this.a1(), M = Math.max(16, Math.min(120, Math.ceil(Math.log(0.01) / Math.log(a)) + 4)); return { h: Array.from({ length: M }, (_, k) => (1 - a) * a ** k), M }; }
+    if (s.algo === "diff") return { h: [0.5, -0.5], M: 16 };
+    const D = this.D(), h = new Map(); for (let j = 0; j < 6; j++) h.set(j * D, s.fb ** j); return { h, M: 5 * D + 1, sparse: true };
+  }
+  mag(f) {
+    const s = this.s, w = TAU * f / SR;
+    if (s.bypass) return 1;
+    if (s.algo === "avg") { const n = s.taps, d = n * Math.sin(w / 2); return Math.abs(d) < 1e-12 ? 1 : Math.abs(Math.sin(n * w / 2) / d); }
+    if (s.algo === "onepole") { const a = this.a1(); return (1 - a) / Math.sqrt(1 - 2 * a * Math.cos(w) + a * a); }
+    if (s.algo === "diff") return Math.abs(Math.sin(w / 2));
+    const g = s.fb; return 1 / Math.sqrt(1 - 2 * g * Math.cos(w * this.D()) + g * g);
+  }
+  update() {
+    const s = this.s, a = this.a1(), D = this.D();
+    const eq = { avg: "y[n] = (x[n] + x[n−1] + … + x[n−" + (s.taps - 1) + "]) / " + s.taps, onepole: "y[n] = " + (1 - a).toFixed(3) + "·x[n] + " + a.toFixed(3) + "·y[n−1]", diff: "y[n] = ½·(x[n] − x[n−1])", echo: "y[n] = x[n] + " + s.fb.toFixed(2) + "·y[n−" + D + "]" }[s.algo];
+    const ops = { avg: s.taps + 1, onepole: 3, diff: 2, echo: 2 }[s.algo];
+    const mem = { avg: s.taps - 1, onepole: 1, diff: 1, echo: D }[s.algo];
+    const fact = { avg: ["first notch", fmtHz(SR / s.taps)], onepole: ["−3 dB near", fmtHz(s.cutoff)], diff: ["−3 dB at", fmtHz(12000)], echo: ["comb peaks every", fmtHz(SR / D)] }[s.algo];
+    this.readout([["equation", s.bypass ? "y[n] = x[n] (bypass)" : eq], ["operations per sample", ops], ["per second at 48 khz", (ops * SR / 1e6).toFixed(2) + " million"], ["memory", mem.toLocaleString("en") + " sample" + (mem === 1 ? "" : "s")], fact]);
+  }
+  draw() {
+    if (!this.cvA.clientWidth) return;
+    const s = this.s;
+    { // impulse response
+      const [g, w, h] = fit(this.cvA), ir = this.impulse(), pl = 14, pr = 14, pt = 30, pb = 22, neg = s.algo === "diff" && !s.bypass;
+      const base = neg ? pt + (h - pt - pb) * 0.6 : h - pb, X = k => pl + k / (ir.M - 1) * (w - pl - pr);
+      let pk = 0; if (s.bypass) pk = 1; else if (ir.sparse) ir.h.forEach(v => { pk = Math.max(pk, Math.abs(v)); }); else ir.h.forEach(v => { pk = Math.max(pk, Math.abs(v)); });
+      const sc = (base - pt) * 0.92 / pk;
+      g.strokeStyle = C["screen-grid"]; g.lineWidth = 1; g.beginPath(); g.moveTo(pl, base + .5); g.lineTo(w - pr, base + .5); g.stroke();
+      const stem = (k, v) => { const x = X(k), y = base - v * sc; g.strokeStyle = C["screen-ink"]; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x, base); g.lineTo(x, y); g.stroke(); g.fillStyle = k === 0 ? C["screen-accent"] : C["screen-ink"]; g.beginPath(); g.arc(x, y, 2.5, 0, TAU); g.fill(); };
+      if (s.bypass) stem(0, 1);
+      else if (ir.sparse) ir.h.forEach((v, k) => stem(k, v));
+      else ir.h.forEach((v, k) => { if (k < ir.M) stem(k, v); });
+      small(g); g.textAlign = "center"; g.textBaseline = "top";
+      if (s.algo === "echo") for (let j = 0; j <= 5; j++) g.fillText(Math.round(j * s.delay) + " ms", X(j * this.D()), h - pb + 6);
+      else for (let k = 0; k < ir.M; k += ir.M > 60 ? 20 : ir.M > 30 ? 10 : 4) g.fillText(String(k), X(k), h - pb + 6);
+      label(g, "impulse response", s.algo === "echo" ? "time" : "samples after the click", w);
+    }
+    { // frequency response, min/max per pixel so dense combs stay readable
+      const [g, w, h] = fit(this.cvB), pl = 34, pr = 10, pt = 24, pb = 20, lo = -60, hi = 20, fLo = 20, fHi = 20000;
+      const X = f => pl + Math.log(f / fLo) / Math.log(fHi / fLo) * (w - pl - pr), Y = d => h - pb - (Math.max(lo, Math.min(hi, d)) - lo) / (hi - lo) * (h - pt - pb);
+      dbGrid(g, w, Y, lo, hi, 20, pl, pr); logTicks(g, X, h - pb + 5);
+      g.strokeStyle = C["screen-dim"]; g.setLineDash([2, 3]); g.beginPath(); g.moveTo(pl, Math.round(Y(0)) + .5); g.lineTo(w - pr, Math.round(Y(0)) + .5); g.stroke(); g.setLineDash([]);
+      const cols = Math.floor(w - pl - pr), sub = s.algo === "echo" ? 64 : 2;
+      g.fillStyle = C["screen-ink"]; g.strokeStyle = C["screen-ink"]; g.lineWidth = 1.5; g.beginPath();
+      for (let c = 0; c <= cols; c++) {
+        let mn = Infinity, mx = -Infinity;
+        for (let j = 0; j < sub; j++) { const f = fLo * Math.pow(fHi / fLo, (c + j / sub) / cols), v = dB(this.mag(f)); mn = Math.min(mn, v); mx = Math.max(mx, v); }
+        if (sub > 2 && Y(mn) - Y(mx) > 1.5) g.fillRect(pl + c, Y(mx), 1, Y(mn) - Y(mx));
+        c ? g.lineTo(pl + c, Y(mx)) : g.moveTo(pl, Y(mx));
+      }
+      g.stroke();
+      label(g, "frequency response · dB", "log hz", w);
+    }
+  }
+}
+
+/* ============== lab 6 · midi ============== */
+const CC_NAMES = { 0: "bank select", 1: "mod wheel", 2: "breath", 7: "volume", 10: "pan", 11: "expression", 64: "sustain pedal", 71: "resonance", 74: "brightness", 120: "all sound off", 123: "all notes off" };
+const TYPE_NAMES = { 8: "note off", 9: "note on", 10: "poly aftertouch", 11: "control change", 12: "program change", 13: "channel pressure", 14: "pitch bend" };
+const KEYMAP = { a: 0, w: 1, s: 2, e: 3, d: 4, f: 5, t: 6, g: 7, y: 8, h: 9, u: 10, j: 11, k: 12, o: 13, l: 14, p: 15, ";": 16, "'": 17 };
+const KEYCHAR = Object.fromEntries(Object.entries(KEYMAP).map(([k, v]) => [v, k]));
+class MidiLab extends Lab {
+  constructor(root) {
+    super(root, "lab 6 · midi keyboard", false);
+    midiLab = this;
+    this.s = { vel: 100, ch: 0, bend: 0, mod: 0, oct: 4 };
+    this.voices = new Map(); this.roll = []; this.held = new Map(); this.down = new Set(); this.sustain = false; this.sustained = new Set();
+    this.bendHist = [{ t: 0, v: 0 }]; this.log = []; this.lastBend = 8192; this.lastMod = 0; this.lastNote = null; this.status = "on-screen keyboard";
+    const cb = el("button", "key", "connect midi device"); cb.type = "button"; cb.addEventListener("click", () => this.connect()); this.top.append(cb);
+    this.scr = el("div", "midi-screen"); this.sc.replaceChild(this.scr, this.cvB);
+    const ttl = el("div", "ttl"); ttl.append(el("span", null, "last message"), el("span", null, "bytes · hex · binary"));
+    this.bytesEl = el("div", "bytes"); this.logEl = el("div", "log"); this.scr.append(ttl, this.bytesEl, this.logEl);
+    this.kb = el("div", "kb"); this.root.insertBefore(this.kb, this.ctls); this.buildKeys();
+    this.range("vel", "velocity", 1, 127, { step: 1, fmt: v => String(v) });
+    this.seg("ch", "channel", [[0, "1"], [1, "2"], [9, "10 · drums"]]);
+    const bg = this.range("bend", "pitch bend", -1, 1, { step: 0.001, fmt: v => (v * 2 >= 0 ? "+" : "") + (v * 2).toFixed(2) + " st" });
+    const spring = () => { if (this.s.bend !== 0) { this.s.bend = 0; this.inputs.bend.sync(); this.changed(); } };
+    bg.querySelector("input").addEventListener("change", spring); bg.querySelector("input").addEventListener("pointerup", spring);
+    this.range("mod", "mod wheel · cc 1", 0, 127, { step: 1, fmt: v => String(v) });
+    this.actions("octave", [["oct −", () => this.shift(-1)], ["oct +", () => this.shift(1)]]);
+    this.showBytes(null); this.update();
+    document.addEventListener("keydown", e => this.key(e, true));
+    document.addEventListener("keyup", e => this.key(e, false));
+  }
+  get base() { return 12 * (this.s.oct + 1); }
+  buildKeys() {
+    this.kb.replaceChildren(); this.keyEls = new Map();
+    const whites = [0, 2, 4, 5, 7, 9, 11], wOffs = [];
+    for (let o = 0; o <= 24; o++) if (whites.includes(o % 12)) wOffs.push(o);
+    const ww = 100 / wOffs.length;
+    const bind = (k, off) => {
+      k.addEventListener("pointerdown", e => { e.preventDefault(); this.press(off); });
+      for (const ev of ["pointerup", "pointerleave", "pointercancel"]) k.addEventListener(ev, () => this.release(off));
+      this.keyEls.set(off, k);
+    };
+    wOffs.forEach(off => {
+      const k = el("div", "wk"), n = this.base + off;
+      if (off % 12 === 0) k.append(el("b", null, midiName(n)));
+      if (KEYCHAR[off]) k.append(el("span", null, KEYCHAR[off]));
+      bind(k, off); this.kb.append(k);
+    });
+    wOffs.forEach((off, i) => {
+      if (off === 24 || ![0, 2, 5, 7, 9].includes(off % 12)) return;
+      const k = el("div", "bk", KEYCHAR[off + 1] || ""); k.style.left = ((i + 1) * ww - ww * 0.3) + "%"; k.style.width = (ww * 0.6) + "%";
+      bind(k, off + 1); this.kb.append(k);
+    });
+    this.syncKeys();
+  }
+  syncKeys() { this.keyEls.forEach((k, off) => k.classList.toggle("on", this.voices.has(this.base + off))); }
+  shift(d) { this.s.oct = Math.max(0, Math.min(8, this.s.oct + d)); this.buildKeys(); }
+  press(off) { const n = this.base + off; if (n > 127 || this.down.has(off)) return; this.down.add(off); this.handle([0x90 | this.s.ch, n, this.s.vel], "screen"); }
+  release(off) { if (!this.down.has(off)) return; this.down.delete(off); this.handle([0x80 | this.s.ch, this.base + off, 64], "screen"); }
+  key(e, isDown) {
+    if (!visible.has(this.root) || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target; if (t && (t.isContentEditable || t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && t.type !== "range"))) return;
+    const k = e.key.toLowerCase();
+    if (isDown && (k === "z" || k === "x")) { if (!e.repeat) { this.down.forEach(off => this.release(off)); this.shift(k === "z" ? -1 : 1); } e.preventDefault(); return; }
+    if (!(k in KEYMAP)) return;
+    e.preventDefault(); if (e.repeat) return;
+    isDown ? this.press(KEYMAP[k]) : this.release(KEYMAP[k]);
+  }
+  changed() {
+    const b = Math.max(0, Math.min(16383, Math.round(8192 + this.s.bend * 8192)));
+    if (b !== this.lastBend) { this.lastBend = b; this.handle([0xE0 | this.s.ch, b & 127, b >> 7], "screen"); }
+    if (this.s.mod !== this.lastMod) { this.lastMod = this.s.mod; this.handle([0xB0 | this.s.ch, 1, this.s.mod], "screen"); }
+  }
+  async connect() {
+    ensureCtx();
+    if (!navigator.requestMIDIAccess) { this.status = "web midi is not available here · try chrome or edge"; this.update(); return; }
+    try {
+      const acc = await navigator.requestMIDIAccess();
+      const hook = () => { const names = []; acc.inputs.forEach(inp => { inp.onmidimessage = e => this.handle(Array.from(e.data), inp.name); names.push(inp.name); }); this.status = names.length ? "listening to " + names.join(", ") : "no midi inputs found · plug one in"; this.update(); };
+      hook(); acc.onstatechange = hook;
+    } catch (err) { this.status = "midi access was blocked"; this.update(); }
+  }
+
+  /* ---------- messages ---------- */
+  handle(b, from) {
+    const st = b[0]; if (st === 0xF8 || st === 0xFE) return;   // clock and active sensing arrive constantly: not logged
+    const type = st >> 4, ch = (st & 15) + 1;
+    let text = "";
+    if (type === 9 && b[2] > 0) { this.noteOn(b[1], b[2]); text = `note on · ch ${ch} · ${midiName(b[1])} (${b[1]}) · velocity ${b[2]}`; }
+    else if (type === 8 || type === 9) { this.noteOff(b[1]); text = `note off · ch ${ch} · ${midiName(b[1])} (${b[1]})` + (type === 9 ? " · as note on, velocity 0" : ""); }
+    else if (type === 11) {
+      text = `control change · ch ${ch} · cc ${b[1]}${CC_NAMES[b[1]] ? " " + CC_NAMES[b[1]] : ""} = ${b[2]}`;
+      if (b[1] === 1) { this.applyMod(b[2]); if (from !== "screen") { this.s.mod = this.lastMod = b[2]; this.inputs.mod.sync(); } }
+      if (b[1] === 64) this.setSustain(b[2] >= 64);
+      if (b[1] === 120 || b[1] === 123) this.allOff();
+    }
+    else if (type === 14) {
+      const v = (b[2] << 7) | b[1], bend = (v - 8192) / 8192; this.applyBend(bend);
+      if (from !== "screen") { this.s.bend = bend; this.lastBend = v; this.inputs.bend.sync(); }
+      text = `pitch bend · ch ${ch} · ${v} of 16383 · ${(bend * 2 >= 0 ? "+" : "") + (bend * 2).toFixed(2)} semitones`;
+    }
+    else if (type === 12) text = `program change · ch ${ch} · program ${b[1] + 1}`;
+    else if (type === 13) text = `channel pressure · ch ${ch} · ${b[1]}`;
+    else if (type === 10) text = `poly aftertouch · ch ${ch} · ${midiName(b[1])} · ${b[2]}`;
+    else if (st === 0xF0) text = `system exclusive · ${b.length} bytes`;
+    else text = { 0xFA: "start", 0xFB: "continue", 0xFC: "stop", 0xFF: "reset" }[st] || "system message";
+    const hx = (b.length > 4 ? b.slice(0, 4) : b).map(hex).join(" ") + (b.length > 4 ? " …" : "");
+    this.log.unshift([hx, text]); this.log.length = Math.min(this.log.length, 14);
+    this.logEl.replaceChildren(...this.log.map(([h2, t]) => { const d = el("div"); d.append(el("i", null, h2), document.createTextNode(t)); return d; }));
+    this.showBytes(b);
+  }
+  showBytes(b) {
+    const boxes = [];
+    for (let i = 0; i < 3; i++) {
+      const d = el("div", "byte" + (!b || i >= b.length ? " empty" : ""));
+      if (b && i < b.length) {
+        const v = b[i], bits = bin(v, 8), type = b[0] >> 4, binEl = el("div", "bin");
+        binEl.append(el("b", null, bits[0]), document.createTextNode(bits.slice(1, 4) + " " + bits.slice(4)));
+        let what;
+        if (i === 0) what = b[0] >= 0xF0 ? "status · system" : `status · ${TYPE_NAMES[type] || "?"} · ch ${(b[0] & 15) + 1}`;
+        else if (type === 8 || type === 9 || type === 10) what = i === 1 ? `data · note ${v} = ${midiName(v)}` : `data · ${type === 10 ? "pressure" : "velocity"} ${v}`;
+        else if (type === 11) what = i === 1 ? `data · controller ${v}` : `data · value ${v}`;
+        else if (type === 14) what = i === 1 ? `data · low 7 bits ${v}` : `data · high 7 bits ${v}`;
+        else what = `data · ${v}`;
+        d.append(el("div", "hex", hex(v)), binEl, el("div", "what", what));
+      } else d.append(el("div", "hex", "··"), el("div", "bin", "········"), el("div", "what", i ? "data byte" : "status byte"));
+      boxes.push(d);
+    }
+    this.bytesEl.replaceChildren(...boxes);
+  }
+
+  /* ---------- the synth that receives them ---------- */
+  ensureSynth() {
+    if (this.bus) return;
+    this.bus = ctx.createGain(); this.bus.gain.value = 0.55; this.bus.connect(master);
+    this.lfo = ctx.createOscillator(); this.lfo.frequency.value = 5.5; this.lfoGain = ctx.createGain(); this.lfoGain.gain.value = this.s.mod / 127 * 40;
+    this.lfo.connect(this.lfoGain); this.lfo.start();
+  }
+  noteOn(n, vel) {
+    ensureCtx(); this.ensureSynth();
+    if (this.voices.has(n)) this.kill(n);
+    this.endRoll(n); this.sustained.delete(n);
+    const t = ctx.currentTime, o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(), peak = 0.05 + 0.3 * (vel / 127) ** 2;
+    o.type = "sawtooth"; o.frequency.value = 440 * 2 ** ((n - 69) / 12); o.detune.value = this.bendCents || 0; this.lfoGain.connect(o.detune);
+    f.type = "lowpass"; f.frequency.value = 500 + vel * 45; f.Q.value = 0.9;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + 0.006); g.gain.setTargetAtTime(peak * 0.5, t + 0.01, 0.35);
+    o.connect(f).connect(g).connect(this.bus); o.start(t);
+    this.voices.set(n, { o, g });
+    const now = performance.now() / 1000, r = { n, vel, t0: now, t1: null }; this.roll.push(r); this.held.set(n, r);
+    this.lastNote = n; this.syncKeys(); this.update();
+  }
+  noteOff(n) {
+    if (this.sustain && this.voices.has(n)) { this.sustained.add(n); this.endRoll(n); return; }
+    this.kill(n); this.endRoll(n);
+  }
+  endRoll(n) { const r = this.held.get(n); if (r) { r.t1 = performance.now() / 1000; this.held.delete(n); } }
+  kill(n) {
+    const v = this.voices.get(n); if (!v) return;
+    const t = ctx.currentTime; v.g.gain.cancelScheduledValues(t); v.g.gain.setValueAtTime(v.g.gain.value, t); v.g.gain.setTargetAtTime(0, t, 0.07); v.o.stop(t + 0.5);
+    v.o.onended = () => { try { this.lfoGain.disconnect(v.o.detune); } catch (err) { /* already gone */ } v.g.disconnect(); };
+    this.voices.delete(n); this.syncKeys();
+  }
+  setSustain(on) { this.sustain = on; if (!on) { this.sustained.forEach(n => this.kill(n)); this.sustained.clear(); } }
+  applyBend(b) {
+    this.bendCents = b * 200; if (ctx) { const t = ctx.currentTime; this.voices.forEach(v => v.o.detune.setTargetAtTime(this.bendCents, t, 0.005)); }
+    this.bendHist.push({ t: performance.now() / 1000, v: b });
+  }
+  applyMod(v) { if (this.lfoGain) this.lfoGain.gain.setTargetAtTime(v / 127 * 40, ctx.currentTime, 0.02); }
+  allOff() { [...this.voices.keys()].forEach(n => { this.kill(n); this.endRoll(n); }); this.sustained.clear(); this.down.clear(); }
+  update() {
+    const n = this.lastNote, items = [["input", this.status]];
+    items.push(n == null ? ["pitch", "f = 440 × 2^((n − 69) / 12)"] : ["last note", n + " = " + midiName(n) + " = " + fmtHz(440 * 2 ** ((n - 69) / 12))]);
+    items.push(["keys", "a–k · w e t y u · z / x octave"]);
+    this.readout(items);
+  }
+  draw() {
+    if (!this.cvA.clientWidth) return;
+    const [g, w, h] = fit(this.cvA), now = performance.now() / 1000, WIN = 6, pl = 34, pr = 8, pt = 24, bs = 26, pb = bs + 8;
+    const lo = this.base - 5, hi = this.base + 29, rh = (h - pt - pb) / (hi - lo + 1);
+    const X = t => pl + (1 - (now - t) / WIN) * (w - pl - pr), Y = n => pt + (hi - n) * rh;
+    for (let n = lo; n <= hi; n++) {
+      if ([1, 3, 6, 8, 10].includes((n % 12 + 12) % 12)) { g.fillStyle = C["screen-grid"]; g.globalAlpha = 0.55; g.fillRect(pl, Y(n), w - pl - pr, rh); g.globalAlpha = 1; }
+      if (n % 12 === 0) { small(g); g.textAlign = "right"; g.textBaseline = "middle"; g.fillText(midiName(n), pl - 4, Y(n) + rh / 2); g.strokeStyle = C["screen-grid"]; g.beginPath(); g.moveTo(pl, Math.round(Y(n) + rh) + .5); g.lineTo(w - pr, Math.round(Y(n) + rh) + .5); g.stroke(); }
+    }
+    this.roll = this.roll.filter(r => r.t1 == null || now - r.t1 < WIN);
+    for (const r of this.roll) {
+      if (r.n < lo || r.n > hi) continue;
+      const x0 = Math.max(pl, X(r.t0)), x1 = X(r.t1 ?? now);
+      g.fillStyle = r.t1 == null ? C["screen-accent"] : C["screen-ink"]; g.globalAlpha = 0.35 + 0.65 * r.vel / 127;
+      g.fillRect(x0, Y(r.n) + 1, Math.max(2, x1 - x0), Math.max(2, rh - 2)); g.globalAlpha = 1;
+    }
+    // pitch bend strip
+    const yc = h - 6 - bs / 2; this.bendHist = this.bendHist.filter((e, i, a) => i === a.length - 1 || now - a[i + 1].t < WIN);
+    g.strokeStyle = C["screen-grid"]; g.beginPath(); g.moveTo(pl, yc + .5); g.lineTo(w - pr, yc + .5); g.stroke();
+    g.strokeStyle = C["screen-accent"]; g.lineWidth = 1.5; g.beginPath();
+    this.bendHist.forEach((e, i) => { const x = Math.max(pl, X(e.t)), y = yc - e.v * bs / 2 * 0.9; if (i) { g.lineTo(x, yc - this.bendHist[i - 1].v * bs / 2 * 0.9); g.lineTo(x, y); } else g.moveTo(x, y); });
+    g.lineTo(w - pr, yc - this.bendHist[this.bendHist.length - 1].v * bs / 2 * 0.9); g.stroke();
+    small(g); g.textAlign = "right"; g.textBaseline = "middle"; g.fillText("BEND", pl - 4, yc);
+    label(g, "piano roll", "last 6 s · brightness = velocity", w);
+  }
+  tick() { this.draw(); }
+}
+
+/* ============== page ============== */
+const LABS = { sampling: SamplingLab, quant: QuantLab, sar: SarLab, dac: DacLab, dsp: DspLab, midi: MidiLab };
+const visible = new Set();
+const labs = [...document.querySelectorAll("[data-lab]")].map(n => new LABS[n.dataset.lab](n));
+const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+labs.forEach(l => io.observe(l.root));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let last = performance.now(), acc = 0;
+(function loop(now) {
+  const dt = (now - last) / 1000; last = now; acc += dt;
+  if (acc > 1 / 30) { for (const l of labs) if (visible.has(l.root) && (l.playing || l === midiLab || !reduce)) l.tick(acc); acc = 0; }
+  requestAnimationFrame(loop);
+})(last);
+
+const rerender = () => { readColors(); labs.forEach(l => l.draw()); };
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", rerender);
+new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const links = [...document.querySelectorAll("nav.index a")];
+const secIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-40% 0px -55% 0px" });
+document.querySelectorAll("section.ch").forEach(s => secIO.observe(s));
+})();
+</script>
+</body>
+</html>

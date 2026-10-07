@@ -1,6 +1,6 @@
 # ClassAudio
 
-Interactive teaching pages for sound synthesis. Open `index.html` for the landing page that links to all three parts.
+Interactive teaching pages for sound synthesis. Open `index.html` for the landing page that links to all four parts.
 
 ## Waves & Harmonics — `waves.html`
 
@@ -9,7 +9,7 @@ spectrum side by side and lets students hear it:
 
 1. **Reading the display**: time domain vs. frequency domain (Fourier).
 2. **Oscillator**: sine, triangle, square and saw, and their harmonic recipes.
-3. **Additive synthesis**: 16 drawable harmonic faders, presets, phase flips, and a "build" animation that adds harmonics one at a time.
+3. **Additive synthesis**: 16 drawable harmonic faders, basic-wave presets, instrument recipes (organ, flute, clarinet, oboe, sax, trumpet, violin, cello), phase flips, and a "build" animation that adds harmonics one at a time.
 4. **FM synthesis**: carrier, C:M ratio and modulation index, with Bessel-function sidebands and Carson bandwidth.
 5. **Filters**: low/high/band pass, 12/24 dB slope, resonance, and a cutoff sweep. Pre-filter bars and wave stay visible in grey.
 6. **Quick reference**: tables and a glossary.
@@ -44,3 +44,16 @@ What effects do to a wave and its harmonics. Each lab shows the wave (input vs. 
 5. **Chorus & flanger**: modulated delay voices, feedback comb filtering, presets.
 6. **The Rhodes chain**: preamp → transformer → tape → chorus on a built-in e-piano phrase or your own audio file.
 7. **Quick reference** and glossary.
+
+## Digital Sound — `digital.html`
+
+How sound becomes numbers and back, with a lab in every chapter:
+
+1. **The digital chain**: microphone → anti-alias filter → ADC → DSP → DAC → reconstruction filter → speaker.
+2. **Sampling**: sample rate, Nyquist, aliasing (with a 100 Hz → 20 kHz sweep), the anti-alias filter, and stepped vs. reconstructed DAC output.
+3. **Bit depth**: quantization steps and error, 6 dB per bit, low-level distortion, and TPDF dither. You can listen to the error on its own.
+4. **Inside the ADC**: a step-by-step successive-approximation converter, plus how sigma-delta converters work.
+5. **Inside the DAC**: an 8-bit binary-weighted DAC with clickable bits, the R–2R ladder, and the reconstruction filter.
+6. **DSP**: moving average (FIR), one-pole (IIR), difference and echo, with impulse and frequency response, operation counts, and buffer latency.
+7. **MIDI**: an on-screen keyboard (mouse or computer keys) or a real MIDI device via Web MIDI. Every message is decoded byte by byte, with a piano roll and a small synth.
+8. **Quick reference**: formats, formulas and a glossary.
