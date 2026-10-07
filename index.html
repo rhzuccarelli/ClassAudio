@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* layout: product-manual cover — a big wordmark, then the three parts of the course as hardware "modules",
+/* layout: product-manual cover — a big wordmark, then the four parts of the course as hardware "modules",
    each with a small live screen, its chapter list and one button in; a short lesson plan underneath */
 :root {
   --bg: #ececea;
@@ -65,7 +65,7 @@ h2 span { color: var(--accent); }
 .sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding-block: 40px 18px; }
 .sec-head p { margin: 0; color: var(--muted); font-size: 14px; }
 
-.modules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.modules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .module {
   display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; min-width: 0;
   background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
@@ -126,7 +126,7 @@ footer { padding-top: 48px; font: 400 11px/1.6 var(--f-mono); text-transform: up
 <div class="bar">
   <span>ClassAudio</span>
   <span class="spacer"></span>
-  <span class="muted">sound design course · 3 parts</span>
+  <span class="muted">sound design course · 4 parts</span>
 </div>
 
 <div class="wrap">
@@ -136,7 +136,7 @@ footer { padding-top: 48px; font: 400 11px/1.6 var(--f-mono); text-transform: up
       <h1>Class<em>Audio</em></h1>
     </div>
     <div class="hero-sub">
-      <p class="lede">Three hands-on pages for learning how sound works: build waves from harmonics, take real recordings apart, and hear what circuits, iron and tape do to a signal.</p>
+      <p class="lede">Four hands-on pages for learning how sound works: build waves from harmonics, take real recordings apart, hear what circuits, iron and tape do to a signal, and see how sound becomes numbers.</p>
       <dl class="specs">
         <dt>runs in</dt><dd>any modern browser · nothing to install</dd>
         <dt>sound</dt><dd>web audio · press play on each lab</dd>
@@ -146,7 +146,7 @@ footer { padding-top: 48px; font: 400 11px/1.6 var(--f-mono); text-transform: up
   </header>
 
   <section aria-labelledby="parts">
-    <div class="sec-head"><h2 id="parts"><span>01</span>the three parts</h2><p>Work through them in order, or jump straight to the one your lesson needs.</p></div>
+    <div class="sec-head"><h2 id="parts"><span>01</span>the four parts</h2><p>Work through them in order, or jump straight to the one your lesson needs.</p></div>
     <div class="modules">
       <a class="module" href="waves.html" data-page="waves">
         <div class="mod-top"><span class="part">part 1</span><span class="file">synthesis</span></div>
@@ -198,6 +198,23 @@ footer { padding-top: 48px; font: 400 11px/1.6 var(--f-mono); text-transform: up
         </div>
         <div class="mod-foot"><span class="needs">needs: nothing · any recording (optional)</span><span class="open">open part 3 →</span></div>
       </a>
+
+      <a class="module" href="digital.html" data-page="digital">
+        <div class="mod-top"><span class="part">part 4</span><span class="file">digital</span></div>
+        <div class="screen"><canvas data-preview="digital" aria-label="preview: a sine wave being sampled into steps"></canvas></div>
+        <div>
+          <h3>Digital Sound</h3>
+          <p>How a voltage becomes numbers and back: sample rate, aliasing, bit depth and dither, what is inside an ADC and a DAC, what a DSP computes, and what a MIDI message really contains.</p>
+          <ul class="chapters">
+            <li><span>1</span>the digital chain</li>
+            <li><span>2</span>sampling, nyquist, aliasing</li>
+            <li><span>3</span>bit depth, quantization noise, dither</li>
+            <li><span>4</span>inside the adc and the dac</li>
+            <li><span>5</span>dsp, latency · midi messages</li>
+          </ul>
+        </div>
+        <div class="mod-foot"><span class="needs">needs: nothing · a midi keyboard (optional)</span><span class="open">open part 4 →</span></div>
+      </a>
     </div>
   </section>
 
@@ -211,6 +228,8 @@ footer { padding-top: 48px; font: 400 11px/1.6 var(--f-mono); text-transform: up
           <tr><td class="n">2</td><td><a href="waves.html" data-page="waves">Waves &amp; Harmonics</a> · ch. 5–6</td><td>Two ways to get harmonics: create them with FM, or carve them with a filter.</td><td>Filter lab: saw, resonance ~15 dB, <kbd>sweep cutoff</kbd>. Then FM at ratio 1.41 with <kbd>sweep index</kbd>.</td></tr>
           <tr><td class="n">3</td><td><a href="analyze.html" data-page="analyze">Sound Microscope</a></td><td>Real instruments are more than a recipe: every harmonic has its own life.</td><td>Record one Rhodes or piano key soft and hard. Compare the harmonic decay charts and the resynthesis.</td></tr>
           <tr><td class="n">4</td><td><a href="effects.html" data-page="effects">Colour &amp; Saturation</a></td><td>"Warm" is measurable: even harmonics, frequency-dependent saturation, flutter.</td><td>Overdrive lab: two tones, fifth vs. third. Transformer lab: sweep the pitch down at a fixed level.</td></tr>
+          <tr><td class="n">5</td><td><a href="digital.html" data-page="digital">Digital Sound</a> · ch. 1–5</td><td>Sound becomes numbers: how often (sample rate) and how precisely (bits). Too few of either can be heard.</td><td>Sampling lab: sine at <kbd>8k</kbd>, press <kbd>sweep</kbd> and hear it fold back. Bit depth lab: fading note at 6 bits, then switch dither on.</td></tr>
+          <tr><td class="n">6</td><td><a href="digital.html" data-page="digital">Digital Sound</a> · ch. 6–7</td><td>Every effect is multiply, add and remember. MIDI is instructions, not audio.</td><td>DSP lab: <kbd>echo</kbd> on clicks, then shorten the delay into a comb. MIDI lab: play a chord and read the bytes.</td></tr>
         </tbody>
       </table>
     </div>
@@ -279,7 +298,17 @@ function drawEffects(cv, t) {
   g.stroke();
   tag(g, "DRIVE +" + (20 * Math.log10(drive)).toFixed(0) + " DB", w);
 }
-const DRAW = { waves: drawWaves, analyze: drawAnalyze, effects: drawEffects };
+// part 4: a sine sampled into steps, with the sample dots
+function drawDigital(cv, t) {
+  const [g, w, h] = fit(cv), mid = h / 2 + 8, half = h / 2 - 24, per = 12 + 6 * Math.sin(t * 0.5), cyc = 2.2, ph = t * 0.8;
+  const v = u => Math.sin(TAU * u / per + ph), n1 = Math.ceil(per * cyc), X = u => u / (per * cyc) * w;
+  g.strokeStyle = C["screen-grid"]; g.beginPath(); g.moveTo(0, mid + .5); g.lineTo(w, mid + .5); g.stroke();
+  g.strokeStyle = C["screen-dim"]; g.lineWidth = 1.5; g.beginPath(); for (let x = 0; x <= w; x++) { const Y = mid - v(x / w * per * cyc) * half; x ? g.lineTo(x, Y) : g.moveTo(x, Y); } g.stroke();
+  g.strokeStyle = C["screen-ink"]; g.lineWidth = 2; g.beginPath(); for (let n = 0; n <= n1; n++) { const Y = mid - v(n) * half; n ? g.lineTo(X(n), Y) : g.moveTo(0, Y); g.lineTo(X(n + 1), Y); } g.stroke();
+  g.fillStyle = C["screen-accent"]; for (let n = 0; n <= n1; n++) { g.beginPath(); g.arc(X(n), mid - v(n) * half, 2.5, 0, TAU); g.fill(); }
+  tag(g, "SAMPLED · " + per.toFixed(1) + " PER CYCLE", w);
+}
+const DRAW = { waves: drawWaves, analyze: drawAnalyze, effects: drawEffects, digital: drawDigital };
 const canvases = [...document.querySelectorAll("[data-preview]")];
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const t0 = performance.now();
