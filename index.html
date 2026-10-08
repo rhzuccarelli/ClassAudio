@@ -188,8 +188,6 @@ nav.index .az span { padding: 4px 0; color: var(--line); }
 .idx td:last-child a b { color: var(--accent); font-weight: 500; margin-right: 6px; }
 .idx td:last-child a:hover { color: var(--ink); }
 .none { color: var(--muted); }
-.plan td:first-child { font: 500 13px/1.4 var(--f-mono); color: var(--accent); width: 32px; }
-.plan td a { font-weight: 600; text-underline-offset: 3px; }
 
 @media (max-width: 960px) {
   .page { grid-template-columns: minmax(0,1fr); gap: 0; }
@@ -224,7 +222,6 @@ nav.index .az span { padding: 4px 0; color: var(--line); }
     <ol>
       <li><a href="#contents"><span>1</span><span>contents</span></a></li>
       <li><a href="#index"><span>2</span><span>index a–z</span></a></li>
-      <li><a href="#class"><span>3</span><span>in class</span></a></li>
     </ol>
     <div class="az" id="az"></div>
   </nav>
@@ -299,27 +296,6 @@ nav.index .az span { padding: 4px 0; color: var(--line); }
           <table>
             <thead><tr><th>term</th><th>meaning</th><th>see</th></tr></thead>
             <tbody id="entries"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section class="ch" id="class">
-      <div class="ch-head"><span class="ch-num">3</span><h2>in class</h2></div>
-      <div class="indent">
-        <div class="prose"><p>One possible order, one class per row. Each “try this” works as a live demo on the projector.</p></div>
-        <div class="note">Every page has a volume slider in its top bar. Start low on classroom speakers: resonant filters and distortion can jump in level.</div>
-        <div class="tbl-wrap plan">
-          <table>
-            <thead><tr><th></th><th>chapter</th><th>idea</th><th>try this</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td><a href="waves.html#series">I · 1–4</a></td><td>Every sound is a set of sine waves. Timbre is the recipe.</td><td>Play <kbd>ideal string</kbd>, then <kbd>in-between</kbd>. Additive lab: <kbd>saw</kbd>, then <kbd>build</kbd>.</td></tr>
-              <tr><td>2</td><td><a href="waves.html#fm">I · 5–6</a></td><td>Create harmonics with FM, or carve them with a filter.</td><td>Saw, resonance ~15 dB, <kbd>sweep cutoff</kbd>. FM at ratio 1.41, <kbd>sweep index</kbd>.</td></tr>
-              <tr><td>3</td><td><a href="analyze.html">II</a></td><td>Every harmonic of a real instrument has its own life.</td><td>Record one note soft and loud. Compare harmonic decay and resynthesis.</td></tr>
-              <tr><td>4</td><td><a href="effects.html">III</a></td><td>“Warm” is measurable.</td><td>Overdrive: two tones, fifth vs. third. Transformer: sweep the pitch down.</td></tr>
-              <tr><td>5</td><td><a href="digital.html#sampling">IV · 1–5</a></td><td>How often (sample rate) and how precisely (bits).</td><td>Sine at <kbd>8k</kbd>, <kbd>sweep</kbd>. A fading note at 6 bits, then dither on.</td></tr>
-              <tr><td>6</td><td><a href="digital.html#dsp">IV · 6–8</a></td><td>Effects are arithmetic. MIDI is instructions, not audio.</td><td><kbd>echo</kbd> on clicks, shorten into a comb. Play a chord, read the bytes.</td></tr>
-            </tbody>
           </table>
         </div>
       </div>
