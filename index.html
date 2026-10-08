@@ -6,208 +6,214 @@
 <title>ClassAudio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* layout: a reference book's front matter — title page, contents, then an A–Z index of terms,
-   each entry a short definition with a pointer to the chapter where you can see and hear it */
+/* layout: the front of a reference manual — same rail + reading column as the chapter pages.
+   the rail holds the A–Z; the column holds a short "how to use", the four volumes and the index of terms */
 :root {
-  --bg: #f6f5f1;
-  --ink: #1a1a19;
-  --muted: #6e6d68;
-  --line: #d9d7d0;
-  --accent: #c2410c;
-  --f-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --bg: #ececea;
+  --panel: #f7f7f5;
+  --ink: #141414;
+  --muted: #6d6d6a;
+  --line: #cbcbc7;
+  --accent: #ff4f00;
+  --f-sans: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #141413; --ink: #e8e6e0; --muted: #94928b; --line: #2f2e2b; --accent: #f08a4b; color-scheme: dark;
-  }
+  :root:not([data-theme="light"]) { --bg: #111112; --panel: #19191b; --ink: #ececea; --muted: #8f8f8c; --line: #313133; --accent: #ff6a1f; color-scheme: dark; }
 }
-:root[data-theme="dark"] {
-  --bg: #141413; --ink: #e8e6e0; --muted: #94928b; --line: #2f2e2b; --accent: #f08a4b; color-scheme: dark;
-}
+:root[data-theme="dark"] { --bg: #111112; --panel: #19191b; --ink: #ececea; --muted: #8f8f8c; --line: #313133; --accent: #ff6a1f; color-scheme: dark; }
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 18px/1.6 var(--f-serif); }
-a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; }
-a:hover { color: var(--accent); text-decoration-color: currentColor; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.55 var(--f-sans); }
+a { color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 96px; }
+.bar {
+  position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 10px 20px; background: var(--bg); border-bottom: 1px solid var(--line);
+  font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .08em;
+}
+.bar b { color: var(--accent); font-weight: 500; }
+.bar a { text-decoration: none; }
+.bar a:hover { color: var(--accent); }
 
-header { padding: 88px 0 40px; }
-h1 { font-weight: 600; font-size: 44px; line-height: 1.1; letter-spacing: -.01em; margin: 0 0 6px; }
-.sub { font-style: italic; color: var(--muted); margin: 0 0 36px; font-size: 20px; }
-header p { margin: 0 0 14px; }
+.page { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 48px; max-width: 1080px; margin: 0 auto; padding: 0 20px 96px; }
+nav.rail {
+  position: sticky; top: 56px; align-self: start; padding-top: 40px;
+  font: 400 12px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em;
+}
+nav.rail a { text-decoration: none; color: var(--muted); }
+nav.rail a:hover { color: var(--ink); }
+.rail-sec { display: grid; gap: 8px; margin-bottom: 28px; }
+.az { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px 0; margin-top: 4px; }
+.az span { color: var(--line); }
+main { min-width: 0; }
 
-h2 { font-weight: 600; font-size: 15px; letter-spacing: .12em; text-transform: uppercase; margin: 0 0 20px; }
-section { padding-top: 56px; }
-section > p { margin: 0 0 14px; }
-.muted { color: var(--muted); }
+header { padding: 56px 0 36px; border-bottom: 1px solid var(--ink); }
+h1 { font: 700 clamp(40px, 6vw, 64px)/1 var(--f-sans); letter-spacing: -.03em; margin: 0 0 8px; }
+.tagline { font-size: 20px; color: var(--muted); margin: 0 0 28px; }
+.how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0; list-style: none; counter-reset: s; }
+.how li { counter-increment: s; font-size: 15px; }
+.how li::before { content: counter(s); display: block; font: 500 12px/1 var(--f-mono); color: var(--accent); margin-bottom: 8px; }
+.how b { font-weight: 600; }
+.fine { margin: 28px 0 0; font: 400 11px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 
-/* contents */
-.toc { list-style: none; margin: 0; padding: 0; }
-.toc > li { padding: 18px 0; border-top: 1px solid var(--line); }
-.toc > li:last-child { border-bottom: 1px solid var(--line); }
-.toc .vol { display: flex; align-items: baseline; gap: 14px; }
-.toc .vol .n { font: 400 13px/1 var(--f-mono); color: var(--muted); width: 28px; flex: none; }
-.toc .vol a { font-weight: 600; font-size: 21px; text-decoration: none; }
-.toc .vol .what { color: var(--muted); font-style: italic; margin-left: auto; font-size: 16px; white-space: nowrap; }
-.toc .desc { margin: 4px 0 8px 42px; }
-.toc ol { list-style: none; margin: 0 0 0 42px; padding: 0; columns: 2; column-gap: 32px; font-size: 16px; }
-.toc ol li { break-inside: avoid; display: flex; gap: 8px; }
-.toc ol li span { font: 400 12px/1.9 var(--f-mono); color: var(--muted); min-width: 1.4em; }
-.toc ol a { text-decoration: none; }
+section { padding-top: 48px; scroll-margin-top: 48px; }
+h2 { font: 600 28px/1.1 var(--f-sans); letter-spacing: -.02em; margin: 0 0 18px; }
+.sec-note { color: var(--muted); margin: -10px 0 20px; max-width: 40em; }
+
+/* volumes */
+.vols { border-top: 1px solid var(--ink); }
+.vol { display: grid; grid-template-columns: 48px minmax(0, 1fr); padding: 16px 0; border-bottom: 1px solid var(--line); }
+.vol .n { font: 500 13px/1.9 var(--f-mono); color: var(--accent); }
+.vol h3 { font: 600 20px/1.3 var(--f-sans); margin: 0; }
+.vol h3 a { text-decoration: none; }
+.vol h3 a:hover { color: var(--accent); }
+.vol p { margin: 2px 0 8px; color: var(--muted); }
+.vol .chs { display: flex; flex-wrap: wrap; gap: 0 18px; font: 400 12px/1.9 var(--f-mono); text-transform: uppercase; letter-spacing: .04em; }
+.vol .chs a { text-decoration: none; white-space: nowrap; }
+.vol .chs a:hover { color: var(--accent); }
+.vol .chs i { font-style: normal; color: var(--muted); margin-right: 4px; }
 
 /* index */
-.find { display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; margin: 0 0 8px; }
+.find { position: relative; margin-bottom: 8px; }
 .find input {
-  flex: 1 1 260px; font: inherit; font-size: 17px; color: var(--ink); background: transparent;
-  border: 0; border-bottom: 1px solid var(--ink); padding: 6px 0; border-radius: 0;
+  width: 100%; font: 400 18px/1 var(--f-sans); color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 0; padding: 14px 16px;
 }
-.find input::placeholder { color: var(--muted); font-style: italic; }
-.find input:focus { outline: none; border-bottom-color: var(--accent); }
-.letters { display: flex; flex-wrap: wrap; gap: 2px 10px; font: 400 13px/1.8 var(--f-mono); margin: 12px 0 8px; }
-.letters a { text-decoration: none; }
-.letters span { color: var(--line); }
-.letter { font-weight: 600; font-size: 28px; margin: 36px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); }
-dl.entries { margin: 0; }
-.entry { padding: 7px 0 7px 1.2em; text-indent: -1.2em; }
-.entry dt, .entry dd { display: inline; margin: 0; }
+.find input::placeholder { color: var(--muted); }
+.find input:focus { outline: none; border-color: var(--ink); }
+.count { font: 400 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 10px 0 0; }
+.letter { font: 500 13px/1 var(--f-mono); color: var(--accent); margin: 36px 0 0; padding-bottom: 10px; border-bottom: 1px solid var(--ink); scroll-margin-top: 56px; }
+dl { margin: 0; }
+.entry { display: grid; grid-template-columns: minmax(0, 200px) minmax(0, 1fr); gap: 4px 24px; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .entry dt { font-weight: 600; }
-.entry dt .alt { font-weight: 400; font-style: italic; color: var(--muted); margin-left: 6px; }
-.entry dd::before { content: " "; }
-.entry .see { color: var(--muted); }
-.entry .see i { font-style: italic; }
-.entry .see .sec { font: 400 12px/1 var(--f-mono); }
-.none { font-style: italic; color: var(--muted); padding: 16px 0; }
+.entry dt small { display: block; font: 400 11px/1.5 var(--f-mono); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-top: 2px; }
+.entry dd { margin: 0; }
+.entry .see { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 4px; font: 400 11px/1.5 var(--f-mono); text-transform: uppercase; letter-spacing: .04em; }
+.entry .see a { text-decoration: none; color: var(--muted); }
+.entry .see a b { color: var(--accent); font-weight: 500; margin-right: 6px; }
+.entry .see a:hover { color: var(--ink); }
+.none { color: var(--muted); padding: 16px 0; }
 
-/* using it in class */
-.plan { list-style: none; margin: 0; padding: 0; counter-reset: c; }
-.plan li { counter-increment: c; display: grid; grid-template-columns: 2.2em 1fr; padding: 12px 0; border-top: 1px solid var(--line); }
-.plan li::before { content: counter(c); font: 400 13px/2 var(--f-mono); color: var(--muted); }
-.plan li:last-child { border-bottom: 1px solid var(--line); }
-.plan b { font-weight: 600; }
-.plan .try { display: block; color: var(--muted); font-size: 16px; margin-top: 2px; }
+/* class */
+.plan { width: 100%; border-collapse: collapse; font-size: 15px; }
+.plan td { padding: 12px 16px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.plan tr:first-child td { border-top: 1px solid var(--ink); }
+.plan td:first-child { font: 500 13px/1.6 var(--f-mono); color: var(--accent); width: 32px; }
+.plan td:nth-child(2) { width: 34%; font-weight: 600; }
+.plan td:nth-child(2) a { display: block; font: 400 11px/1.8 var(--f-mono); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); text-decoration: none; }
+.plan td:nth-child(2) a:hover { color: var(--accent); }
+.plan td:last-child { color: var(--muted); }
 
-footer { padding-top: 64px; font-size: 15px; color: var(--muted); font-style: italic; }
+footer { padding-top: 48px; font: 400 11px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 
-@media (max-width: 640px) {
-  body { font-size: 17px; }
-  header { padding-top: 48px; }
-  h1 { font-size: 36px; }
-  .wrap { padding-inline: 16px; }
-  .toc .vol { flex-wrap: wrap; }
-  .toc .vol .what { margin-left: 42px; width: 100%; white-space: normal; }
-  .toc ol { columns: 1; }
+@media (max-width: 860px) {
+  .page { grid-template-columns: minmax(0, 1fr); gap: 0; padding-inline: 16px; }
+  nav.rail { display: none; }
+  .bar { padding: 10px 16px; }
+  .how { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+@media (max-width: 560px) {
+  header { padding-top: 36px; }
+  .entry { grid-template-columns: minmax(0, 1fr); }
+  .plan td:nth-child(2) { width: 40%; }
+  .plan td:last-child { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <h1>ClassAudio</h1>
-    <p class="sub">A working reference for sound.</p>
-    <p>ClassAudio explains how sound is made, measured, coloured and stored. It is organised like a reference book: four volumes of short chapters, and an index of terms at the back.</p>
-    <p>Look a word up, read the definition, and follow the link to the chapter. Every chapter has a small lab where you can see the idea on a graph and hear it at the same time.</p>
-    <p class="muted">Runs in any modern browser. Nothing to install, and files you open stay on your computer.</p>
-  </header>
+<div class="bar">
+  <span>ClassAudio <b>/</b> <a href="waves.html">waves</a> <b>/</b> <a href="analyze.html">microscope</a> <b>/</b> <a href="effects.html">effects</a> <b>/</b> <a href="digital.html">digital</a></span>
+</div>
 
-  <section id="contents" aria-labelledby="h-contents">
-    <h2 id="h-contents">Contents</h2>
-    <ol class="toc">
-      <li>
-        <div class="vol"><span class="n">I</span><a href="waves.html">Waves &amp; Harmonics</a><span class="what">synthesis</span></div>
-        <p class="desc">What a sound is made of, and the classic ways to build one.</p>
-        <ol>
-          <li><span>1</span><a href="waves.html#read">Reading the display</a></li>
-          <li><span>2</span><a href="waves.html#series">Harmonic or inharmonic</a></li>
-          <li><span>3</span><a href="waves.html#osc">Oscillator</a></li>
-          <li><span>4</span><a href="waves.html#additive">Additive synthesis</a></li>
-          <li><span>5</span><a href="waves.html#fm">FM synthesis</a></li>
-          <li><span>6</span><a href="waves.html#filter">Filters</a></li>
-          <li><span>7</span><a href="waves.html#ref">Quick reference</a></li>
-        </ol>
-      </li>
-      <li>
-        <div class="vol"><span class="n">II</span><a href="analyze.html">Sound Microscope</a><span class="what">analysis</span></div>
-        <p class="desc">Take a recording of one note apart and measure it.</p>
-        <ol>
-          <li><span>1</span><a href="analyze.html#load">Load a sound</a></li>
-          <li><span>2</span><a href="analyze.html#time">Envelope</a></li>
-          <li><span>3</span><a href="analyze.html#sgram">Spectrogram</a></li>
-          <li><span>4</span><a href="analyze.html#harm">Harmonics at the cursor</a></li>
-          <li><span>5</span><a href="analyze.html#decay">Harmonic decay</a></li>
-          <li><span>6</span><a href="analyze.html#move">Pitch &amp; brightness</a></li>
-          <li><span>7</span><a href="analyze.html#resynth">Resynthesis</a></li>
-          <li><span>8</span><a href="analyze.html#modal">From simulation to sound</a></li>
-          <li><span>9</span><a href="analyze.html#deep">How deep can we go</a></li>
-        </ol>
-      </li>
-      <li>
-        <div class="vol"><span class="n">III</span><a href="effects.html">Colour &amp; Saturation</a><span class="what">effects</span></div>
-        <p class="desc">What circuits, iron and tape do to a wave and its harmonics.</p>
-        <ol>
-          <li><span>1</span><a href="effects.html#kinds">Three kinds of change</a></li>
-          <li><span>2</span><a href="effects.html#drive">Overdrive &amp; clipping</a></li>
-          <li><span>3</span><a href="effects.html#xfmr">Transformers</a></li>
-          <li><span>4</span><a href="effects.html#tape">Tape</a></li>
-          <li><span>5</span><a href="effects.html#chorus">Chorus &amp; flanger</a></li>
-          <li><span>6</span><a href="effects.html#chain">The Rhodes chain</a></li>
-          <li><span>7</span><a href="effects.html#ref">Quick reference</a></li>
-        </ol>
-      </li>
-      <li>
-        <div class="vol"><span class="n">IV</span><a href="digital.html">Digital Sound</a><span class="what">digital audio</span></div>
-        <p class="desc">How a voltage becomes numbers, and back.</p>
-        <ol>
-          <li><span>1</span><a href="digital.html#chain">The digital chain</a></li>
-          <li><span>2</span><a href="digital.html#sampling">Sampling &amp; aliasing</a></li>
-          <li><span>3</span><a href="digital.html#bits">Bit depth &amp; dither</a></li>
-          <li><span>4</span><a href="digital.html#adc">Inside the ADC</a></li>
-          <li><span>5</span><a href="digital.html#dac">Inside the DAC</a></li>
-          <li><span>6</span><a href="digital.html#dsp">DSP</a></li>
-          <li><span>7</span><a href="digital.html#midi">MIDI</a></li>
-          <li><span>8</span><a href="digital.html#wav">Anatomy of a .wav file</a></li>
-          <li><span>9</span><a href="digital.html#ref">Quick reference</a></li>
-        </ol>
-      </li>
-    </ol>
-  </section>
-
-  <section id="index" aria-labelledby="h-index">
-    <h2 id="h-index">Index of terms</h2>
-    <div class="find">
-      <input id="q" type="search" placeholder="Look up a term…" aria-label="Look up a term" autocomplete="off" spellcheck="false">
+<div class="page">
+  <nav class="rail" aria-label="On this page">
+    <div class="rail-sec">
+      <a href="#volumes">volumes</a>
+      <a href="#index">index a–z</a>
+      <a href="#class">in class</a>
     </div>
-    <nav class="letters" id="letters" aria-label="Jump to letter"></nav>
-    <div id="entries"></div>
-  </section>
+    <div class="az" id="az"></div>
+  </nav>
 
-  <section id="class" aria-labelledby="h-class">
-    <h2 id="h-class">Using it in class</h2>
-    <p>One possible order, one class per line. Each idea has a lab you can run live on the projector. Keep the volume low at first: every page has a volume slider in its top bar, and resonant filters and distortion can jump in level.</p>
-    <ol class="plan">
-      <li><div><b>Every sound is a set of sine waves.</b> <a href="waves.html#series">Vol. I, ch. 1–4</a><span class="try">Play the ideal string, then the in-between one. In the additive lab, pick saw and press build.</span></div></li>
-      <li><div><b>Make harmonics, or carve them away.</b> <a href="waves.html#fm">Vol. I, ch. 5–6</a><span class="try">Filter lab: saw, resonance around 15 dB, sweep the cutoff. Then FM at ratio 1.41, sweep the index.</span></div></li>
-      <li><div><b>Every harmonic of a real instrument has its own life.</b> <a href="analyze.html">Vol. II</a><span class="try">Record one note soft and loud, and compare the harmonic decay and the resynthesis. Dry WAV or FLAC works best.</span></div></li>
-      <li><div><b>“Warm” can be measured.</b> <a href="effects.html">Vol. III</a><span class="try">Overdrive lab: two tones, a fifth against a third. Transformer lab: sweep the pitch down at a fixed level.</span></div></li>
-      <li><div><b>How often and how precisely.</b> <a href="digital.html#sampling">Vol. IV, ch. 1–5</a><span class="try">Sampling lab at 8 kHz, press sweep. Bit-depth lab: a fading note at 6 bits, then dither on.</span></div></li>
-      <li><div><b>Effects are arithmetic; MIDI is instructions.</b> <a href="digital.html#dsp">Vol. IV, ch. 6–8</a><span class="try">Echo on clicks, then shorten it into a comb. Play a chord and read the bytes. Open one of your own .wav files.</span></div></li>
-    </ol>
-  </section>
+  <main>
+    <header>
+      <h1>ClassAudio</h1>
+      <p class="tagline">A reference for sound: how it is made, measured, coloured and stored.</p>
+      <ol class="how">
+        <li><b>Look it up.</b> Search the index for a term, or browse it A–Z.</li>
+        <li><b>Read the definition.</b> One or two plain sentences, no prior maths needed.</li>
+        <li><b>Open the chapter.</b> Each one has a lab: change a setting, see the graph move, hear the result.</li>
+      </ol>
+      <p class="fine">runs in the browser · nothing to install · your files stay on your computer</p>
+    </header>
 
-  <footer>ClassAudio. Built with the Web Audio API and plain JavaScript. The examples are simplified models made for teaching.</footer>
+    <section id="volumes" aria-labelledby="h-vol">
+      <h2 id="h-vol">Volumes</h2>
+      <div class="vols">
+        <div class="vol"><span class="n">I</span><div>
+          <h3><a href="waves.html">Waves &amp; Harmonics</a></h3>
+          <p>What a sound is made of, and the classic ways to build one.</p>
+          <div class="chs"><a href="waves.html#read"><i>1</i>reading the display</a><a href="waves.html#series"><i>2</i>harmonic or inharmonic</a><a href="waves.html#osc"><i>3</i>oscillator</a><a href="waves.html#additive"><i>4</i>additive</a><a href="waves.html#fm"><i>5</i>fm</a><a href="waves.html#filter"><i>6</i>filters</a><a href="waves.html#ref"><i>7</i>reference</a></div>
+        </div></div>
+        <div class="vol"><span class="n">II</span><div>
+          <h3><a href="analyze.html">Sound Microscope</a></h3>
+          <p>Take a recording of one note apart and measure it.</p>
+          <div class="chs"><a href="analyze.html#load"><i>1</i>load</a><a href="analyze.html#time"><i>2</i>envelope</a><a href="analyze.html#sgram"><i>3</i>spectrogram</a><a href="analyze.html#harm"><i>4</i>harmonics</a><a href="analyze.html#decay"><i>5</i>decay</a><a href="analyze.html#move"><i>6</i>pitch &amp; brightness</a><a href="analyze.html#resynth"><i>7</i>resynthesis</a><a href="analyze.html#modal"><i>8</i>simulation to sound</a><a href="analyze.html#deep"><i>9</i>how deep</a></div>
+        </div></div>
+        <div class="vol"><span class="n">III</span><div>
+          <h3><a href="effects.html">Colour &amp; Saturation</a></h3>
+          <p>What circuits, transformers and tape do to a wave and its harmonics.</p>
+          <div class="chs"><a href="effects.html#kinds"><i>1</i>kinds of change</a><a href="effects.html#drive"><i>2</i>overdrive</a><a href="effects.html#xfmr"><i>3</i>transformers</a><a href="effects.html#tape"><i>4</i>tape</a><a href="effects.html#chorus"><i>5</i>chorus &amp; flanger</a><a href="effects.html#chain"><i>6</i>rhodes chain</a><a href="effects.html#ref"><i>7</i>reference</a></div>
+        </div></div>
+        <div class="vol"><span class="n">IV</span><div>
+          <h3><a href="digital.html">Digital Sound</a></h3>
+          <p>How a voltage becomes numbers, and back again.</p>
+          <div class="chs"><a href="digital.html#chain"><i>1</i>the chain</a><a href="digital.html#sampling"><i>2</i>sampling</a><a href="digital.html#bits"><i>3</i>bit depth</a><a href="digital.html#adc"><i>4</i>adc</a><a href="digital.html#dac"><i>5</i>dac</a><a href="digital.html#dsp"><i>6</i>dsp</a><a href="digital.html#midi"><i>7</i>midi</a><a href="digital.html#wav"><i>8</i>.wav file</a><a href="digital.html#ref"><i>9</i>reference</a></div>
+        </div></div>
+      </div>
+    </section>
+
+    <section id="index" aria-labelledby="h-index">
+      <h2 id="h-index">Index</h2>
+      <div class="find"><input id="q" type="search" placeholder="Search a term — aliasing, dither, FM…" aria-label="Search the index" autocomplete="off" spellcheck="false"></div>
+      <p class="count" id="count"></p>
+      <div id="entries"></div>
+    </section>
+
+    <section id="class" aria-labelledby="h-class">
+      <h2 id="h-class">In class</h2>
+      <p class="sec-note">A possible order, one class per row. Start with the volume low: resonant filters and distortion can jump in level.</p>
+      <table class="plan"><tbody>
+        <tr><td>1</td><td>Every sound is a set of sine waves<a href="waves.html#series">I · 1–4</a></td><td>Play the ideal string, then the in-between one. In the additive lab, pick saw and press build.</td></tr>
+        <tr><td>2</td><td>Make harmonics, or carve them away<a href="waves.html#fm">I · 5–6</a></td><td>Filter lab: saw, resonance around 15 dB, sweep the cutoff. Then FM at ratio 1.41, sweep the index.</td></tr>
+        <tr><td>3</td><td>Each harmonic has its own life<a href="analyze.html">II</a></td><td>Record one note soft and loud and compare the harmonic decay. Dry WAV or FLAC works best.</td></tr>
+        <tr><td>4</td><td>“Warm” can be measured<a href="effects.html">III</a></td><td>Overdrive lab: two tones, a fifth against a third. Transformer lab: sweep the pitch down at a fixed level.</td></tr>
+        <tr><td>5</td><td>How often, and how precisely<a href="digital.html#sampling">IV · 1–5</a></td><td>Sampling lab at 8 kHz, press sweep. Bit-depth lab: a fading note at 6 bits, then dither on.</td></tr>
+        <tr><td>6</td><td>Effects are arithmetic; MIDI is instructions<a href="digital.html#dsp">IV · 6–8</a></td><td>Echo on clicks, then shorten it into a comb. Play a chord and read the bytes. Open one of your own .wav files.</td></tr>
+      </tbody></table>
+    </section>
+
+    <footer>ClassAudio · web audio api and plain javascript · the examples are simplified models made for teaching</footer>
+  </main>
 </div>
 
 <script>
 (() => {
 "use strict";
-const VOL = { waves: ["I", "Waves & Harmonics"], analyze: ["II", "Sound Microscope"], effects: ["III", "Colour & Saturation"], digital: ["IV", "Digital Sound"] };
-// [term, alternate / abbreviation, definition, [page, anchor, chapter], …]
+const VOL = { waves: "I", analyze: "II", effects: "III", digital: "IV" };
+const CH = {
+  waves: { read: "reading the display", series: "harmonic or inharmonic", osc: "oscillator", additive: "additive synthesis", fm: "fm synthesis", filter: "filters" },
+  analyze: { time: "envelope", sgram: "spectrogram", harm: "harmonics", decay: "harmonic decay", move: "pitch & brightness", resynth: "resynthesis", modal: "simulation to sound" },
+  effects: { kinds: "kinds of change", drive: "overdrive", xfmr: "transformers", tape: "tape", chorus: "chorus & flanger" },
+  digital: { sampling: "sampling", bits: "bit depth", adc: "inside the adc", dac: "inside the dac", dsp: "dsp", midi: "midi", wav: ".wav file" }
+};
 const T = [
   ["ADC", "analog-to-digital converter", "Measures a voltage many times a second and turns each measurement into a number.", ["digital", "adc", 4]],
   ["additive synthesis", "", "Building a sound by adding sine waves together, one per harmonic, each with its own level.", ["waves", "additive", 4]],
@@ -284,28 +290,29 @@ const T = [
 const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const key = t => t[0].toLowerCase().replace(/[^a-z0-9]/g, "");
 T.sort((a, b) => key(a).localeCompare(key(b)));
-const first = t => /[a-z]/i.test(t[0][0]) ? t[0][0].toUpperCase() : "#";
-const see = r => `<a href="${r[0]}.html#${r[1]}">${esc(VOL[r[0]][1])}</a> <span class="sec">${VOL[r[0]][0]}.${r[2]}</span>`;
-const entry = t => `<div class="entry"><dt>${esc(t[0])}${t[1] ? `<span class="alt">${esc(t[1])}</span>` : ""}</dt><dd>${esc(t[2])} <span class="see"><i>See</i> ${t.slice(3).map(see).join("; ")}.</span></dd></div>`;
+const first = t => t[0][0].toUpperCase();
+const see = r => `<a href="${r[0]}.html#${r[1]}"><b>${VOL[r[0]]}.${r[2]}</b>${esc(CH[r[0]][r[1]])}</a>`;
+const entry = t => `<div class="entry"><dt>${esc(t[0])}${t[1] ? `<small>${esc(t[1])}</small>` : ""}</dt><dd>${esc(t[2])}<div class="see">${t.slice(3).map(see).join("")}</div></dd></div>`;
 
-const box = document.getElementById("entries"), q = document.getElementById("q"), nav = document.getElementById("letters");
-const all = [...new Set(T.map(first))];
-nav.innerHTML = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(L => all.includes(L) ? `<a href="#L-${L}">${L}</a>` : `<span>${L}</span>`).join("");
+const box = document.getElementById("entries"), q = document.getElementById("q"), count = document.getElementById("count"), az = document.getElementById("az");
+const have = new Set(T.map(first));
+az.innerHTML = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(L => have.has(L) ? `<a href="#L-${L}">${L}</a>` : `<span>${L}</span>`).join("");
+az.addEventListener("click", () => { if (q.value) { q.value = ""; render(); } });
 
 function render() {
   const s = q.value.trim().toLowerCase();
-  const hits = s ? T.filter(t => (t[0] + " " + t[1]).toLowerCase().includes(s) || t[2].toLowerCase().includes(s)) : T;
+  const hits = s ? T.filter(t => (t[0] + " " + t[1] + " " + t[2]).toLowerCase().includes(s)) : T;
+  count.textContent = s ? `${hits.length} of ${T.length} terms` : `${T.length} terms`;
   if (!hits.length) { box.innerHTML = `<p class="none">Nothing found for “${esc(q.value.trim())}”.</p>`; return; }
   let html = "", cur = "";
   for (const t of hits) {
     const L = first(t);
-    if (L !== cur) { html += (cur ? "</dl>" : "") + `<h3 class="letter" id="L-${L}">${L}</h3><dl class="entries">`; cur = L; }
+    if (L !== cur) { html += (cur ? "</dl>" : "") + `<h3 class="letter" id="L-${L}">${L}</h3><dl>`; cur = L; }
     html += entry(t);
   }
   box.innerHTML = html + "</dl>";
 }
 q.addEventListener("input", render);
-nav.addEventListener("click", () => { if (q.value) { q.value = ""; render(); } });
 render();
 })();
 </script>
