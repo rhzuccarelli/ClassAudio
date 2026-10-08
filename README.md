@@ -56,4 +56,5 @@ How sound becomes numbers and back, with a lab in every chapter:
 5. **Inside the DAC**: an 8-bit binary-weighted DAC with clickable bits, the R–2R ladder, and the reconstruction filter.
 6. **DSP**: moving average (FIR), one-pole (IIR), difference and echo, with impulse and frequency response, operation counts, and buffer latency.
 7. **MIDI**: an on-screen keyboard (mouse or computer keys) or a real MIDI device via Web MIDI. Every message is decoded byte by byte, with a piano roll and a small synth.
-8. **Quick reference**: formats, formulas and a glossary.
+8. **Anatomy of a .wav file**: a live hex inspector of a generated file (rate, bit depth, channels, content), or of your own .wav. It explains every RIFF / fmt / data field, little-endian numbers, interleaved frames and extra chunks (LIST, bext, iXML…), and can download the file.
+9. **Quick reference**: formats, formulas and a glossary.
