@@ -1,6 +1,6 @@
 # ClassAudio
 
-Interactive teaching pages for sound synthesis. Open `index.html` for the landing page that links to all four parts.
+An interactive reference for sound: synthesis, analysis, effects and digital audio. Open `index.html` for the front page: a contents list of the four volumes and an A–Z index of terms, each with a short definition and a link to the chapter where you can see and hear it.
 
 ## Waves & Harmonics — `waves.html`
 
