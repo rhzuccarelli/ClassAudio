@@ -22,7 +22,7 @@ Open any page in a browser, or serve the folder with GitHub Pages.
 
 ## Sound Microscope — `analyze.html`
 
-Load a recording of a single note (or one of three synthetic examples) and take it apart:
+Load a recording of a single note (or one of five synthetic examples: piano string, plucked string, bowed cello, trumpet, e-piano) and take it apart:
 
 1. **Load**: drag and drop or pick a file. It is decoded and analysed locally; nothing is uploaded.
 2. **Envelope**: attack time, two-stage (early/late) decay fit, T60, tremolo rate and depth.
@@ -31,7 +31,7 @@ Load a recording of a single note (or one of three synthetic examples) and take 
 5. **Harmonic decay**: levels of harmonics 1–8 over time (bark, beating).
 6. **Pitch & brightness**: YIN pitch track in cents and spectral centroid.
 7. **Resynthesis**: compare static vs. tracked additive rebuilds with the original.
-8. **How deep can we go**: what is measurable, what makes a Rhodes hard to simulate, and the limits.
+8. **How deep can we go**: what is measurable, what makes pianos, brass, bowed strings, flutes, guitars and the Rhodes hard to simulate, and the limits.
 
 ## Colour & Saturation — `effects.html`
 

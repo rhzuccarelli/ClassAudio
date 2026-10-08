@@ -381,9 +381,21 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
             <li><b>Trumpet</b>: brass. The strongest harmonics are 2–5 and the rest fall away slowly, so it is very bright. Played louder, a trumpet gets even brighter: the recipe changes with dynamics.</li>
             <li><b>Violin</b> and <b>cello</b>: a bowed string moves in a saw-like way (stick, slip, stick, slip), so they start from the saw recipe and its phases. The wooden body then boosts some harmonics and cuts others. These bumps are the <b>body resonances</b>, and they are why the fundamental of a low cello note is often weaker than the second harmonic.</li>
           </ul>
-          <p>Play them and you will notice that they all sound a bit like an organ. A steady recipe is only half of a timbre. A real instrument also has an <b>attack</b> (the scrape of the bow, the chiff of a flute, the blat of a trumpet), <b>vibrato</b>, <b>noise</b>, and harmonics that each fade in and out on their own schedule. Take a real recording apart in the <a href="analyze.html">Sound Microscope</a> to see how much moves.</p>
+          <p>Play them and you will notice that they all sound a bit like an organ, and the cello and trumpet sound quite strange. That is not a mistake in the faders. It shows something important: <b>a steady recipe is only a small part of a timbre</b>. Your ear recognises an instrument mostly from what <i>changes</i>.</p>
         </div>
-        <div class="note try">Pick <kbd>clarinet</kbd>, then press <kbd>build</kbd>. Only odd harmonics arrive. Then try <kbd>cello</kbd> and sweep the pitch: the recipe stays fixed to the harmonic numbers, but a real cello's body resonances stay fixed in Hz. That fixed-in-Hz bump is called a <b>formant</b>, and it is why a sped-up recording sounds like a smaller instrument.</div>
+        <h3><span class="n">4.4</span>what the recipe is missing</h3>
+        <div class="prose">
+          <p>Switch on <kbd>articulate</kbd> and press play. The same recipe now plays as repeated notes, and each harmonic becomes its own sine with its own envelope. Each instrument adds the things that a steady spectrum cannot hold:</p>
+          <ul>
+            <li><b>Attack and release.</b> A bow takes a tenth of a second to get the string going, while an organ pipe speaks almost at once.</li>
+            <li><b>Harmonics that arrive one after another.</b> In a trumpet the upper harmonics build up later than the low ones. That short dark-to-bright sweep at the start is the "blat" of brass. Strings and reeds do it too, less strongly.</li>
+            <li><b>Vibrato</b> (about 5–6 Hz, ±10–25 cents) that starts a moment after the note, and the small upward <b>scoop</b> into pitch of trumpets and saxophones.</li>
+            <li><b>Noise</b>: the breath in a flute (with a "chiff" at the start), the rosin scratch of a bow, the click of an organ key.</li>
+            <li><b>Body resonances fixed in Hz</b> for violin and cello. As vibrato slides each harmonic across these peaks, its level shimmers up and down. This is a big part of why a string section sounds alive.</li>
+          </ul>
+          <p>It gets a lot closer, but it is still a sketch, and this is about as far as a 16-harmonic additive engine can go. Real instruments have many more harmonics (a low cello note has useful energy past the 40th), their recipe changes with every note and dynamic, and their noise and transients are complex sounds of their own. That is why commercial virtual instruments use <b>recordings</b> (samples) or <b>physical models</b> that simulate the string, tube and body. The <a href="analyze.html">Sound Microscope</a> lets you measure all of these changes in a real recording.</p>
+        </div>
+        <div class="note try">Pick <kbd>clarinet</kbd>, then press <kbd>build</kbd>. Only odd harmonics arrive. Then pick <kbd>trumpet</kbd>, switch <kbd>articulate</kbd> on and off, and compare. Listen to the start of each note. Without articulation the recipe follows the harmonic numbers when you move the pitch, but a real body's resonances stay fixed in Hz. A peak fixed in Hz like that is called a <b>formant</b>, and it is why a sped-up recording sounds like a smaller instrument.</div>
         <div class="note">These recipes are simplified teaching averages, not measurements of one instrument. Real spectra change with the note, the dynamic, the player and the microphone position.</div>
       </div>
     </section>
@@ -601,15 +613,32 @@ const PRESETS = {
   triangle: { h: Array.from({ length: 16 }, (_, i) => (i % 2 === 0 ? 1 / ((i + 1) * (i + 1)) : 0)), ph: Array.from({ length: 16 }, (_, i) => i % 4 === 2) },
   organ:    { h: [1, .8, .6, .7, 0, .5, 0, .6, 0, 0, 0, .35, 0, 0, 0, .3], ph: [] },
   // instrument recipes: rough steady-state spectra (linear amplitude) and a typical pitch for each
-  flute:    { f0: 523, h: [1, .42, .18, .09, .05, .03, .02, .01], ph: [] },
+  flute:    { f0: 523, h: [1, .3, .12, .05, .025, .012, .006], ph: [] },
   clarinet: { f0: 147, h: [1, .03, .75, .04, .5, .05, .35, .07, .22, .08, .15, .06, .1, .05, .07, .04], ph: [] },
   oboe:     { f0: 440, h: [.35, .65, 1, .85, .55, .4, .32, .22, .16, .12, .09, .07, .05, .04, .03, .02], ph: [] },
-  sax:      { f0: 233, h: [.7, 1, .82, .55, .62, .45, .4, .3, .32, .22, .18, .15, .12, .1, .08, .06], ph: [] },
-  trumpet:  { f0: 233, h: [.5, .82, 1, .92, .78, .62, .5, .4, .32, .25, .19, .15, .11, .08, .06, .05], ph: [] },
+  sax:      { f0: 311, h: [.7, 1, .82, .55, .62, .45, .4, .3, .32, .22, .18, .15, .12, .1, .08, .06], ph: [] },
+  trumpet:  { f0: 392, h: [.5, 1, .89, .71, .56, .45, .36, .28, .22, .17, .13, .1, .08, .06, .045, .035], ph: [] },
   violin:   { f0: 440, h: [.65, .5, 1, .45, .55, .62, .35, .3, .4, .25, .22, .15, .14, .1, .08, .06], ph: Array.from({ length: 16 }, (_, i) => i % 2 === 1) },
-  cello:    { f0: 131, h: [.6, 1, .55, .72, .35, .45, .3, .25, .28, .15, .18, .1, .12, .08, .07, .05], ph: Array.from({ length: 16 }, (_, i) => i % 2 === 1) },
+  cello:    { f0: 196, h: [.8, 1, .62, .55, .5, .42, .3, .26, .28, .2, .16, .14, .12, .09, .08, .06], ph: Array.from({ length: 16 }, (_, i) => i % 2 === 1) },
   clear:    { h: [], ph: [] },
 };
+// "articulate" mode: what a steady recipe lacks. att / rel in s; sus = level after the attack;
+// spread = extra onset delay per harmonic (s); slow = how much longer each higher harmonic takes to rise;
+// vib = [rate Hz, depth cents, delay s]; scoop = starting pitch offset in cents;
+// noise = [level, band centre Hz, Q, extra burst at the attack]; body = fixed resonances [Hz, gain dB, Q]
+const ART = {
+  default:  { att: 0.02, rel: 0.08, sus: 1, spread: 0, slow: 0, vib: [0, 0, 0], scoop: 0, noise: [0, 1000, 1, 0], body: [] },
+  organ:    { att: 0.012, rel: 0.05, sus: 1, spread: 0, slow: 0, vib: [0, 0, 0], scoop: 0, noise: [0, 3000, 0.7, 0.25], body: [] },
+  flute:    { att: 0.08, rel: 0.12, sus: 0.9, spread: 0.004, slow: 0.08, vib: [5, 14, 0.3], scoop: -15, noise: [0.22, 2500, 0.8, 0.35], body: [] },
+  clarinet: { att: 0.04, rel: 0.08, sus: 0.95, spread: 0.002, slow: 0.05, vib: [0, 0, 0], scoop: 0, noise: [0.05, 1800, 1, 0.08], body: [] },
+  oboe:     { att: 0.035, rel: 0.08, sus: 0.9, spread: 0.002, slow: 0.04, vib: [5.5, 12, 0.35], scoop: -10, noise: [0.04, 2500, 1, 0.06], body: [] },
+  sax:      { att: 0.045, rel: 0.1, sus: 0.85, spread: 0.003, slow: 0.06, vib: [5, 16, 0.4], scoop: -25, noise: [0.12, 2200, 0.9, 0.15], body: [] },
+  trumpet:  { att: 0.03, rel: 0.09, sus: 0.85, spread: 0.006, slow: 0.25, vib: [5, 8, 0.5], scoop: -35, noise: [0.04, 1500, 1, 0.1], body: [] },
+  violin:   { att: 0.1, rel: 0.15, sus: 0.9, spread: 0.003, slow: 0.05, vib: [6, 22, 0.25], scoop: 0, noise: [0.1, 3500, 1.2, 0.25], body: [[280, 6, 4], [470, 5, 4], [2800, 6, 2]] },
+  cello:    { att: 0.12, rel: 0.2, sus: 0.9, spread: 0.003, slow: 0.05, vib: [5.5, 20, 0.3], scoop: 0, noise: [0.09, 2000, 1.2, 0.25], body: [[200, 6, 4], [420, 5, 4], [1500, 5, 2]] },
+};
+let noiseBuffer = null;
+const noiseBuf = () => { if (!noiseBuffer) { noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate); const d = noiseBuffer.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } return noiseBuffer; };
 
 class Lab {
   constructor(root, kind) {
@@ -652,7 +681,7 @@ class Lab {
       this.seg("preset", "preset", [["sine", "sine"], ["saw", "saw"], ["square", "square"], ["triangle", "tri"], ["clear", "clear"]], pick);
       this.seg("preset", "instrument recipe", [["organ", "organ"], ["flute", "flute"], ["clarinet", "clarinet"], ["oboe", "oboe"],
         ["sax", "sax"], ["trumpet", "trumpet"], ["violin", "violin"], ["cello", "cello"]], pick, true);
-      this.actions("demo", [["build", () => this.startBuild()], ["partials", null, "partials"]]);
+      this.actions("demo", [["build", () => this.startBuild()], ["partials", null, "partials"], ["articulate", null, "life"]]);
     }
     if (k === "fm") {
       this.range("fc", "carrier", 55, 880, { log: true, fmt: v => fmtHz(v) + " · " + noteName(v) });
@@ -722,7 +751,8 @@ class Lab {
   }
   set(key, v) { this.s[key] = v; this.inputs[key] && this.inputs[key].sync(); this.changed(); }
   halt(key) { if (this.s[key]) { this.s[key] = false; const i = this.inputs["_" + key]; if (i) i.btn.setAttribute("aria-pressed", "false"); } }
-  onToggle(key) { if (key === "sweep" && this.s.sweep) { this.sweepT0 = performance.now(); this.sweepBase = this.kind === "fm" ? Math.max(this.s.index, 4) : null; } }
+  onToggle(key) {
+    if (key === "life" && this.playing) { this.stop(); this.start(); } if (key === "sweep" && this.s.sweep) { this.sweepT0 = performance.now(); this.sweepBase = this.kind === "fm" ? Math.max(this.s.index, 4) : null; } }
   changed() { this.render(); this.syncAudio(); }
 
   /* ---------- additive fader bank ---------- */
@@ -945,13 +975,47 @@ class Lab {
       this.car = ctx.createOscillator(); this.mod = ctx.createOscillator(); this.modGain = ctx.createGain();
       this.mod.connect(this.modGain).connect(this.car.frequency);
       this.car.connect(this.f1); this.mod.start(); this.car.start();
+    } else if (this.kind === "additive" && this.s.life) {
+      this.lifeNote(); this.lifeTimer = setInterval(() => this.lifeNote(), 2100);
     } else {
       this.osc = ctx.createOscillator(); this.osc.connect(this.f1); this.osc.start();
     }
     this.playing = true; current = this; this.setBtn(); this.syncAudio(true);
   }
+  // one articulated note: a sine per harmonic, each with its own envelope, plus vibrato, noise and body resonances.
+  // reads the faders and pitch when the note starts, so changes apply from the next note
+  lifeNote() {
+    const s = this.s, A = ART[s.preset] || ART.default, sum = s.h.reduce((a, b) => a + b, 0);
+    if (!sum) return;
+    const t = ctx.currentTime + 0.03, end = t + 1.6, stopAt = end + A.rel * 8, norm = 0.8 / sum;
+    const bus = ctx.createGain(); let node = bus;
+    for (const [f, g, q] of A.body) { const b = ctx.createBiquadFilter(); b.type = "peaking"; b.frequency.value = f; b.gain.value = g; b.Q.value = q; node.connect(b); node = b; }
+    node.connect(this.out);
+    const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = A.vib[0] || 5; lg.gain.setValueAtTime(0, t);
+    if (A.vib[1]) { lg.gain.setValueAtTime(0, t + A.vib[2]); lg.gain.linearRampToValueAtTime(A.vib[1], t + A.vib[2] + 0.3); }
+    lfo.connect(lg); lfo.start(t); lfo.stop(stopAt);
+    s.h.forEach((a, i) => {
+      if (!(a > 0) || (i + 1) * s.f0 > 20000) return;
+      const o = ctx.createOscillator(), g = ctx.createGain(), on = t + A.spread * i, at = A.att * (1 + A.slow * i), pk = a * norm;
+      o.frequency.value = (i + 1) * s.f0;
+      if (A.scoop) { o.detune.setValueAtTime(A.scoop, t); o.detune.setTargetAtTime(0, t, 0.04); }
+      lg.connect(o.detune);
+      g.gain.setValueAtTime(0, t); g.gain.setValueAtTime(0, on); g.gain.linearRampToValueAtTime(pk, on + at);
+      g.gain.setTargetAtTime(pk * A.sus, on + at, 0.15); g.gain.setTargetAtTime(0, end, A.rel);
+      o.connect(g).connect(bus); o.start(t); o.stop(stopAt);
+    });
+    if (A.noise[0] || A.noise[3]) {
+      const ns = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), ng = ctx.createGain(), lvl = A.noise[0];
+      ns.buffer = noiseBuf(); ns.loop = true; bp.type = "bandpass"; bp.frequency.value = A.noise[1]; bp.Q.value = A.noise[2];
+      ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(lvl + A.noise[3], t + Math.min(0.015, A.att));
+      ng.gain.setTargetAtTime(lvl, t + 0.015, 0.04); ng.gain.setTargetAtTime(0, end, A.rel);
+      ns.connect(bp).connect(ng).connect(bus); ns.start(t); ns.stop(stopAt);
+    }
+    setTimeout(() => bus.disconnect(), (stopAt - ctx.currentTime + 0.3) * 1000);
+  }
   stop() {
     if (!this.playing) return;
+    clearInterval(this.lifeTimer); this.lifeTimer = null;
     const t = ctx.currentTime, out = this.out, nodes = [this.osc, this.car, this.mod].filter(Boolean);
     out.gain.cancelScheduledValues(t); out.gain.setValueAtTime(out.gain.value, t); out.gain.linearRampToValueAtTime(0, t + 0.05);
     nodes.forEach(n => n.stop(t + 0.08));
@@ -960,7 +1024,7 @@ class Lab {
     this.playing = false; if (current === this) current = null; this.setBtn();
   }
   syncAudio(now) {
-    if (!this.playing) return;
+    if (!this.playing || this.lifeTimer) return;
     const s = this.s, t = ctx.currentTime, tc = now ? 0.001 : 0.015;
     const to = (param, v) => param.setTargetAtTime(v, t, tc);
     if (this.kind === "fm") {
