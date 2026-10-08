@@ -31,7 +31,8 @@ Load a recording of a single note (or one of five synthetic examples: piano stri
 5. **Harmonic decay**: levels of harmonics 1–8 over time (bark, beating).
 6. **Pitch & brightness**: YIN pitch track in cents and spectral centroid.
 7. **Resynthesis**: compare static vs. tracked additive rebuilds with the original.
-8. **How deep can we go**: what is measurable, what makes pianos, brass, bowed strings, flutes, guitars and the Rhodes hard to simulate, and the limits.
+8. **From simulation to sound**: paste a modal (FEA) mode list with energies, get each mode's stiffness and effective mass, a hammer-impulse level estimate, Rayleigh damping from two T60 knobs, static and dynamic plots, playback, and a hand-off to the analysis chapters.
+9. **How deep can we go**: what is measurable, what makes pianos, brass, bowed strings, flutes, guitars and the Rhodes hard to simulate, and the limits.
 
 ## Colour & Saturation — `effects.html`
 

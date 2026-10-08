@@ -141,6 +141,20 @@ td.flag { color: var(--accent); font-weight: 600; }
 .bars-cell { display: inline-block; height: 6px; background: var(--ink); border-radius: 0 3px 3px 0; vertical-align: middle; }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.mtab-wrap table { min-width: 720px; }
+.mtab input { width: 100%; min-width: 70px; font: 500 12.5px/1 var(--f-mono); padding: 5px 6px; border: 1px solid var(--line); border-radius: 5px; background: var(--bg); color: var(--ink); text-align: right; }
+.mtab input:focus { border-color: var(--ink); outline: none; }
+.mtab td.calc { font: 400 12px/1.2 var(--f-mono); color: var(--ink); }
+.mtab td.calc i { font-style: normal; color: var(--muted); font-size: 10px; display: block; text-transform: uppercase; letter-spacing: .05em; }
+.mtab button { font: 500 12px/1 var(--f-mono); background: none; border: 0; color: var(--muted); cursor: pointer; padding: 4px 6px; }
+.mtab button:hover { color: var(--accent); }
+.mpaste { margin-top: 12px; }
+.mpaste summary { cursor: pointer; padding: 4px 0; }
+.mpaste textarea { display: block; width: 100%; margin: 8px 0; font: 400 12.5px/1.5 var(--f-mono); padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); resize: vertical; }
+.mctl { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px 18px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.mctl label { display: grid; gap: 6px; font: 500 10.5px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }
+.mctl label span { display: flex; align-items: center; gap: 6px; color: var(--ink); text-transform: none; letter-spacing: 0; font-size: 12px; }
+.mctl input { width: 90px; font: 500 13px/1 var(--f-mono); padding: 6px 8px; border: 1px solid var(--ink); border-radius: 6px; background: var(--bg); color: var(--ink); }
 .grid2 > div { min-width: 0; }
 footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .empty-note { font: 500 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 8px 2px 0; }
@@ -173,7 +187,8 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
       <li><a href="#decay"><span>5</span><span>harmonic decay</span></a></li>
       <li><a href="#move"><span>6</span><span>pitch &amp; brightness</span></a></li>
       <li><a href="#resynth"><span>7</span><span>resynthesis</span></a></li>
-      <li><a href="#deep"><span>8</span><span>how deep can we go</span></a></li>
+      <li><a href="#modal"><span>8</span><span>from simulation to sound</span></a></li>
+      <li><a href="#deep"><span>9</span><span>how deep can we go</span></a></li>
     </ol>
   </nav>
 
@@ -334,8 +349,76 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
     </section>
 
     <!-- 8 -->
+    <section class="ch" id="modal">
+      <div class="ch-head"><span class="ch-num">8</span><h2>from simulation to sound</h2></div>
+      <div class="indent">
+        <div class="prose">
+          <p>A <b>modal simulation</b> (finite elements, in CAD tools such as Onshape, SolidWorks or COMSOL) finds the ways a part likes to vibrate. Each <b>mode</b> has a frequency and a shape. For a tine and tonebar that is exactly the list of partials the instrument can play. This lab turns that list into a sound you can hear and then analyse with the rest of this page.</p>
+          <p>A simulation gives you some of what you need, but not all of it:</p>
+          <ul>
+            <li><b>Frequencies: yes.</b> They become the partials, as they are.</li>
+            <li><b>How loud each mode is: not directly.</b> A mode shape has no real size. The "1 mm" deformation in the viewer is only a display scale. But the <b>energy</b> the tool reports at that scale tells you how stiff the mode is: <code>k = 2E / d²</code>. From the stiffness and the frequency you get the mode's <b>effective mass</b>: <code>m = k / ω²</code>, with ω = 2π·f.</li>
+            <li><b>Decay: no.</b> A modal solve contains no damping at all, so nothing in it says how long a mode rings. Damping has to come from measurement or experience. Here it comes from two knobs.</li>
+          </ul>
+        </div>
+        <h3><span class="n">8.1</span>energy → stiffness → mass → loudness</h3>
+        <div class="prose">
+          <p>Worked example: mode 1 at 1161 Hz shows <b>0.012 J at 1 mm</b>. Then k = 2 × 0.012 / 0.001² = <b>24,000 N/m</b>, ω = 2π × 1161 = 7,295 rad/s, and m = 24,000 / 7,295² ≈ <b>0.45 g</b>. That is the part of the tine's mass that really takes part in this vibration.</p>
+          <p>A hammer blow is a short push, an <b>impulse</b> J (force × time, in N·s). It gives each mode a starting speed <code>v = J × w / m</code>, where <i>w</i> (0–1) is how much the hammer point moves in that mode's shape: 1 at the mode's peak, 0 at a node. Light modes (small m) get going faster from the same blow. A real hammer also stays in contact for a moment (about 0.3–1 ms for felt or neoprene). Modes much faster than that contact time are barely excited, which is why the <b>contact time</b> knob darkens the sound.</p>
+          <p>The pickup or microphone does not hear position. A magnetic pickup follows <b>velocity</b>, and the sound radiated into the air follows <b>acceleration</b> more closely. Switch between them to hear how much this changes the balance: each step up multiplies a mode's level by its ω, so high modes come forward.</p>
+        </div>
+        <div class="lab">
+          <div class="lab-top"><span class="lab-name">modal synthesis · mode list → sound</span></div>
+          <div class="tbl-wrap mtab-wrap"><table class="mtab" id="mtab">
+            <thead><tr><th>mode</th><th>frequency (Hz)</th><th>energy at ref. (J)</th><th>hammer w (0–1)</th><th>k (N/m)</th><th>m (g)</th><th>T60 (s)</th><th>start level</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+          <div class="seg" style="margin-top:10px">
+            <button class="key" type="button" id="m-add">+ mode</button>
+            <button class="key" type="button" id="m-reset">reset to the example tine</button>
+          </div>
+          <details class="mpaste">
+            <summary class="ctl-label">paste a mode list</summary>
+            <textarea id="m-text" rows="5" spellcheck="false" placeholder="Mode 1 (1161 Hz) 0.012 J&#10;Mode 2 (1192 Hz)&#10;Mode 3 (2249 Hz) 0.05 J"></textarea>
+            <div class="seg"><button class="key" type="button" id="m-parse">fill the table</button><span class="ctl-label">one mode per line · "… Hz" is required, "… J" is optional</span></div>
+          </details>
+          <div class="mctl">
+            <label>reference deformation <span><input type="number" id="m-ref" min="0.001" step="0.1" value="1"> mm</span></label>
+            <label>hammer impulse <span><input type="number" id="m-imp" min="0" step="0.5" value="2"> mN·s</span></label>
+            <label>hammer contact <span><input type="number" id="m-tc" min="0" step="0.1" value="0.4"> ms</span></label>
+            <label>T60 at 1 kHz <span><input type="number" id="m-t1" min="0.05" step="0.5" value="4"> s</span></label>
+            <label>T60 at 8 kHz <span><input type="number" id="m-t8" min="0.02" step="0.1" value="0.4"> s</span></label>
+            <label>length <span><input type="number" id="m-dur" min="0.5" max="10" step="0.5" value="4"> s</span></label>
+          </div>
+          <div class="seg" style="margin-top:12px">
+            <span class="ctl-label">listen to</span>
+            <button class="key" type="button" data-mout="0">displacement</button>
+            <button class="key" type="button" data-mout="1" aria-pressed="true">velocity (pickup)</button>
+            <button class="key" type="button" data-mout="2">acceleration (air)</button>
+          </div>
+          <div class="grid2" style="margin-top:14px">
+            <div class="screen"><canvas id="cv-mstat" aria-label="static spectrum of the modes"></canvas></div>
+            <div class="screen"><canvas id="cv-mdyn" aria-label="level of each mode over time"></canvas></div>
+          </div>
+          <div class="readout" id="ro-modal"></div>
+          <div class="seg" style="margin-top:12px">
+            <button class="key hot" type="button" id="m-play">▶ play simulation</button>
+            <button class="key" type="button" id="m-analyse">analyse it in the microscope ↑</button>
+          </div>
+        </div>
+        <h3><span class="n">8.2</span>static and dynamic</h3>
+        <div class="prose">
+          <p>The left screen is the <b>static</b> picture: one bar per mode at its starting level, with its ratio to mode 1. The dashed lines mark where perfect harmonics (×2, ×3…) would be, so you can see at once how inharmonic the part is. The right screen is the <b>dynamic</b> picture: every mode falls in a straight line in dB, steeper for higher modes. Press <kbd>analyse it in the microscope</kbd> and the simulated note goes through chapters 2–7 like a recording, so you can compare it with a real one.</p>
+          <p>The two damping knobs set the decay time at 1 kHz and at 8 kHz. Every mode in between follows a standard engineering model, <b>Rayleigh damping</b>. To set them from reality, record the real part, load it in chapter 1 and read the T60 values in the harmonics table in chapter 4.</p>
+        </div>
+        <div class="note try">Look at modes 1 and 2 in the example: 1161 and 1192 Hz. They are the same bending in two directions (up-down and sideways), almost but not quite equal. Together they <b>beat</b> 31 times a second. That is too fast to hear as a wobble in loudness (the tremolo readout only looks at 1–15 Hz). Instead it sounds rough, and it shows as a fine ripple in the waveform and the spectrogram. Lower the frequency of mode 2 towards 1161 Hz and the roughness slows down into an audible "wah-wah". Real tines are shaped and tuned so that this pair either matches or sits well apart.</div>
+        <div class="note">Check your tool before trusting the numbers. Set the display deformation to 2 mm: if the energy becomes four times bigger (0.048 J instead of 0.012 J), the value is the mode's strain energy at that scale, and the formulas above apply. The model leaves out the hammer's bounce, the exact strike and pickup points (only approximated by <i>w</i>), the pickup's non-linearity and the air. It is a well-founded first sketch of the sound, not a recording.</div>
+      </div>
+    </section>
+
+    <!-- 9 -->
     <section class="ch" id="deep">
-      <div class="ch-head"><span class="ch-num">8</span><h2>how deep can we go</h2></div>
+      <div class="ch-head"><span class="ch-num">9</span><h2>how deep can we go</h2></div>
       <div class="indent">
         <div class="prose">
           <p>Analysis goes in layers. Each layer needs more careful recordings and gives you more of what makes an instrument itself.</p>
@@ -347,7 +430,7 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
             <li><b>Many recordings together.</b> The real character of an instrument lives in how these numbers <i>change</i>: across velocities, across the keyboard, across pickup settings. That needs a set of recordings and a spreadsheet, not one file.</li>
           </ol>
         </div>
-        <h3><span class="n">8.1</span>what makes real instruments hard to simulate, and how to measure it</h3>
+        <h3><span class="n">9.1</span>what makes real instruments hard to simulate, and how to measure it</h3>
         <div class="tbl-wrap">
           <table>
             <thead><tr><th>feature</th><th style="text-align:left">where it comes from</th><th style="text-align:left">how to see it here</th></tr></thead>
@@ -367,7 +450,7 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
             </tbody>
           </table>
         </div>
-        <h3><span class="n">8.2</span>limits of this page</h3>
+        <h3><span class="n">9.2</span>limits of this page</h3>
         <div class="prose">
           <ul>
             <li><b>One note at a time.</b> Chords and melodies confuse the pitch detector and mix the harmonic series together.</li>
@@ -693,6 +776,122 @@ function makeExample(kind) {
   let m = 0; for (const v of x) m = Math.max(m, Math.abs(v)); for (let i = 0; i < x.length; i++) x[i] *= 0.9 / m;
   return { x, sr };
 }
+
+/* ============== modal synthesis: mode list → sound ============== */
+const MODAL_EXAMPLE = [[1161, 0.012], [1192, null], [2249, null], [3964, null], [8104, null], [8542, null], [8568, null]];
+let MR = MODAL_EXAMPLE.map(([f, E]) => ({ f, E, w: 1 }));
+const MO = { out: 1 };
+const mval = id => { const v = parseFloat($(id).value); return isFinite(v) ? v : 0; };
+// every derived number for the current table and knobs
+function modalModel() {
+  const d = Math.max(1e-6, mval("m-ref") / 1000), J = mval("m-imp") / 1000, tc = Math.max(0, mval("m-tc")) / 1000;
+  const T1 = Math.max(0.01, mval("m-t1")), T8 = Math.max(0.01, mval("m-t8")), w1 = TAU * 1000, w8 = TAU * 8000;
+  // Rayleigh damping: decay rate σ = (α + β·ω²) / 2, solved from the two T60 knobs (σ = 6.91 / T60)
+  const beta = (13.82 / T8 - 13.82 / T1) / (w8 * w8 - w1 * w1), alpha = 13.82 / T1 - beta * w1 * w1;
+  const valid = MR.filter(r => r.f > 0 && r.f < 22000);
+  const ref = valid.find(r => r.E > 0), mRef = ref ? 2 * ref.E / (d * d) / (TAU * ref.f) ** 2 : 0.0005;
+  const modes = valid.map(r => {
+    const om = TAU * r.f, assumed = !(r.E > 0), m = assumed ? mRef : 2 * r.E / (d * d) / (om * om), k = m * om * om;
+    // half-sine hammer pulse of length tc: its spectrum weights each mode (1 at low frequency)
+    const u = om * tc / Math.PI, hw = tc ? (Math.abs(1 - u * u) < 1e-6 ? Math.PI / 4 : Math.abs(Math.cos(om * tc / 2) / (1 - u * u))) : 1;
+    const v = J * Math.max(0, Math.min(1, r.w)) * hw / m, sigma = Math.max(0.05, (alpha + beta * om * om) / 2);
+    return { r, f: r.f, om, m, k, assumed, v, x: v / om, E: 0.5 * m * v * v, sigma, T60: 6.91 / sigma, A: v * Math.pow(om, MO.out - 1) };
+  });
+  const Amax = Math.max(1e-30, ...modes.map(q => q.A));
+  modes.forEach(q => q.db = 20 * Math.log10(Math.max(q.A, 1e-30) / Amax));
+  return { modes, dur: Math.min(10, Math.max(0.5, mval("m-dur") || 4)), anyAssumed: modes.some(q => q.assumed), hasRef: !!ref };
+}
+function modalSynth() {
+  const M = modalModel(), sr = 44100, n = Math.round(M.dur * sr), x = new Float32Array(n), ph = MO.out * Math.PI / 2;
+  for (const q of M.modes) {
+    if (!(q.A > 0)) continue;
+    const c = Math.cos(q.om / sr), sn = Math.sin(q.om / sr), dec = Math.exp(-q.sigma / sr);
+    let re = Math.cos(ph), im = Math.sin(ph), a = q.A;   // rotating phasor: fast and exact enough for a few seconds
+    for (let i = 0; i < n; i++) { x[i] += a * im; const r2 = re * c - im * sn; im = re * sn + im * c; re = r2; a *= dec; }
+  }
+  const on = Math.round(sr * 0.001), fade = Math.round(sr * 0.08);
+  for (let i = 0; i < n; i++) { if (i < on) x[i] *= 0.5 - 0.5 * Math.cos(Math.PI * i / on); if (i > n - fade) x[i] *= (n - i) / fade; }
+  let m = 0; for (const v of x) m = Math.max(m, Math.abs(v)); if (m > 0) for (let i = 0; i < n; i++) x[i] *= 0.9 / m;
+  return { x, sr };
+}
+const fmtSig = v => !isFinite(v) ? "—" : v >= 1e4 ? Math.round(v).toLocaleString("en") : v >= 100 ? v.toFixed(0) : v >= 1 ? v.toFixed(2) : v.toPrecision(2);
+function renderModalTable() {
+  const tb = $("mtab").tBodies[0]; tb.replaceChildren();
+  MR.forEach((r, i) => {
+    const tr = el("tr"), cell = (key, step) => { const td = el("td"), inp = el("input"); inp.type = "number"; inp.step = step; inp.value = r[key] == null ? "" : r[key]; if (key === "E") inp.placeholder = "assume"; inp.setAttribute("aria-label", key + " of mode " + (i + 1)); inp.addEventListener("input", () => { const v = parseFloat(inp.value); r[key] = isFinite(v) ? v : (key === "E" ? null : 0); updateModal(); }); td.append(inp); return td; };
+    const del = el("button", null, "×"); del.type = "button"; del.setAttribute("aria-label", "remove mode " + (i + 1)); del.addEventListener("click", () => { MR.splice(i, 1); renderModalTable(); updateModal(); });
+    const tdDel = el("td"); tdDel.append(del);
+    tr.append(el("td", null, String(i + 1)), cell("f", "1"), cell("E", "0.001"), cell("w", "0.1"), el("td", "calc"), el("td", "calc"), el("td", "calc"), el("td", "calc"), tdDel);
+    tb.append(tr);
+  });
+}
+function updateModal() {
+  const M = modalModel(), rows = $("mtab").tBodies[0].rows;
+  MR.forEach((r, i) => {
+    const q = M.modes.find(o => o.r === r), c = rows[i] && rows[i].cells; if (!c) return;
+    const put = (j, main, sub) => { c[j].replaceChildren(document.createTextNode(main)); if (sub) c[j].append(el("i", null, sub)); };
+    if (!q) { [4, 5, 6, 7].forEach(j => put(j, "—")); return; }
+    put(4, fmtSig(q.k), q.assumed ? "assumed" : ""); put(5, (q.m * 1000).toFixed(q.m < 1e-4 ? 4 : 3), q.assumed ? "= mode " + (MR.findIndex(o => o.E > 0) + 1 || "?") : "");
+    put(6, q.T60.toFixed(q.T60 < 1 ? 2 : 1)); put(7, q.db.toFixed(1) + " dB");
+  });
+  const pairs = [];
+  for (let i = 0; i < M.modes.length; i++) for (let j = i + 1; j < M.modes.length; j++) { const df = Math.abs(M.modes[i].f - M.modes[j].f); if (df > 0 && df < 60) pairs.push(`${M.modes[i].f} / ${M.modes[j].f} Hz → ${df.toFixed(df < 10 ? 1 : 0)} Hz`); }
+  const Et = M.modes.reduce((a, q) => a + q.E, 0), top = M.modes.slice().sort((a, b) => b.A - a.A)[0];
+  readout("ro-modal", [["energy from the hammer", Et ? (Et * 1000).toPrecision(3) + " mJ" : "—"], ["loudest mode", top ? top.f + " Hz · T60 " + top.T60.toFixed(2) + " s" : "—"],
+    ["beating", pairs.length ? pairs.join(" · ") : "none (no modes closer than 60 Hz)"],
+    ...(M.anyAssumed ? [["assumed", M.hasRef ? "modes without energy use the same mass as the first mode with one" : "no energy given: all modes use 0.5 g"]] : [])]);
+  drawModal(M);
+}
+function drawModal(M) {
+  M = M || modalModel();
+  const cs = $("cv-mstat"), cd = $("cv-mdyn"); if (!cs.clientWidth) return;
+  { // static spectrum on a log axis, with a harmonic grid on mode 1
+    const [g, w, h] = fit(cs); frame(g, w, h, "static · start level", "dB · log hz");
+    const fs = M.modes.map(q => q.f), lo = Math.max(20, Math.min(...fs, 1000) / 1.6), hi = Math.min(22000, Math.max(...fs, 2000) * 1.4);
+    const X = f => PAD.l + Math.log(f / lo) / Math.log(hi / lo) * (w - PAD.l - PAD.r), Y = yAxis(g, w, h, -60, 0, 12, v => String(v));
+    g.font = "400 9.5px 'IBM Plex Mono', monospace"; g.textAlign = "center"; g.textBaseline = "top"; g.fillStyle = C["screen-dim"];
+    for (const f of [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000]) if (f > lo && f < hi) g.fillText(f >= 1000 ? f / 1000 + "k" : String(f), X(f), h - PAD.b + 6);
+    const f1 = M.modes[0] && M.modes[0].f;
+    if (f1) { g.strokeStyle = C["screen-grid"]; g.setLineDash([3, 4]); g.lineWidth = 1; g.beginPath(); for (let n = 2; n * f1 < hi; n++) { const xx = Math.round(X(n * f1)) + .5; g.moveTo(xx, PAD.t); g.lineTo(xx, h - PAD.b); } g.stroke(); g.setLineDash([]); }
+    M.modes.forEach((q, i) => {
+      const xx = X(q.f), y = Y(Math.max(-60, q.db));
+      g.fillStyle = i === 0 ? C["screen-accent"] : C["screen-ink"]; g.fillRect(xx - 1.5, y, 3, h - PAD.b - y);
+      if (f1) { g.fillStyle = C["screen-dim"]; g.textBaseline = "bottom"; g.fillText("×" + (q.f / f1).toFixed(2), xx, Math.max(PAD.t + 22 + (i % 2) * 11, y - 3 - (i % 2) * 11)); }
+    });
+  }
+  { // dynamic: each mode falls in a straight line in dB
+    const [g, w, h] = fit(cd); frame(g, w, h, "dynamic · level over time", "dB");
+    const X = timeAxis(g, w, h, M.dur), Y = yAxis(g, w, h, -80, 0, 20, v => String(v));
+    g.save(); g.beginPath(); g.rect(PAD.l, PAD.t, w - PAD.l - PAD.r, h - PAD.t - PAD.b); g.clip();
+    M.modes.slice().sort((a, b) => a.db - b.db).forEach(q => {
+      const i = M.modes.indexOf(q); g.strokeStyle = RAMP[Math.min(RAMP.length - 1, i)]; g.lineWidth = 2; g.beginPath();
+      g.moveTo(X(0), Y(q.db)); g.lineTo(X(M.dur), Y(q.db - 8.686 * q.sigma * M.dur)); g.stroke();
+    });
+    g.restore();
+  }
+}
+function parseModes(text) {
+  const out = [];
+  for (const line of text.split(/\n/)) {
+    const hz = line.match(/(\d+(?:[.,]\d+)?)\s*hz/i); if (!hz) continue;
+    const j = line.match(/(\d*[.,]?\d+(?:e-?\d+)?)\s*j\b/i);
+    out.push({ f: parseFloat(hz[1].replace(",", ".")), E: j ? parseFloat(j[1].replace(",", ".")) : null, w: 1 });
+  }
+  return out;
+}
+renderModalTable();
+["m-ref", "m-imp", "m-tc", "m-t1", "m-t8", "m-dur"].forEach(id => $(id).addEventListener("input", () => updateModal()));
+document.querySelectorAll("[data-mout]").forEach(b => b.addEventListener("click", () => { MO.out = +b.dataset.mout; document.querySelectorAll("[data-mout]").forEach(o => o.setAttribute("aria-pressed", String(o === b))); updateModal(); }));
+$("m-add").addEventListener("click", () => { const last = MR[MR.length - 1]; MR.push({ f: last ? Math.round(last.f * 1.5) : 1000, E: null, w: 1 }); renderModalTable(); updateModal(); });
+$("m-reset").addEventListener("click", () => { MR = MODAL_EXAMPLE.map(([f, E]) => ({ f, E, w: 1 })); renderModalTable(); updateModal(); });
+$("m-parse").addEventListener("click", () => { const m = parseModes($("m-text").value); if (m.length) { MR = m; renderModalTable(); updateModal(); } });
+$("m-play").addEventListener("click", () => { const { x, sr } = modalSynth(); playArray(x, sr); });
+$("m-analyse").addEventListener("click", () => {
+  const { x, sr } = modalSynth();
+  document.querySelectorAll("[data-ex]").forEach(o => o.setAttribute("aria-pressed", "false"));
+  run(x, sr, { name: "modal simulation (" + MR.length + " modes)", ch: 1, full: x.length / sr });
+  $("time").scrollIntoView({ behavior: "smooth" });
+});
 
 /* ============== audio ============== */
 let ctx = null, master = null, src = null;
@@ -1155,8 +1354,9 @@ for (const id of ["cv-wave", "cv-env", "cv-sg", "cv-tracks", "cv-pitch", "cv-cen
 }
 
 /* ============== boot ============== */
-new ResizeObserver(() => drawAll()).observe(document.querySelector("main"));
-const rerender = () => { readColors(); drawAll(); };
+new ResizeObserver(() => { drawAll(); drawModal(); }).observe(document.querySelector("main"));
+const rerender = () => { readColors(); drawAll(); drawModal(); };
+updateModal();
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 const links = [...document.querySelectorAll("nav.index a")];
