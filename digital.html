@@ -264,7 +264,41 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
 }
 .kb .on { background: var(--accent) !important; color: var(--on-accent); }
 .kb .on b { color: var(--on-accent); }
+/* wav lab */
+.screens.wav { grid-template-columns: minmax(0, 1fr); }
+.wav-scr { background: var(--screen); color: var(--screen-ink); padding: 10px 12px; overflow: hidden; font: 400 11px/1.55 var(--f-mono); min-width: 0; }
+.wav-scr .ttl { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font: 500 10px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+.wav-scr .ttl span:last-child { color: var(--screen-dim); }
+.wav-scr .ttl i { font-style: normal; color: var(--gc); margin-left: 10px; }
+.g-riff { --gc: var(--screen-accent); } .g-fmt { --gc: #6cb6ff; } .g-data { --gc: #c49bff; } .g-smp { --gc: #7ee0a0; } .g-smpR { --gc: #3fae6a; }
+.g-other { --gc: #ffd166; } .g-pad, .g-none { --gc: var(--screen-dim); }
+.hx { overflow-x: auto; }
+.hx .row { display: flex; white-space: nowrap; }
+.hx .off { color: var(--screen-dim); width: 6ch; flex: none; }
+.hx .b { color: var(--gc); width: 3ch; text-align: center; cursor: pointer; border-radius: 2px; flex: none; }
+.hx .b.sel { background: color-mix(in srgb, var(--gc) 32%, transparent); color: var(--screen-ink); }
+.hx .gap { width: 1ch; flex: none; }
+.hx .asc { margin-left: 2ch; color: var(--screen-dim); white-space: pre; }
+.hx .asc b { color: var(--screen-ink); font-weight: 400; }
+.hx .more { color: var(--screen-dim); padding-top: 4px; }
+.wav-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 12px; height: 270px; }
+.fdetail { border: 1px solid var(--screen-grid); border-left: 3px solid var(--gc); border-radius: 6px; padding: 10px; display: grid; gap: 6px; align-content: start; overflow: auto; }
+.fdetail .nm { font: 500 13px/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--gc); }
+.fdetail .meta { color: var(--screen-dim); text-transform: uppercase; font-size: 10px; letter-spacing: .06em; }
+.fdetail .val { font-size: 16px; line-height: 1.3; }
+.fdetail .bytes { letter-spacing: .08em; }
+.fdetail p { margin: 0; color: var(--screen-ink); font-family: var(--f-sans); font-size: 13.5px; line-height: 1.45; }
+.flist { position: relative; overflow-y: auto; border-top: 1px solid var(--screen-grid); }
+.frow { display: grid; grid-template-columns: 5ch minmax(0, 1fr) minmax(0, 1fr); gap: 8px; width: 100%; text-align: left; background: none; border: 0; border-left: 3px solid var(--gc);
+  color: var(--screen-ink); font: 400 10.5px/1.4 var(--f-mono); padding: 4px 6px; cursor: pointer; border-bottom: 1px solid var(--screen-grid); }
+.frow span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.frow span:first-child { color: var(--screen-dim); }
+.frow span:nth-child(2) { color: var(--gc); text-transform: uppercase; letter-spacing: .04em; }
+.frow[aria-pressed="true"] { background: color-mix(in srgb, var(--gc) 22%, transparent); }
+.file-btn { position: relative; overflow: hidden; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 @media (max-width: 1100px) { .kinds { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .wav-fields { grid-template-columns: minmax(0, 1fr); height: auto; } .flist { max-height: 220px; } .hx .asc { display: none; } .wav-scr { font-size: 10px; } }
 @media (max-width: 700px) { .midi-screen { height: 250px; } .kb { height: 110px; } .kb .wk span { display: none; } }
 </style>
 </head>
@@ -287,7 +321,8 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
       <li><a href="#dac"><span>5</span><span>inside the dac</span></a></li>
       <li><a href="#dsp"><span>6</span><span>dsp</span></a></li>
       <li><a href="#midi"><span>7</span><span>midi</span></a></li>
-      <li><a href="#ref"><span>8</span><span>quick reference</span></a></li>
+      <li><a href="#wav"><span>8</span><span>anatomy of a .wav</span></a></li>
+      <li><a href="#ref"><span>9</span><span>quick reference</span></a></li>
     </ol>
   </nav>
 
@@ -480,8 +515,37 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
     </section>
 
     <!-- 8 -->
+    <section class="ch" id="wav">
+      <div class="ch-head"><span class="ch-num">8</span><h2>anatomy of a .wav file</h2></div>
+      <div class="indent">
+        <div class="prose"><p>A <b>.wav</b> file is the simplest way to store the numbers from chapters 2 and 3. It has a short header that says how to read the numbers, then the numbers themselves, one after another, with no compression. The lab below builds a real one-second .wav file in your browser and shows every byte of its start. Hover over a byte (or tap a row on the right) to see what it means. You can also open one of your own files: it is read on your computer and never uploaded.</p></div>
+        <div class="lab" data-lab="wav"></div>
+        <h3><span class="n">8.1</span>chunks</h3>
+        <div class="prose"><p>A wav file is a <b>RIFF</b> file (Resource Interchange File Format, 1991). It starts with the letters <code>RIFF</code>, the size of the rest of the file, and the word <code>WAVE</code>. After that everything is a <b>chunk</b>: a four-letter name, a four-byte size, and then that many bytes of content. Two chunks are required:</p>
+          <ul>
+            <li><b><code>fmt </code></b> (with a space at the end, so it has four letters) holds the recipe: integer or float, number of channels, sample rate, bits per sample, and two values worked out from them, the byte rate and the block align.</li>
+            <li><b><code>data</code></b> holds the samples. Its size tells you how long the sound is: <code>duration = data size ÷ byte rate</code>.</li>
+          </ul>
+          <p>Any other chunk is optional, and a program skips the ones it does not understand. That is how metadata fits in without breaking old software: <code>LIST</code> (title, artist, software), <code>bext</code> (Broadcast Wave: description, date and timecode), <code>cue </code> (markers), <code>smpl</code> (loop points for samplers), <code>iXML</code> (scene, take and track names from film recorders) and <code>JUNK</code> (empty space reserved so the header can grow later). Open a file from your DAW or a field recorder and you will often find several.</p></div>
+        <h3><span class="n">8.2</span>little-endian: numbers stored backwards</h3>
+        <div class="prose"><p>Any number bigger than one byte is split into bytes, and a wav file stores the <b>smallest byte first</b>. This is called <b>little-endian</b>. 44,100 is <code>0x0000AC44</code> in hexadecimal, but in the file it appears as <code>44 AC 00 00</code>. To read it, take the bytes right to left. Apple's AIFF format stores the same information in the other order (big-endian), which is one of the few real differences between the two.</p></div>
+        <h3><span class="n">8.3</span>frames and interleaving</h3>
+        <div class="prose"><p>In a stereo file the channels take turns: left sample, right sample, left, right… One sample of every channel at the same moment is a <b>frame</b>, and the <b>block align</b> field says how many bytes a frame takes: 4 for 16-bit stereo, 6 for 24-bit stereo. In the lab the left channel is green and the right channel is dark green, so you can see them alternate.</p>
+          <p>How a sample is written depends on the bit depth:</p>
+          <ul>
+            <li><b>8 bit</b> is <i>unsigned</i>: 0 to 255, with silence at 128 (<code>80</code>). This is an old exception, so watch out for it.</li>
+            <li><b>16, 24 and 32 bit integers</b> are <i>signed</i> (two's complement): silence is 0, and negative numbers start with <code>FF</code> in their top byte.</li>
+            <li><b>32-bit float</b> (format 3) stores the value as a decimal number, with ±1.0 as full scale. Values above 1.0 are allowed, so a float file cannot clip.</li>
+          </ul></div>
+        <div class="note try">Pick <kbd>8 bit</kbd> and <kbd>silence</kbd>: every sample byte is <code>80</code>. Switch to <kbd>16 bit</kbd>: now silence is <code>00 00</code>. Then switch the sample rate between 44.1k and 48k and watch bytes 24–27 and 28–31 change.</div>
+        <h3><span class="n">8.4</span>limits and relatives</h3>
+        <div class="prose"><p>The size fields are 32 bits, so a wav file cannot be bigger than 4 GB (some older software even stops at 2 GB). That is about 6 h 45 min of 44.1 kHz / 16-bit stereo, but only 4 h 8 min of 48 kHz / 24-bit stereo, and much less for multitrack recordings. <b>RF64</b> and <b>BW64</b> are wav files with 64-bit sizes for longer recordings. <b>FLAC</b> stores the same samples losslessly in about half the space. <b>MP3</b> and <b>AAC</b> are lossy: they throw away what a hearing model predicts you will not notice, so the original numbers cannot be recovered.</p></div>
+      </div>
+    </section>
+
+    <!-- 9 -->
     <section class="ch" id="ref">
-      <div class="ch-head"><span class="ch-num">8</span><h2>quick reference</h2></div>
+      <div class="ch-head"><span class="ch-num">9</span><h2>quick reference</h2></div>
       <div class="indent">
         <div class="tbl-wrap">
           <table>
@@ -504,6 +568,7 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
               <tr><td class="mono">rate = f<sub>s</sub> × bits × channels</td><td>uncompressed data rate in bits per second</td></tr>
               <tr><td class="mono">latency = buffer / f<sub>s</sub></td><td>delay added by one processing buffer</td></tr>
               <tr><td class="mono">f = 440 × 2<sup>(n − 69)/12</sup></td><td>frequency of MIDI note n</td></tr>
+              <tr><td class="mono">wav size = 44 + seconds × f<sub>s</sub> × channels × bytes</td><td>size of a plain PCM .wav file (44-byte header, no extra chunks)</td></tr>
             </tbody>
           </table>
         </div>
@@ -533,6 +598,9 @@ footer { padding-top: 40px; font: 400 11px/1.6 var(--f-mono); text-transform: up
               <tr><td>status / data byte</td><td>In MIDI, the first byte (type + channel, starts with 1) and the values that follow (start with 0, so 0–127).</td></tr>
               <tr><td>velocity</td><td>How fast a key was pressed, 1–127.</td></tr>
               <tr><td>CC</td><td>Control change: a MIDI message for knobs, wheels and pedals.</td></tr>
+              <tr><td>RIFF / chunk</td><td>The container format of .wav files: a series of chunks, each a four-letter id, a size and a body.</td></tr>
+              <tr><td>little-endian</td><td>Storing a multi-byte number with its smallest byte first, as .wav files do.</td></tr>
+              <tr><td>frame</td><td>One sample of every channel at the same moment. In a file the channels of a frame are interleaved.</td></tr>
             </tbody>
           </table>
         </div>
@@ -1345,8 +1413,215 @@ class MidiLab extends Lab {
   tick() { this.draw(); }
 }
 
+/* ============== lab 7 · anatomy of a .wav ============== */
+const WAV_FMT = { 1: "PCM integers", 2: "Microsoft ADPCM", 3: "IEEE float", 6: "A-law", 7: "μ-law", 0xFFFE: "extensible" };
+const CHUNK_NOTES = {
+  "LIST": "A metadata list: title, artist, software, date…", "bext": "Broadcast Wave extension: description, originator, date and timecode.",
+  "fact": "Number of sample frames. Required for compressed and float formats.", "cue ": "Cue points: markers in the audio.", "smpl": "Sampler information: root note and loop points.",
+  "JUNK": "Empty space reserved so the header can grow later without rewriting the whole file.", "PAD ": "Padding.", "iXML": "Production metadata from film recorders (scene, take, track names) as XML.",
+  "id3 ": "ID3 tags, as used in MP3 files.", "inst": "Instrument information: root note and key range.", "acid": "ACID loop information: tempo and number of beats.",
+};
+const ascii4 = (u8, o) => String.fromCharCode(u8[o], u8[o + 1], u8[o + 2], u8[o + 3]);
+function encodeWav({ rate, bits, ch, content }) {
+  const B = bits / 8, frames = rate, dataLen = frames * ch * B, u8 = new Uint8Array(44 + dataLen), v = new DataView(u8.buffer);
+  const str = (o, t) => { for (let i = 0; i < 4; i++) u8[o + i] = t.charCodeAt(i); };
+  str(0, "RIFF"); v.setUint32(4, 36 + dataLen, true); str(8, "WAVE");
+  str(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, bits === 32 ? 3 : 1, true); v.setUint16(22, ch, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate * ch * B, true); v.setUint16(32, ch * B, true); v.setUint16(34, bits, true);
+  str(36, "data"); v.setUint32(40, dataLen, true);
+  const amp = content === "loud" ? 0.999 : 0.5;
+  for (let n = 0, o = 44; n < frames; n++) for (let c = 0; c < ch; c++, o += B) {
+    const x = content === "silence" ? 0 : amp * Math.sin(TAU * (c ? 660 : 440) * n / rate);   // left 440 Hz, right 660 Hz
+    if (bits === 8) u8[o] = Math.round(x * 127) + 128;
+    else if (bits === 16) v.setInt16(o, Math.round(x * 32767), true);
+    else if (bits === 24) { const q = Math.round(x * 8388607); u8[o] = q & 255; u8[o + 1] = (q >> 8) & 255; u8[o + 2] = (q >> 16) & 255; }
+    else v.setFloat32(o, x, true);
+  }
+  return u8;
+}
+// one sample → [integer or float value, value as a fraction of full scale, how it was read]
+function readSample(u8, v, o, B, isFloat) {
+  const hx = [...u8.subarray(o, o + B)].map(hex).join(" ");
+  if (isFloat && B === 4) { const x = v.getFloat32(o, true); return [x.toFixed(5), x, `${hx} → 32-bit float. ±1.0 is full scale.`]; }
+  if (isFloat && B === 8) { const x = v.getFloat64(o, true); return [x.toFixed(5), x, `${hx} → 64-bit float.`]; }
+  if (B === 1) { const r = u8[o]; return [String(r - 128), (r - 128) / 128, `${hx} → ${r}, and 8-bit wav is unsigned, so ${r} − 128 = ${r - 128}. Silence is 128 (80).`]; }
+  const rev = [...u8.subarray(o, o + B)].reverse().map(hex).join("");
+  let q = B === 2 ? v.getInt16(o, true) : B === 4 ? v.getInt32(o, true) : (u8[o] | u8[o + 1] << 8 | u8[o + 2] << 16);
+  if (B === 3 && q & 0x800000) q -= 0x1000000;
+  return [q.toLocaleString("en"), q / 2 ** (8 * B - 1), `${hx} → read backwards → 0x${rev} → ${q.toLocaleString("en")} (signed: a top byte of 80 or more means negative).`];
+}
+function parseWav(u8) {
+  const v = new DataView(u8.buffer, u8.byteOffset, u8.byteLength), L = u8.length, F = [], chunks = [];
+  const le = (o, n) => n === 2 ? v.getUint16(o, true) : v.getUint32(o, true);
+  const leNote = (o, n) => `${[...u8.subarray(o, o + n)].map(hex).join(" ")} → read backwards → 0x${[...u8.subarray(o, o + n)].reverse().map(hex).join("")}`;
+  const add = (off, len, name, value, note, g) => F.push({ off, len, name, value, note, g });
+  if (L < 12 || ascii4(u8, 0) !== "RIFF" || ascii4(u8, 8) !== "WAVE")
+    return { fields: F, chunks, error: L >= 4 && ascii4(u8, 0) === "RF64" ? "this is an RF64 file (a wav with 64-bit sizes), which this lab does not decode" : "this is not a RIFF / WAVE file" };
+  add(0, 4, "chunk id", '"RIFF"', "Every wav file starts with these four letters: Resource Interchange File Format.", "riff");
+  add(4, 4, "riff size", le(4, 4).toLocaleString("en") + " bytes", leNote(4, 4) + ". The size of everything after this field: the file size minus 8.", "riff");
+  add(8, 4, "form type", '"WAVE"', "This RIFF file holds audio. Everything after this is a list of chunks.", "riff");
+  let p = 12, fmt = null, data = null;
+  while (p + 8 <= L) {
+    const id = ascii4(u8, p), size = le(p + 4, 4), body = p + 8, g = id === "fmt " ? "fmt" : id === "data" ? "data" : "other";
+    chunks.push({ id, size, off: p, g });
+    add(p, 4, "chunk id", `"${id}"`, id === "fmt " ? "The format chunk: the recipe for reading the samples." : id === "data" ? "The data chunk: the samples themselves." : (CHUNK_NOTES[id] || "A chunk this lab does not know.") + " Programs skip chunks they do not understand.", g);
+    add(p + 4, 4, "chunk size", size.toLocaleString("en") + " bytes", leNote(p + 4, 4) + ". How many bytes of this chunk follow.", g);
+    if (id === "fmt " && size >= 16 && body + 16 <= L) {
+      const af = le(body, 2), chs = le(body + 2, 2), sr = le(body + 4, 4), br = le(body + 8, 4), ba = le(body + 12, 2), bps = le(body + 14, 2);
+      fmt = { af, chs, sr, br, ba, bps, sub: af };
+      add(body, 2, "audio format", af + " · " + (WAV_FMT[af] || "another codec"), leNote(body, 2) + ". 1 means plain integer PCM, 3 means floating point.", "fmt");
+      add(body + 2, 2, "channels", String(chs), leNote(body + 2, 2) + ". 1 is mono, 2 is stereo. The channels take turns inside the data chunk.", "fmt");
+      add(body + 4, 4, "sample rate", sr.toLocaleString("en") + " Hz", leNote(body + 4, 4) + ". Samples per second for each channel (chapter 2).", "fmt");
+      add(body + 8, 4, "byte rate", br.toLocaleString("en") + " bytes/s", leNote(body + 8, 4) + `. Sample rate × channels × bytes per sample = ${sr.toLocaleString("en")} × ${chs} × ${bps / 8}. A player uses it to work out time.`, "fmt");
+      add(body + 12, 2, "block align", ba + " bytes", leNote(body + 12, 2) + ". Bytes per frame: one sample for every channel.", "fmt");
+      add(body + 14, 2, "bits per sample", String(bps), leNote(body + 14, 2) + ". The bit depth (chapter 3).", "fmt");
+      if (size >= 18 && body + 18 <= L) add(body + 16, 2, "extension size", String(le(body + 16, 2)), "How many extra format bytes follow.", "fmt");
+      if (af === 0xFFFE && size >= 40 && body + 40 <= L) {
+        add(body + 18, 2, "valid bits", String(le(body + 18, 2)), "How many bits of each sample are really used (for example 20 of 24).", "fmt");
+        add(body + 20, 4, "channel mask", "0x" + le(body + 20, 4).toString(16).toUpperCase(), "Which speaker each channel is meant for: front left, front right, centre…", "fmt");
+        fmt.sub = le(body + 24, 2);
+        add(body + 24, 16, "sub-format guid", fmt.sub + " · " + (WAV_FMT[fmt.sub] || "another codec"), "The real format. Its first two bytes use the same codes as the audio format field.", "fmt");
+      }
+    } else if (id === "data" && fmt && fmt.ba > 0) {
+      data = { off: body, size: Math.min(size, L - body) };
+      const B = fmt.bps / 8, isFloat = fmt.sub === 3, frames = Math.min(48, Math.floor(data.size / fmt.ba));
+      if (fmt.sub === 1 || isFloat) for (let n = 0; n < frames; n++) for (let c = 0; c < fmt.chs; c++) {
+        const o = body + n * fmt.ba + c * B, [val, x, how] = readSample(u8, v, o, B, isFloat);
+        add(o, B, `frame ${n} · ${fmt.chs === 2 ? (c ? "right" : "left") : "ch " + (c + 1)}`, `${val} · ${(x >= 0 ? "+" : "") + x.toFixed(3)} fs`, how, c % 2 ? "smpR" : "smp");
+      }
+    } else if (size > 0 && body < L) add(body, Math.min(size, L - body), id.trim() + " content", size.toLocaleString("en") + " bytes", CHUNK_NOTES[id] || "The content of a chunk this lab does not decode.", g);
+    p = body + size + (size & 1);
+    if (size & 1 && p - 1 < L) add(p - 1, 1, "pad byte", hex(u8[p - 1]), "Every chunk must start at an even position, so a chunk with an odd size is followed by one padding byte.", "pad");
+  }
+  return { fields: F, chunks, fmt, data };
+}
+// decode the data chunk into float channels for playback (first 30 s)
+function decodeWav(u8, W) {
+  const f = W.fmt; if (!f || !W.data || !(f.sub === 1 || f.sub === 3) || !f.chs || f.ba !== f.chs * f.bps / 8 || f.sr < 3000 || f.sr > 384000) return null;
+  const v = new DataView(u8.buffer, u8.byteOffset, u8.byteLength), B = f.bps / 8, n = Math.min(Math.floor(W.data.size / f.ba), f.sr * 30), ch = [];
+  if (!n) return null;
+  for (let c = 0; c < Math.min(f.chs, 8); c++) { const d = new Float32Array(n); for (let i = 0; i < n; i++) d[i] = readSample(u8, v, W.data.off + i * f.ba + c * B, B, f.sub === 3)[1]; ch.push(d); }
+  return { rate: f.sr, ch };
+}
+class WavLab extends Lab {
+  constructor(root) {
+    super(root, "lab 7 · wav file inspector");
+    this.s = { rate: 44100, bits: 16, ch: 2, content: "tone" };
+    this.sc.classList.add("wav");
+    this.hexEl = el("div", "wav-scr"); this.fEl = el("div", "wav-scr");
+    this.sc.replaceChild(this.hexEl, this.cvA); this.sc.replaceChild(this.fEl, this.cvB);
+    this.seg("rate", "sample rate", [[8000, "8k"], [22050, "22.05k"], [44100, "44.1k"], [48000, "48k"], [96000, "96k"]], () => { this.file = null; });
+    this.seg("bits", "bit depth", [[8, "8"], [16, "16"], [24, "24"], [32, "32 float"]], () => { this.file = null; });
+    this.seg("ch", "channels", [[1, "mono"], [2, "stereo"]], () => { this.file = null; });
+    this.seg("content", "content", [["tone", "tone"], ["loud", "full-scale tone"], ["silence", "silence"]], () => { this.file = null; });
+    const [g] = this.group("file"), row = el("div", "seg");
+    const lab = el("span", "key file-btn", "open your .wav"); this.fileInput = el("input"); this.fileInput.type = "file"; this.fileInput.accept = ".wav,audio/wav,audio/x-wav";
+    this.fileInput.setAttribute("aria-label", "open a wav file"); this.fileInput.addEventListener("change", e => this.loadFile(e.target.files[0])); lab.append(this.fileInput);
+    const dl = el("button", "key", "download this .wav"); dl.type = "button"; dl.addEventListener("click", () => this.download());
+    row.append(lab, dl); g.append(row);
+    this.hexEl.addEventListener("mouseover", e => { const i = e.target.dataset && e.target.dataset.i; if (i == null) return; const k = this.fieldAt(+i); if (k !== this.sel) this.select(k, false); });
+    this.hexEl.addEventListener("click", e => { const i = e.target.dataset && e.target.dataset.i; if (i != null) this.select(this.fieldAt(+i), false); });
+    this.file = null; this.update();
+  }
+  async loadFile(file) {
+    if (!file) return;
+    const u8 = new Uint8Array(await file.arrayBuffer());
+    this.file = { name: file.name, u8 }; this.fileInput.value = "";
+    ["rate", "bits", "ch", "content"].forEach(k => { const b = this.inputs[k]; this.s[k + "_"] = this.s[k]; this.s[k] = null; b.sync(); });
+    this.update(); if (this.playing) this.refreshAudio();
+  }
+  update() {
+    if (!this.file) ["rate", "bits", "ch", "content"].forEach(k => { if (this.s[k] == null) { this.s[k] = this.s[k + "_"]; this.inputs[k].sync(); } });
+    this.u8 = this.file ? this.file.u8 : encodeWav(this.s);
+    this.W = parseWav(this.u8); this.audio = decodeWav(this.u8, this.W);
+    if (this.btn) this.btn.disabled = !this.audio;
+    const pick = this.W.fields.findIndex(f => f.name === "sample rate");
+    this.sel = pick >= 0 ? pick : 0; this.win = 0;
+    this.renderFields(); this.select(this.sel, false);
+    const f = this.W.fmt, L = this.u8.length, mb = v => v >= 1e6 ? (v / 1e6).toFixed(2) + " MB" : v >= 1e3 ? (v / 1e3).toFixed(1) + " KB" : v + " bytes";
+    const items = [[this.file ? "file" : "generated", this.file ? this.file.name : "1 s · left 440 hz · right 660 hz"], ["size", L.toLocaleString("en") + " bytes · " + mb(L)]];
+    if (this.W.error) items.push(["problem", this.W.error]);
+    else {
+      items.push(["chunks", this.W.chunks.map(c => c.id.trim() + " " + mb(c.size)).join(" · ")]);
+      if (f && this.W.data) {
+        items.push(["header", (this.W.data.off).toLocaleString("en") + " bytes before the samples"], ["duration", (this.W.data.size / f.br).toFixed(3) + " s"]);
+        if (!this.file) items.push(["one minute", mb(f.br * 60 + 44)]);
+      }
+      if (!this.audio) items.push(["playback", "this lab only plays integer and float pcm"]);
+    }
+    this.readout(items);
+  }
+  fieldAt(off) {
+    const F = this.W.fields; for (let i = 0; i < F.length; i++) if (off >= F[i].off && off < F[i].off + F[i].len) return i;
+    return -1;
+  }
+  groupAt(off) {
+    const i = this.fieldAt(off); if (i >= 0) return this.W.fields[i].g;
+    for (const c of this.W.chunks) if (off >= c.off && off < c.off + 8 + c.size) return c.g === "data" ? (this.W.fmt && Math.floor((off - c.off - 8) % this.W.fmt.ba / (this.W.fmt.bps / 8)) % 2 ? "smpR" : "smp") : c.g;
+    return "none";
+  }
+  renderHex() {
+    const u8 = this.u8, ROWS = 12, start = this.win, end = Math.min(u8.length, start + ROWS * 16), F = this.W.fields[this.sel];
+    const ttl = el("div", "ttl"), lg = el("span", null, "bytes " + start + "–" + (end - 1) + " · hex");
+    for (const [g, t] of [["riff", "riff"], ["fmt", "fmt"], ["data", "data"], ["smp", "left / mono"], ["smpR", "right"], ["other", "other chunks"]]) { const i = el("i", "g-" + g, "■ " + t); lg.append(i); }
+    ttl.append(lg, el("span", null, "hover a byte"));
+    const hx = el("div", "hx");
+    for (let r = start; r < end; r += 16) {
+      const row = el("div", "row"); row.append(el("span", "off", r.toString(16).toUpperCase().padStart(5, "0")));
+      const asc = el("span", "asc");
+      for (let i = r; i < r + 16; i++) {
+        if (i === r + 8) row.append(el("span", "gap"));
+        if (i >= end) { row.append(el("span", "b", "  ")); continue; }
+        const b = el("span", "b g-" + this.groupAt(i) + (F && i >= F.off && i < F.off + F.len ? " sel" : ""), hex(u8[i])); b.dataset.i = i; row.append(b);
+        const ch = u8[i] >= 32 && u8[i] < 127 ? String.fromCharCode(u8[i]) : "·";
+        asc.append(u8[i] >= 65 && u8[i] <= 122 ? el("b", null, ch) : document.createTextNode(ch));
+      }
+      row.append(asc); hx.append(row);
+    }
+    if (end < u8.length) hx.append(el("div", "more", "… " + (u8.length - end).toLocaleString("en") + " more bytes"));
+    this.hexEl.replaceChildren(ttl, hx);
+  }
+  renderFields() {
+    this.detail = el("div", "fdetail"); const list = el("div", "flist"); this.rows = [];
+    this.W.fields.forEach((f, i) => {
+      const b = el("button", "frow g-" + f.g); b.type = "button";
+      b.append(el("span", null, String(f.off)), el("span", null, f.name), el("span", null, f.value));
+      b.addEventListener("click", () => this.select(i, true)); list.append(b); this.rows.push(b);
+    });
+    const wrap = el("div", "wav-fields"); wrap.append(this.detail, list);
+    const ttl = el("div", "ttl"); ttl.append(el("span", null, "fields"), el("span", null, "offset · name · value"));
+    this.fEl.replaceChildren(ttl, wrap); this.list = list;
+  }
+  select(i, moveWin) {
+    const F = this.W.fields;
+    if (i < 0 || !F[i]) {
+      this.detail.className = "fdetail g-none";
+      this.detail.replaceChildren(el("div", "nm", this.W.error ? "cannot read" : "more data"), el("p", null, this.W.error ? "This lab reads RIFF / WAVE files: " + this.W.error + "." : "Only the start of the data chunk is labelled. The rest continues the same pattern, frame after frame."));
+      this.sel = -1; this.renderHex(); return;
+    }
+    const f = F[i]; this.sel = i;
+    if (moveWin || f.off < this.win || f.off >= this.win + 192) this.win = Math.max(0, (f.off >> 4 << 4) - (f.off >= 64 ? 32 : 0));
+    this.detail.className = "fdetail g-" + f.g;
+    this.detail.replaceChildren(el("div", "nm", f.name), el("div", "meta", "offset " + f.off + " · " + f.len + " byte" + (f.len > 1 ? "s" : "")),
+      el("div", "val", f.value), el("div", "bytes meta", [...this.u8.subarray(f.off, f.off + Math.min(f.len, 16))].map(hex).join(" ") + (f.len > 16 ? " …" : "")), el("p", null, f.note));
+    this.rows.forEach((r, j) => r.setAttribute("aria-pressed", String(j === i)));
+    if (moveWin === false && this.rows[i]) { const r = this.rows[i], L = this.list; if (r.offsetTop < L.scrollTop || r.offsetTop > L.scrollTop + L.clientHeight - 24) L.scrollTop = Math.max(0, r.offsetTop - 40); }
+    this.renderHex();
+  }
+  download() {
+    const a = document.createElement("a"), s = this.s;
+    a.href = URL.createObjectURL(new Blob([this.u8], { type: "audio/wav" }));
+    a.download = this.file ? this.file.name : `classaudio-${s.rate}hz-${s.bits}bit-${s.ch === 2 ? "stereo" : "mono"}.wav`;
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+  makeBuffer() { const a = this.audio, b = ctx.createBuffer(a.ch.length, a.ch[0].length, a.rate); a.ch.forEach((d, i) => b.getChannelData(i).set(d)); return b; }
+  start() { if (this.audio) super.start(); }
+  refreshAudio() { if (this.audio) super.refreshAudio(); else this.stop(); }
+  draw() {}
+}
+
 /* ============== page ============== */
-const LABS = { sampling: SamplingLab, quant: QuantLab, sar: SarLab, dac: DacLab, dsp: DspLab, midi: MidiLab };
+const LABS = { sampling: SamplingLab, quant: QuantLab, sar: SarLab, dac: DacLab, dsp: DspLab, midi: MidiLab, wav: WavLab };
 const visible = new Set();
 const labs = [...document.querySelectorAll("[data-lab]")].map(n => new LABS[n.dataset.lab](n));
 const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));

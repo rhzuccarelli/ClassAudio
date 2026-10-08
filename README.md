@@ -22,7 +22,7 @@ Open any page in a browser, or serve the folder with GitHub Pages.
 
 ## Sound Microscope — `analyze.html`
 
-Load a recording of a single note (or one of three synthetic examples) and take it apart:
+Load a recording of a single note (or one of five synthetic examples: piano string, plucked string, bowed cello, trumpet, e-piano) and take it apart:
 
 1. **Load**: drag and drop or pick a file. It is decoded and analysed locally; nothing is uploaded.
 2. **Envelope**: attack time, two-stage (early/late) decay fit, T60, tremolo rate and depth.
@@ -31,7 +31,7 @@ Load a recording of a single note (or one of three synthetic examples) and take 
 5. **Harmonic decay**: levels of harmonics 1–8 over time (bark, beating).
 6. **Pitch & brightness**: YIN pitch track in cents and spectral centroid.
 7. **Resynthesis**: compare static vs. tracked additive rebuilds with the original.
-8. **How deep can we go**: what is measurable, what makes a Rhodes hard to simulate, and the limits.
+8. **How deep can we go**: what is measurable, what makes pianos, brass, bowed strings, flutes, guitars and the Rhodes hard to simulate, and the limits.
 
 ## Colour & Saturation — `effects.html`
 
@@ -56,4 +56,5 @@ How sound becomes numbers and back, with a lab in every chapter:
 5. **Inside the DAC**: an 8-bit binary-weighted DAC with clickable bits, the R–2R ladder, and the reconstruction filter.
 6. **DSP**: moving average (FIR), one-pole (IIR), difference and echo, with impulse and frequency response, operation counts, and buffer latency.
 7. **MIDI**: an on-screen keyboard (mouse or computer keys) or a real MIDI device via Web MIDI. Every message is decoded byte by byte, with a piano roll and a small synth.
-8. **Quick reference**: formats, formulas and a glossary.
+8. **Anatomy of a .wav file**: a live hex inspector of a generated file (rate, bit depth, channels, content), or of your own .wav. It explains every RIFF / fmt / data field, little-endian numbers, interleaved frames and extra chunks (LIST, bext, iXML…), and can download the file.
+9. **Quick reference**: formats, formulas and a glossary.
